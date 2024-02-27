@@ -1,0 +1,3 @@
+# Prefacio {.unnumbered}
+
+Notas del curso XS0128 (Inferencia Bayesiana).
