@@ -1,3 +1,52 @@
 # Pensamiento Bayesiano
 
-## Paradigmas de Inferencia
+Librerías:
+```{r}
+library(tidyverse)
+library(LearnBayes)
+```
+
+
+## Ejemplo 1
+
+- Pregunta de investigación: ¿Qué proporción de estudiantes universitarios duermen al menos 8 horas diarias? 
+
+- Notación: $p$: proporción de estudiantes que duermen al menos 8 horas diarias. 
+
+- Datos: Muestra de 27 estudiantes donde 11 sí durmieron al menos 8 horas ayer.
+
+- Modelo: 
+$$L(p)\propto p^s(1-p)^f$$
+- Distribución posterior: Si $g(p)$ es la densidad previa de $p$, entonces:
+$$g(p|\text{datos})\propto g(p)L(p)$$
+**Primera escogencia de previa $g(p)$**
+
+```{r}
+p <- seq(0.05,0.95,by = 0.1)
+previa <- c(1,5.2,8,7.2,4.6,2.1,0.7,0.1,0,0)
+previa <- previa / sum(previa)
+plot(p, previa, type = "h", ylab="Probabilidad previa")
+```
+
+```{r}
+datos_sleep <- c(11, 16)
+datos_tot <- data.frame(p = p, previa = previa)
+datos_tot <- datos_tot %>% mutate(posterior = previa* p^(11)*(1-p)^(16)) %>%
+  mutate(posterior = posterior/sum(posterior)) 
+round(datos_tot,2)
+```
+
+Comparación:
+```{r}
+datos_tot_long <- datos_tot %>%
+  pivot_longer(previa:posterior,names_to = 'Type',values_to = 'Probability')
+
+ggplot(datos_tot_long, aes(x = p, y = Probability, group = Type, color = Type)) +
+  geom_line(linewidth = 3) +
+  facet_wrap(~ Type, nrow =  2) +
+  theme_minimal()
+
+```
+
+**Segunda escogencia de previa $g(p)$**
+
