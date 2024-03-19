@@ -50,3 +50,111 @@ ggplot(datos_tot_long, aes(x = p, y = Probability, group = Type, color = Type)) 
 
 **Segunda escogencia de previa $g(p)$**
 
+Escogencia de los parámetros de la Beta:
+```{r}
+quantile1 <- list(p = .5,x=.3)
+quantile2 <- list(p=.9,x=.5)
+beta.select(quantile1,quantile2)
+```
+
+Comparación de densidades:
+```{r}
+a <- 3.26
+b <- 7.19
+s <- 11
+f <- 16
+
+x_values <- seq(0, 1, length.out = 1000)
+df <- data.frame(x = x_values,
+                 Prior = dbeta(x_values, a, b),
+                 Likelihood = dbeta(x_values, s + 1, f + 1),
+                 Posterior = dbeta(x_values, a + s, b + f))
+
+
+ggplot(df, aes(x)) +
+  geom_line(aes(y = Prior), linetype = "dashed", size = 1.5, color = "blue") +
+  geom_line(aes(y = Likelihood), linetype = "dotted", size = 1.5, color = "green") +
+  geom_line(aes(y = Posterior), size = 1.5, color = "red") +
+  labs(x = "p", y = "Density") +
+  theme_minimal() +
+  scale_color_manual(values = c("blue", "green", "red")) +
+  theme(legend.position = "top") +
+  guides(color = guide_legend(title = "Density"))
+
+```
+
+Para responder parcialmente la pregunta de investigación:
+```{r}
+1 - pbeta(0.5, a + s, b + f)
+```
+
+es decir hay una probabilidad aproximadamente de 7% de que más de la mitad de los estudiantes universitarios duerman más de 8 horas diarias. 
+
+Intervalo de credibilidad para $p$:
+
+```{r}
+qbeta(c(0.05, 0.95), a + s, b + f)
+```
+
+en donde se infiere que $p$ tiene una probabilidad del 95% de estar ubicado entre esos dos valores. El resultado anterior que es exacto, se puede aproximar usando simulación:
+
+```{r}
+ps <- rbeta(1000, a + s, b + f)
+hist(ps,xlab="p",main="")
+```
+
+y la probabilidad de que $p>0.5|\text{datos}$ se puede aproximar empíricamente:
+
+```{r}
+sum(ps >= 0.5)/1000
+```
+
+y el intervalo de credibilidad correspondiente:
+```{r}
+quantile(ps, c(0.05, 0.95))
+```
+
+### Predicción
+
+Bajo la primera previa:
+
+```{r}
+p <- seq(0.05, 0.95, by=.1)
+prior <- c(1, 5.2, 8, 7.2, 4.6, 2.1, 0.7, 0.1, 0, 0)
+prior <- prior/sum(prior)
+m <- 20
+ys <- 0:20
+pred <- pdiscp(p, prior, m, ys)
+round(cbind(0:20,pred),3)
+```
+
+Bajo la segunda previa (beta):
+
+```{r}
+fy <- choose(m,ys)*beta(a+ys,b = b+m-ys)/beta(a,b)
+ab <- c(3.26, 7.19)
+pred <- pbetap(ab, m, ys)
+```
+
+O por simulación:
+```{r}
+p <- rbeta(1000, 3.26, 7.19)
+y <- rbinom(1000, 20, p)
+table(y)
+```
+
+```{r}
+freq <- table(y)
+ys <- as.integer(names(freq))
+predprob <- freq / sum(freq)
+
+df <- data.frame(ys = ys, predprob = predprob)
+
+
+ggplot(df, aes(x = ys, y = predprob)) +
+  geom_line(stat = "identity", type = "h", color = "blue", size = 1.5) +
+  labs(x = "y", y = "Predictive Probability") +
+  theme_minimal()
+
+```
+
