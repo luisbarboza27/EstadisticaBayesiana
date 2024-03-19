@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "pensamiento.html",
+    "href": "pensamiento.html",
+    "title": "Pensamiento Bayesiano",
+    "section": "",
+    "text": "Librerías:\n\nlibrary(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.1\n✔ ggplot2   3.5.0     ✔ tibble    3.2.1\n✔ lubridate 1.9.3     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(LearnBayes)\n\n\n\n\nPregunta de investigación: ¿Qué proporción de estudiantes universitarios duermen al menos 8 horas diarias?\nNotación: \\(p\\): proporción de estudiantes que duermen al menos 8 horas diarias.\nDatos: Muestra de 27 estudiantes donde 11 sí durmieron al menos 8 horas ayer.\nModelo: \\[L(p)\\propto p^s(1-p)^f\\]\nDistribución posterior: Si \\(g(p)\\) es la densidad previa de \\(p\\), entonces: \\[g(p|\\text{datos})\\propto g(p)L(p)\\] Primera escogencia de previa \\(g(p)\\)\n\n\np &lt;- seq(0.05,0.95,by = 0.1)\nprevia &lt;- c(1,5.2,8,7.2,4.6,2.1,0.7,0.1,0,0)\nprevia &lt;- previa / sum(previa)\nplot(p, previa, type = \"h\", ylab=\"Probabilidad previa\")\n\n\n\n\n\ndatos_sleep &lt;- c(11, 16)\ndatos_tot &lt;- data.frame(p = p, previa = previa)\ndatos_tot &lt;- datos_tot %&gt;% mutate(posterior = previa* p^(11)*(1-p)^(16)) %&gt;%\n  mutate(posterior = posterior/sum(posterior)) \nround(datos_tot,2)\n\n      p previa posterior\n1  0.05   0.03      0.00\n2  0.15   0.18      0.00\n3  0.25   0.28      0.13\n4  0.35   0.25      0.48\n5  0.45   0.16      0.33\n6  0.55   0.07      0.06\n7  0.65   0.02      0.00\n8  0.75   0.00      0.00\n9  0.85   0.00      0.00\n10 0.95   0.00      0.00\n\n\nComparación:\n\ndatos_tot_long &lt;- datos_tot %&gt;%\n  pivot_longer(previa:posterior,names_to = 'Type',values_to = 'Probability')\n\nggplot(datos_tot_long, aes(x = p, y = Probability, group = Type, color = Type)) +\n  geom_line(linewidth = 3) +\n  facet_wrap(~ Type, nrow =  2) +\n  theme_minimal()\n\n\n\n\nSegunda escogencia de previa \\(g(p)\\)"
+  },
+  {
+    "objectID": "pensamiento.html#ejemplo-1",
+    "href": "pensamiento.html#ejemplo-1",
+    "title": "1  Pensamiento Bayesiano",
+    "section": "1.1 Ejemplo 1",
+    "text": "1.1 Ejemplo 1\n\nPregunta de investigación: ¿Qué proporción de estudiantes universitarios duermen al menos 8 horas diarias?\nNotación: \\(p\\): proporción de estudiantes que duermen al menos 8 horas diarias.\nDatos: Muestra de 27 estudiantes donde 11 sí durmieron al menos 8 horas ayer.\nModelo: \\[L(p)\\propto p^s(1-p)^f\\]\nDistribución posterior: Si \\(g(p)\\) es la densidad previa de \\(p\\), entonces: \\[g(p|\\text{datos})\\propto g(p)L(p)\\] Primera escogencia de previa \\(g(p)\\)\n\n\np &lt;- seq(0.05,0.95,by = 0.1)\nprevia &lt;- c(1,5.2,8,7.2,4.6,2.1,0.7,0.1,0,0)\nprevia &lt;- previa / sum(previa)\nplot(p, previa, type = \"h\", ylab=\"Probabilidad previa\")\n\n\n\n\n\ndatos_sleep &lt;- c(11, 16)\ndatos_tot &lt;- data.frame(p = p, previa = previa)\ndatos_tot &lt;- datos_tot %&gt;% mutate(posterior = previa* p^(11)*(1-p)^(16)) %&gt;%\n  mutate(posterior = posterior/sum(posterior)) \nround(datos_tot,2)\n\n      p previa posterior\n1  0.05   0.03      0.00\n2  0.15   0.18      0.00\n3  0.25   0.28      0.13\n4  0.35   0.25      0.48\n5  0.45   0.16      0.33\n6  0.55   0.07      0.06\n7  0.65   0.02      0.00\n8  0.75   0.00      0.00\n9  0.85   0.00      0.00\n10 0.95   0.00      0.00\n\n\nComparación:\n\ndatos_tot_long &lt;- datos_tot %&gt;%\n  pivot_longer(previa:posterior,names_to = 'Type',values_to = 'Probability')\n\nggplot(datos_tot_long, aes(x = p, y = Probability, group = Type, color = Type)) +\n  geom_line(linewidth = 3) +\n  facet_wrap(~ Type, nrow =  2) +\n  theme_minimal()\n\n\n\n\nSegunda escogencia de previa \\(g(p)\\)"
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "Summary",
+    "section": "",
+    "text": "Summary\nIn summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "References"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Prefacio",
+    "section": "",
+    "text": "Prefacio\nNotas computacionales del curso XS0128 (Inferencia Bayesiana) para el I-2024."
+  }
+]
