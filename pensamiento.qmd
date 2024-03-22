@@ -88,7 +88,12 @@ Para responder parcialmente la pregunta de investigación:
 1 - pbeta(0.5, a + s, b + f)
 ```
 
-es decir hay una probabilidad aproximadamente de 7% de que más de la mitad de los estudiantes universitarios duerman más de 8 horas diarias. 
+es decir hay una probabilidad aproximadamente de 7% de que más de la mitad de los estudiantes universitarios duerman más de 8 horas diarias. O bien, si se quiere calcular la probabilidad de que la proporción de estudiantes sea mayor a lo observado:
+
+```{r}
+1 - pbeta(11/27, a + s, b + f)
+```
+
 
 Intervalo de credibilidad para $p$:
 
@@ -156,5 +161,12 @@ ggplot(df, aes(x = ys, y = predprob)) +
   labs(x = "y", y = "Predictive Probability") +
   theme_minimal()
 
+```
+Cálculo de intervalo de credibilidad al 90% usando la probabilidad predictiva anterior:
+
+```{r}
+dist <- cbind(ys,predprob)
+covprob <- .9
+discint(dist,covprob)
 ```
 

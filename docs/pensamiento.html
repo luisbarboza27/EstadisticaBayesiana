@@ -306,48 +306,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] 0.0690226</code></pre>
 </div>
 </div>
-<p>es decir hay una probabilidad aproximadamente de 7% de que más de la mitad de los estudiantes universitarios duerman más de 8 horas diarias.</p>
+<p>es decir hay una probabilidad aproximadamente de 7% de que más de la mitad de los estudiantes universitarios duerman más de 8 horas diarias. O bien, si se quiere calcular la probabilidad de que la proporción de estudiantes sea mayor a lo observado:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pbeta</span>(<span class="dv">11</span><span class="sc">/</span><span class="dv">27</span>, a <span class="sc">+</span> s, b <span class="sc">+</span> f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3603559</code></pre>
+</div>
+</div>
 <p>Intervalo de credibilidad para <span class="math inline">\(p\)</span>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qbeta</span>(<span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>), a <span class="sc">+</span> s, b <span class="sc">+</span> f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qbeta</span>(<span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>), a <span class="sc">+</span> s, b <span class="sc">+</span> f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2555267 0.5133608</code></pre>
 </div>
 </div>
 <p>en donde se infiere que <span class="math inline">\(p\)</span> tiene una probabilidad del 95% de estar ubicado entre esos dos valores. El resultado anterior que es exacto, se puede aproximar usando simulación:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1000</span>, a <span class="sc">+</span> s, b <span class="sc">+</span> f)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ps,<span class="at">xlab=</span><span class="st">"p"</span>,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1000</span>, a <span class="sc">+</span> s, b <span class="sc">+</span> f)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ps,<span class="at">xlab=</span><span class="st">"p"</span>,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="pensamiento_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>y la probabilidad de que <span class="math inline">\(p&gt;0.5|\text{datos}\)</span> se puede aproximar empíricamente:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(ps <span class="sc">&gt;=</span> <span class="fl">0.5</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(ps <span class="sc">&gt;=</span> <span class="fl">0.5</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.056</code></pre>
+<pre><code>[1] 0.068</code></pre>
 </div>
 </div>
 <p>y el intervalo de credibilidad correspondiente:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(ps, <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(ps, <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       5%       95% 
-0.2629841 0.5032472 </code></pre>
+0.2570154 0.5139937 </code></pre>
 </div>
 </div>
 <section id="predicción" class="level3" data-number="1.1.1">
 <h3 data-number="1.1.1" class="anchored" data-anchor-id="predicción"><span class="header-section-number">1.1.1</span> Predicción</h3>
 <p>Bajo la primera previa:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>, <span class="at">by=</span>.<span class="dv">1</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">5.2</span>, <span class="dv">8</span>, <span class="fl">7.2</span>, <span class="fl">4.6</span>, <span class="fl">2.1</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> prior<span class="sc">/</span><span class="fu">sum</span>(prior)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>ys <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">pdiscp</span>(p, prior, m, ys)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cbind</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>,pred),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>, <span class="at">by=</span>.<span class="dv">1</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">5.2</span>, <span class="dv">8</span>, <span class="fl">7.2</span>, <span class="fl">4.6</span>, <span class="fl">2.1</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> prior<span class="sc">/</span><span class="fu">sum</span>(prior)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>ys <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">20</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">pdiscp</span>(p, prior, m, ys)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cbind</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>,pred),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          pred
  [1,]  0 0.020
@@ -375,33 +381,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Bajo la segunda previa (beta):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fy <span class="ot">&lt;-</span> <span class="fu">choose</span>(m,ys)<span class="sc">*</span><span class="fu">beta</span>(a<span class="sc">+</span>ys,<span class="at">b =</span> b<span class="sc">+</span>m<span class="sc">-</span>ys)<span class="sc">/</span><span class="fu">beta</span>(a,b)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">3.26</span>, <span class="fl">7.19</span>)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">pbetap</span>(ab, m, ys)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fy <span class="ot">&lt;-</span> <span class="fu">choose</span>(m,ys)<span class="sc">*</span><span class="fu">beta</span>(a<span class="sc">+</span>ys,<span class="at">b =</span> b<span class="sc">+</span>m<span class="sc">-</span>ys)<span class="sc">/</span><span class="fu">beta</span>(a,b)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">3.26</span>, <span class="fl">7.19</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">pbetap</span>(ab, m, ys)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>O por simulación:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1000</span>, <span class="fl">3.26</span>, <span class="fl">7.19</span>)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">20</span>, p)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">1000</span>, <span class="fl">3.26</span>, <span class="fl">7.19</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">20</span>, p)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>y
-  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 
- 20  40  86  90 113 118 117  96  83  76  58  37  33  16   6   8   3 </code></pre>
+  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18 
+ 19  42  59  85  97 119 116 119  82  79  52  44  40  19  12   8   5   2   1 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>freq <span class="ot">&lt;-</span> <span class="fu">table</span>(y)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ys <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(freq))</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>predprob <span class="ot">&lt;-</span> freq <span class="sc">/</span> <span class="fu">sum</span>(freq)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ys =</span> ys, <span class="at">predprob =</span> predprob)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> ys, <span class="at">y =</span> predprob)) <span class="sc">+</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">type =</span> <span class="st">"h"</span>, <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"y"</span>, <span class="at">y =</span> <span class="st">"Predictive Probability"</span>) <span class="sc">+</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>freq <span class="ot">&lt;-</span> <span class="fu">table</span>(y)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ys <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">names</span>(freq))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>predprob <span class="ot">&lt;-</span> freq <span class="sc">/</span> <span class="fu">sum</span>(freq)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ys =</span> ys, <span class="at">predprob =</span> predprob)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> ys, <span class="at">y =</span> predprob)) <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">type =</span> <span class="st">"h"</span>, <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"y"</span>, <span class="at">y =</span> <span class="st">"Predictive Probability"</span>) <span class="sc">+</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in geom_line(stat = "identity", type = "h", color = "blue", size =
 1.5): Ignoring unknown parameters: `type`</code></pre>
@@ -411,7 +417,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 Defaulting to continuous.</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="pensamiento_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Cálculo de intervalo de credibilidad al 90% usando la probabilidad predictiva anterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>dist <span class="ot">&lt;-</span> <span class="fu">cbind</span>(ys,predprob)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>covprob <span class="ot">&lt;-</span> .<span class="dv">9</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">discint</span>(dist,covprob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$prob
+   12 
+0.934 
+
+$set
+ 1  2  3  4  5  6  7  8  9 10 11 12 
+ 1  2  3  4  5  6  7  8  9 10 11 12 </code></pre>
 </div>
 </div>
 
