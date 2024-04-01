@@ -167,6 +167,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#predicción" id="toc-predicción" class="nav-link" data-scroll-target="#predicción"><span class="header-section-number">1.1.1</span> Predicción</a></li>
   </ul></li>
+  <li><a href="#ejemplo-2" id="toc-ejemplo-2" class="nav-link" data-scroll-target="#ejemplo-2"><span class="header-section-number">1.2</span> Ejemplo 2</a></li>
+  <li><a href="#ejemplo-3-evaluación-práctica-1" id="toc-ejemplo-3-evaluación-práctica-1" class="nav-link" data-scroll-target="#ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</a></li>
   </ul>
 </nav>
     </div>
@@ -332,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(ps <span class="sc">&gt;=</span> <span class="fl">0.5</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.068</code></pre>
+<pre><code>[1] 0.077</code></pre>
 </div>
 </div>
 <p>y el intervalo de credibilidad correspondiente:</p>
@@ -340,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(ps, <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       5%       95% 
-0.2570154 0.5139937 </code></pre>
+0.2492904 0.5232295 </code></pre>
 </div>
 </div>
 <section id="predicción" class="level3" data-number="1.1.1">
@@ -393,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>y
   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18 
- 19  42  59  85  97 119 116 119  82  79  52  44  40  19  12   8   5   2   1 </code></pre>
+ 20  42  67  89  91 131 126 109  86  57  54  56  29  17  12   9   2   2   1 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -427,17 +429,35 @@ Defaulting to continuous.</code></pre>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">discint</span>(dist,covprob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$prob
-   12 
-0.934 
+    1 
+0.908 
 
 $set
- 1  2  3  4  5  6  7  8  9 10 11 12 
- 1  2  3  4  5  6  7  8  9 10 11 12 </code></pre>
+ 1  2  3  4  5  6  7  8  9 10 11 
+ 1  2  3  4  5  6  7  8  9 10 11 </code></pre>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="ejemplo-2" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="ejemplo-2"><span class="header-section-number">1.2</span> Ejemplo 2</h2>
+</section>
+<section id="ejemplo-3-evaluación-práctica-1" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</h2>
+<p>Los siguientes datos simulan el sexo de 200 recién nacidos, en donde 1 denota niño y 0 denota niña.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>recien_n</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 1 1 1 0 1 1 1 1 0 1 0 0 1 0 1 1 1 1 1 0 0 0 0 1 1 0 0 1 0 1 1 1 1 0 1 0 0
+ [38] 0 0 1 1 1 1 0 1 1 1 1 1 0 1 0 1 1 1 0 1 1 1 1 1 1 1 1 0 0 0 1 1 1 1 1 0 1
+ [75] 1 1 1 0 1 1 0 1 1 0 1 1 0 1 1 1 1 0 0 1 1 0 1 1 0 1 1 1 1 1 0 0 0 1 0 1 0
+[112] 0 1 1 0 0 1 0 0 0 1 1 1 0 1 1 0 1 0 0 0 1 0 1 1 1 0 0 1 1 0 1 1 0 1 0 1 0
+[149] 1 0 0 1 1 1 1 1 1 1 0 1 0 1 1 1 0 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1
+[186] 0 0 0 0 1 1 1 1 1 0 1 0 1 0 0</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

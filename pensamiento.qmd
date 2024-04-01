@@ -170,3 +170,19 @@ covprob <- .9
 discint(dist,covprob)
 ```
 
+## Ejemplo 2
+
+## Ejemplo 3 (Evaluación Práctica 1)
+
+Los siguientes datos simulan el sexo de 200 recién nacidos, en donde 1 denota niño y 0 denota niña.
+
+```{r,echo=FALSE}
+set.seed(10)
+recien_n <- rbinom(n = 200,size = 1,prob = 111/200)
+```
+
+```{r}
+recien_n
+```
+
+
