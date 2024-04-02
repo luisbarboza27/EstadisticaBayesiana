@@ -167,7 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#predicción" id="toc-predicción" class="nav-link" data-scroll-target="#predicción"><span class="header-section-number">1.1.1</span> Predicción</a></li>
   </ul></li>
-  <li><a href="#ejemplo-2" id="toc-ejemplo-2" class="nav-link" data-scroll-target="#ejemplo-2"><span class="header-section-number">1.2</span> Ejemplo 2</a></li>
+  <li><a href="#ejemplo-2-ejercicio-5-capítulo-2-albert" id="toc-ejemplo-2-ejercicio-5-capítulo-2-albert" class="nav-link" data-scroll-target="#ejemplo-2-ejercicio-5-capítulo-2-albert"><span class="header-section-number">1.2</span> Ejemplo 2 (Ejercicio 5, Capítulo 2, Albert)</a></li>
   <li><a href="#ejemplo-3-evaluación-práctica-1" id="toc-ejemplo-3-evaluación-práctica-1" class="nav-link" data-scroll-target="#ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</a></li>
   </ul>
 </nav>
@@ -334,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(ps <span class="sc">&gt;=</span> <span class="fl">0.5</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.077</code></pre>
+<pre><code>[1] 0.06</code></pre>
 </div>
 </div>
 <p>y el intervalo de credibilidad correspondiente:</p>
@@ -342,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(ps, <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       5%       95% 
-0.2492904 0.5232295 </code></pre>
+0.2457305 0.5036328 </code></pre>
 </div>
 </div>
 <section id="predicción" class="level3" data-number="1.1.1">
@@ -395,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>y
   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18 
- 20  42  67  89  91 131 126 109  86  57  54  56  29  17  12   9   2   2   1 </code></pre>
+ 23  43  61 101  95 113 112  99 100  84  52  46  26  16  10  10   5   2   2 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -430,7 +430,7 @@ Defaulting to continuous.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>$prob
     1 
-0.908 
+0.906 
 
 $set
  1  2  3  4  5  6  7  8  9 10 11 
@@ -439,14 +439,67 @@ $set
 </div>
 </section>
 </section>
-<section id="ejemplo-2" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="ejemplo-2"><span class="header-section-number">1.2</span> Ejemplo 2</h2>
+<section id="ejemplo-2-ejercicio-5-capítulo-2-albert" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="ejemplo-2-ejercicio-5-capítulo-2-albert"><span class="header-section-number">1.2</span> Ejemplo 2 (Ejercicio 5, Capítulo 2, Albert)</h2>
+<p>Previa:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>previa_mu <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">mu =</span> <span class="fu">seq</span>(<span class="dv">20</span>,<span class="dv">70</span>,<span class="at">by =</span> <span class="dv">10</span>),</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">gmu =</span> <span class="fu">c</span>(.<span class="dv">1</span>,.<span class="dv">15</span>,.<span class="dv">25</span>,.<span class="dv">25</span>,.<span class="dv">15</span>,.<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Datos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>y_snow <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">38.6</span>,<span class="fl">42.4</span>,<span class="fl">57.5</span>,<span class="fl">40.5</span>,<span class="fl">51.7</span>,<span class="fl">67.1</span>,<span class="fl">33.4</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>            <span class="fl">60.9</span>,<span class="fl">64.1</span>,<span class="fl">40.1</span>,<span class="fl">40.7</span>,<span class="fl">6.4</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>y_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(y_snow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Verosimilitud:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>posterior_mu <span class="ot">&lt;-</span> previa_mu <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">like =</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="dv">12</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="dv">10</span><span class="sc">^</span><span class="dv">2</span>)<span class="sc">*</span>(mu<span class="sc">-</span>y_bar)<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Posterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>posterior_mu <span class="ot">&lt;-</span> posterior_mu <span class="sc">%&gt;%</span> </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post =</span> gmu<span class="sc">*</span>like<span class="sc">/</span><span class="fu">sum</span>(gmu<span class="sc">*</span>like))</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>posterior_mu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  mu  gmu         like         post
+1 20 0.10 2.201480e-17 1.954479e-17
+2 30 0.15 8.192991e-07 1.091063e-06
+3 40 0.25 1.873425e-01 4.158078e-01
+4 50 0.25 2.632064e-01 5.841881e-01
+5 60 0.15 2.272076e-06 3.025731e-06
+6 70 0.10 1.205079e-16 1.069871e-16</code></pre>
+</div>
+</div>
+<p>Intervalo de credibilidad al 80% para <span class="math inline">\(\mu\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dist_mu <span class="ot">&lt;-</span> posterior_mu <span class="sc">%&gt;%</span> <span class="fu">select</span>(mu,post)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>covprob <span class="ot">&lt;-</span> .<span class="dv">8</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">discint</span>(dist_mu,covprob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$prob
+[1] 0.9999959
+
+$set
+[1] 40 50</code></pre>
+</div>
+</div>
+<p>También se podría estimar el intervalo de credibilidad vía simulación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>muestra_mu <span class="ot">&lt;-</span> <span class="fu">sample</span>(dist_mu<span class="sc">$</span>mu,<span class="at">size =</span> <span class="dv">1000</span>,<span class="at">replace =</span> T,<span class="at">prob =</span> dist_mu<span class="sc">$</span>post)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(muestra_mu,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>10% 90% 
+ 40  50 </code></pre>
+</div>
+</div>
 </section>
 <section id="ejemplo-3-evaluación-práctica-1" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</h2>
 <p>Los siguientes datos simulan el sexo de 200 recién nacidos, en donde 1 denota niño y 0 denota niña.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>recien_n</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>recien_n</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [1] 1 1 1 0 1 1 1 1 0 1 0 0 1 0 1 1 1 1 1 0 0 0 0 1 1 0 0 1 0 1 1 1 1 0 1 0 0
  [38] 0 0 1 1 1 1 0 1 1 1 1 1 0 1 0 1 1 1 0 1 1 1 1 1 1 1 1 0 0 0 1 1 1 1 1 0 1

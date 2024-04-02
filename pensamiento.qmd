@@ -170,7 +170,49 @@ covprob <- .9
 discint(dist,covprob)
 ```
 
-## Ejemplo 2
+## Ejemplo 2 (Ejercicio 5, Capítulo 2, Albert)
+
+Previa:
+```{r}
+previa_mu <- data.frame(mu = seq(20,70,by = 10),
+                        gmu = c(.1,.15,.25,.25,.15,.1))
+```
+
+Datos:
+```{r}
+y_snow <- c(38.6,42.4,57.5,40.5,51.7,67.1,33.4,
+            60.9,64.1,40.1,40.7,6.4)
+y_bar <- mean(y_snow)
+```
+
+Verosimilitud:
+```{r}
+posterior_mu <- previa_mu %>%
+  mutate(like = exp(-12/(2*10^2)*(mu-y_bar)^2))
+```
+
+Posterior:
+```{r}
+posterior_mu <- posterior_mu %>% 
+  mutate(post = gmu*like/sum(gmu*like))
+posterior_mu
+```
+
+Intervalo de credibilidad al 80% para $\mu$:
+
+```{r}
+dist_mu <- posterior_mu %>% select(mu,post)
+covprob <- .8
+discint(dist_mu,covprob)
+```
+
+También se podría estimar el intervalo de credibilidad vía simulación:
+
+```{r}
+muestra_mu <- sample(dist_mu$mu,size = 1000,replace = T,prob = dist_mu$post)
+quantile(muestra_mu,probs = c(0.1,0.9))
+```
+
 
 ## Ejemplo 3 (Evaluación Práctica 1)
 
