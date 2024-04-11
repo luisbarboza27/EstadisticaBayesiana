@@ -9,6 +9,7 @@ book:
   chapters:
     - index.qmd
     - pensamiento.qmd
+    - unparametro.qmd
     - references.qmd
 
 bibliography: references.bib

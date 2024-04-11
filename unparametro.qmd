@@ -1,0 +1,98 @@
+# Modelos de un parámetro
+
+## Ejemplo 1
+
+Análisis del ejemplo de la página 37 del Gelman.
+
+Un estudio alemán concluyó que de un total de 980 nacimientos con condición de placenta previa, 437 nacieron niñas.
+
+Pregunta de investigación: Qué tan evidente es la afirmación de que en la población de nacimientos de placenta previa, la proporción de nacimientos femeninos sea menor a 0.485?
+
+## Primera previa
+
+Suponga que $\theta$: proporción de niñas que nacieron bajo la condición de placenta previa. Usando una previa uniforme para $\theta$ en (0,1), la media posterior es $Beta(438,544)$:
+
+```{r}
+a_post <- 438
+b_post <- 544
+```
+
+por lo tanto la media y la desviación posterior del parámetro $\theta$ es:
+
+```{r}
+media_post <- a_post/(a_post+b_post)
+sd_post <- sqrt(media_post*(1-media_post)/983)
+```
+
+Como la posterior es beta, se puede calcular directamente que un intervalo de credibilidad al 95% es $(0.415,0.477)$, lo cual se puede comprobar de manera aproximada al calcular:
+
+```{r}
+pbeta(0.477,shape1 = a_post,shape2 = b_post)-
+  pbeta(0.415,shape1 = a_post,shape2 = b_post)
+```
+
+Por la justificación vista en clase, se puede aproximar la distribución posterior con una distribución normal y calcular directamente los límites del intervalo de credibilidad a como sigue:
+
+```{r}
+cuantil0975_norm <- media_post+qnorm(0.975)*sd_post
+cuantil025_norm <- media_post-qnorm(0.975)*sd_post
+c(cuantil025_norm,cuantil0975_norm)
+```
+
+Asimismo, podemos obtener una muestra aleatoria de la posterior de la sifuiente forma:
+
+```{r}
+theta_post <- rbeta(1000,shape1 = a_post,b_post)
+hist(theta_post)
+```
+
+y así calcular el mismo intervalo de credibilidad:
+
+```{r}
+quantile(theta_post,probs = c(0.025,0.975))
+```
+
+y un estimador puntual bayesiano para $\theta$:
+
+```{r}
+median(theta_post)
+```
+
+Por otro lado también podemos usar la reparametrización $\phi=\log\left(\frac{\theta}{1-\theta}\right)$ para aplicar la aproximación normal sobre un parámetro totalmente definido en $\mathbb R$:
+
+```{r}
+phi_post <- log(theta_post/(1-theta_post))
+hist(phi_post)
+phi_mean <- mean(phi_post)
+phi_sd <- sd(phi_post)
+```
+y de esta forma aproximar el mismo intervalo de credibilidad para $\theta$, usando la transformación logística:
+
+```{r}
+logistico <- function(u){
+  exp(u)/(1+exp(u))
+}
+
+logistico(phi_mean+qnorm(0.975)*phi_sd)
+logistico(phi_mean-qnorm(0.975)*phi_sd)
+```
+
+También podemos hacer inferencia sobre la razón niña/niño ($\theta/(1-\theta)$):
+
+```{r}
+razon_post <- theta_post/(1-theta_post)
+quantile(razon_post,probs = c(0.025,0.975))
+```
+
+La pregunta de investigación puede ser contestada al calcular lo siguiente e interpretarlo de forma apropiada según lo comentado en clase:
+
+```{r}
+pbeta(0.485,shape1 = a_post,shape2 = b_post)
+```
+
+Asimismo, podemos calcular el *periodo de retorno* del evento principal al calcular:
+
+```{r}
+1/pbeta(0.485,shape1 = a_post,shape2 = b_post,lower.tail = F)
+```
+
