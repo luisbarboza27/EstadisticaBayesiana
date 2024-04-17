@@ -96,3 +96,51 @@ Asimismo, podemos calcular el *periodo de retorno* del evento principal al calcu
 1/pbeta(0.485,shape1 = a_post,shape2 = b_post,lower.tail = F)
 ```
 
+## Ejemplo 2
+
+Desarrollamos una solución alternativa al ejemplo en la sección 3.2 del Albert:
+
+En este caso se tiene datos correspondientes a las diferencias entre los resultados de partidos de fútbol americano y "point spreads":
+
+```{r}
+library(LearnBayes)
+data("footballscores")
+attach(footballscores)
+d <- favorite-underdog-spread
+```
+
+Si asumimos un modelo normal en las diferencias con media 0 y varianza $\sigma^2$, el estadístico suficiente respectivo es:
+
+```{r}
+v <- sum(d^2)
+n <- length(d)
+show(v)
+```
+
+Asumiendo una distribución previa $Inv-\chi^2(v_0=1, \sigma^2_0=1)$, según lo visto en clase, la probabilidad posterior de $\sigma^2$ es $Inv-\chi^2(v_1=n+1, \sigma^2_1=nv+1)$ en donde:
+
+```{r}
+v1 <- n+1
+sigma1 <- sqrt(n*v+1) 
+```
+
+Simulamos una muestra de tamaño 1000 de la distribución posterior de $\sigma^2$. Noten que la simulación usa las propiedades de una chi-cuadrado inversa.
+
+```{r}
+Xpost <- rchisq(n = 1000,df = n+1) 
+Z <- 1/Xpost
+sigma2_post <- sigma1*Z
+```
+
+O bien pueden usar la siguiente función que simula las muestras directamente:
+
+```{r}
+library(LaplacesDemon)
+sigma2_post2 <- rinvchisq(n = 1000,df = v1,scale = sigma1/v1)
+```
+Noten que el parametro de escala en esta función hay que dividirlo por los grados de libertad para que sea igual al que definimos en clase. En ambos casos se puede calcular un intervalo de credibilidad al 95% y un estimador puntual de $\sigma^2$:
+
+```{r}
+quantile(sigma2_post, probs = c(0.025, 0.5, 0.975))
+quantile(sigma2_post2, probs = c(0.025, 0.5, 0.975))
+```

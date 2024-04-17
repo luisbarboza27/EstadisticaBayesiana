@@ -171,6 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#ejemplo-1" id="toc-ejemplo-1" class="nav-link active" data-scroll-target="#ejemplo-1"><span class="header-section-number">2.1</span> Ejemplo 1</a></li>
   <li><a href="#primera-previa" id="toc-primera-previa" class="nav-link" data-scroll-target="#primera-previa"><span class="header-section-number">2.2</span> Primera previa</a></li>
+  <li><a href="#ejemplo-2" id="toc-ejemplo-2" class="nav-link" data-scroll-target="#ejemplo-2"><span class="header-section-number">2.3</span> Ejemplo 2</a></li>
   </ul>
 </nav>
     </div>
@@ -242,14 +243,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     2.5%     97.5% 
-0.4167990 0.4774184 </code></pre>
+0.4149379 0.4792422 </code></pre>
 </div>
 </div>
 <p>y un estimador puntual bayesiano para <span class="math inline">\(\theta\)</span>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(theta_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4458801</code></pre>
+<pre><code>[1] 0.4459606</code></pre>
 </div>
 </div>
 <p>Por otro lado también podemos usar la reparametrización <span class="math inline">\(\phi=\log\left(\frac{\theta}{1-\theta}\right)\)</span> para aplicar la aproximación normal sobre un parámetro totalmente definido en <span class="math inline">\(\mathbb R\)</span>:</p>
@@ -270,11 +271,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">logistico</span>(phi_mean<span class="sc">+</span><span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>phi_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4762229</code></pre>
+<pre><code>[1] 0.4783524</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logistico</span>(phi_mean<span class="sc">-</span><span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>phi_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4155781</code></pre>
+<pre><code>[1] 0.4148551</code></pre>
 </div>
 </div>
 <p>También podemos hacer inferencia sobre la razón niña/niño (<span class="math inline">\(\theta/(1-\theta)\)</span>):</p>
@@ -283,7 +284,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(razon_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     2.5%     97.5% 
-0.7146746 0.9135768 </code></pre>
+0.7092203 0.9202787 </code></pre>
 </div>
 </div>
 <p>La pregunta de investigación puede ser contestada al calcular lo siguiente e interpretarlo de forma apropiada según lo comentado en clase:</p>
@@ -298,6 +299,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span><span class="fu">pbeta</span>(<span class="fl">0.485</span>,<span class="at">shape1 =</span> a_post,<span class="at">shape2 =</span> b_post,<span class="at">lower.tail =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 139.392</code></pre>
+</div>
+</div>
+</section>
+<section id="ejemplo-2" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="ejemplo-2"><span class="header-section-number">2.3</span> Ejemplo 2</h2>
+<p>Desarrollamos una solución alternativa al ejemplo en la sección 3.2 del Albert:</p>
+<p>En este caso se tiene datos correspondientes a las diferencias entre los resultados de partidos de fútbol americano y “point spreads”:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(LearnBayes)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"footballscores"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(footballscores)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> favorite<span class="sc">-</span>underdog<span class="sc">-</span>spread</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Si asumimos un modelo normal en las diferencias con media 0 y varianza <span class="math inline">\(\sigma^2\)</span>, el estadístico suficiente respectivo es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">sum</span>(d<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(d)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 128902</code></pre>
+</div>
+</div>
+<p>Asumiendo una distribución previa <span class="math inline">\(Inv-\chi^2(v_0=1, \sigma^2_0=1)\)</span>, según lo visto en clase, la probabilidad posterior de <span class="math inline">\(\sigma^2\)</span> es <span class="math inline">\(Inv-\chi^2(v_1=n+1, \sigma^2_1=nv+1)\)</span> en donde:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> n<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>sigma1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(n<span class="sc">*</span>v<span class="sc">+</span><span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Simulamos una muestra de tamaño 1000 de la distribución posterior de <span class="math inline">\(\sigma^2\)</span>. Noten que la simulación usa las propiedades de una chi-cuadrado inversa.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>Xpost <span class="ot">&lt;-</span> <span class="fu">rchisq</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">df =</span> n<span class="sc">+</span><span class="dv">1</span>) </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>Xpost</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>sigma2_post <span class="ot">&lt;-</span> sigma1<span class="sc">*</span>Z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>O bien pueden usar la siguiente función que simula las muestras directamente:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(LaplacesDemon)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'LaplacesDemon'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:LearnBayes':
+
+    rdirichlet</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>sigma2_post2 <span class="ot">&lt;-</span> <span class="fu">rinvchisq</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">df =</span> v1,<span class="at">scale =</span> sigma1<span class="sc">/</span>v1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Noten que el parametro de escala en esta función hay que dividirlo por los grados de libertad para que sea igual al que definimos en clase. En ambos casos se puede calcular un intervalo de credibilidad al 95% y un estimador puntual de <span class="math inline">\(\sigma^2\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(sigma2_post, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    2.5%      50%    97.5% 
+12.43946 13.85911 15.52504 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(sigma2_post2, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    2.5%      50%    97.5% 
+12.49812 13.84956 15.41044 </code></pre>
 </div>
 </div>
 
