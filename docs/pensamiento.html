@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./unparametro.html" rel="next">
 <link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -149,6 +149,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./unparametro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Modelos de un parámetro</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -168,7 +174,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#predicción" id="toc-predicción" class="nav-link" data-scroll-target="#predicción"><span class="header-section-number">1.1.1</span> Predicción</a></li>
   </ul></li>
   <li><a href="#ejemplo-2-ejercicio-5-capítulo-2-albert" id="toc-ejemplo-2-ejercicio-5-capítulo-2-albert" class="nav-link" data-scroll-target="#ejemplo-2-ejercicio-5-capítulo-2-albert"><span class="header-section-number">1.2</span> Ejemplo 2 (Ejercicio 5, Capítulo 2, Albert)</a></li>
-  <li><a href="#ejemplo-3-evaluación-práctica-1" id="toc-ejemplo-3-evaluación-práctica-1" class="nav-link" data-scroll-target="#ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</a></li>
+  <li><a href="#ejemplo-3-evaluación-práctica-1" id="toc-ejemplo-3-evaluación-práctica-1" class="nav-link" data-scroll-target="#ejemplo-3-evaluación-práctica-1"><span class="header-section-number">1.3</span> Ejemplo 3 (Evaluación Práctica 1)</a>
+  <ul class="collapse">
+  <li><a href="#previa-1" id="toc-previa-1" class="nav-link" data-scroll-target="#previa-1"><span class="header-section-number">1.3.1</span> Previa 1</a></li>
+  <li><a href="#previa-2" id="toc-previa-2" class="nav-link" data-scroll-target="#previa-2"><span class="header-section-number">1.3.2</span> Previa 2</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -334,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(ps <span class="sc">&gt;=</span> <span class="fl">0.5</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.06</code></pre>
+<pre><code>[1] 0.086</code></pre>
 </div>
 </div>
 <p>y el intervalo de credibilidad correspondiente:</p>
@@ -342,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(ps, <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       5%       95% 
-0.2457305 0.5036328 </code></pre>
+0.2515219 0.5183528 </code></pre>
 </div>
 </div>
 <section id="predicción" class="level3" data-number="1.1.1">
@@ -394,8 +404,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>y
-  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18 
- 23  43  61 101  95 113 112  99 100  84  52  46  26  16  10  10   5   2   2 </code></pre>
+  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17 
+ 18  44  67  87 102 104 124 108  80  82  56  36  37  25  15   5   6   4 </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -429,12 +439,12 @@ Defaulting to continuous.</code></pre>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">discint</span>(dist,covprob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$prob
-    1 
-0.906 
+   11 
+0.927 
 
 $set
- 1  2  3  4  5  6  7  8  9 10 11 
- 1  2  3  4  5  6  7  8  9 10 11 </code></pre>
+ 1  2  3  4  5  6  7  8  9 10 11 12 
+ 1  2  3  4  5  6  7  8  9 10 11 12 </code></pre>
 </div>
 </div>
 </section>
@@ -509,8 +519,96 @@ $set
 [186] 0 0 0 0 1 1 1 1 1 0 1 0 1 0 0</code></pre>
 </div>
 </div>
+<p>Vamos a utilizar dos distintas formas de definir numéricamente la previa:</p>
+<section id="previa-1" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="previa-1"><span class="header-section-number">1.3.1</span> Previa 1</h3>
+<p>Se va a definir una previa usando una grilla de tamaño 1000 con 100000 muestras:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>p_prev_sample <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="dv">100000</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>histo_1 <span class="ot">&lt;-</span> <span class="fu">hist</span>(p_prev_sample,<span class="at">breaks =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>p_post1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">p =</span> histo_1<span class="sc">$</span>breaks[<span class="sc">-</span><span class="dv">1</span>],<span class="at">prev =</span> histo_1<span class="sc">$</span>counts)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>p_post1 <span class="ot">&lt;-</span> p_post1 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">prev =</span> prev <span class="sc">/</span> <span class="fu">sum</span>(prev))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cálculo de probabilidad posterior y valor de <span class="math inline">\(p\)</span> que la maximiza:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sum</span>(recien_n)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>n_tot <span class="ot">&lt;-</span> <span class="fu">length</span>(recien_n)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>p_post1 <span class="ot">&lt;-</span> p_post1 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">post =</span> prev <span class="sc">*</span> p<span class="sc">^</span>y<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(n_tot<span class="sc">-</span>y)) <span class="sc">%&gt;%</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post =</span> post <span class="sc">/</span> <span class="fu">sum</span>(post))</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_post1<span class="sc">$</span>p,p_post1<span class="sc">$</span>post,<span class="at">type=</span><span class="st">'l'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Valor que maximiza la posterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>p_post1<span class="sc">$</span>p[<span class="fu">which.max</span>(p_post1<span class="sc">$</span>post)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.606</code></pre>
+</div>
+</div>
+</section>
+<section id="previa-2" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="previa-2"><span class="header-section-number">1.3.2</span> Previa 2</h3>
+<p>Se va a definir una previa usando una grilla de tamaño 10 con 1000 muestras:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>p_prev_sample <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="dv">1000</span>)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>histo_2 <span class="ot">&lt;-</span> <span class="fu">hist</span>(p_prev_sample,<span class="at">breaks =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>p_post2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">p =</span> histo_2<span class="sc">$</span>breaks[<span class="sc">-</span><span class="dv">1</span>],<span class="at">prev =</span> histo_2<span class="sc">$</span>counts)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>p_post2 <span class="ot">&lt;-</span> p_post2 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">prev =</span> prev <span class="sc">/</span> <span class="fu">sum</span>(prev))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cálculo de probabilidad posterior y valor de <span class="math inline">\(p\)</span> que la maximiza:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>p_post2 <span class="ot">&lt;-</span> p_post2 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">post =</span> prev <span class="sc">*</span> p<span class="sc">^</span>y<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(n_tot<span class="sc">-</span>y)) <span class="sc">%&gt;%</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post =</span> post <span class="sc">/</span> <span class="fu">sum</span>(post))</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_post2<span class="sc">$</span>p,p_post2<span class="sc">$</span>post,<span class="at">type=</span><span class="st">'l'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="pensamiento_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Valor que maximiza la posterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>p_post2<span class="sc">$</span>p[<span class="fu">which.max</span>(p_post2<span class="sc">$</span>post)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6</code></pre>
+</div>
+</div>
+<p>De ahora en adelante se utilizará la primera previa para calcular la muestra de tamaño 10000 de la distribución posterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>muestra_post <span class="ot">&lt;-</span> <span class="fu">sample</span>(p_post1<span class="sc">$</span>p,<span class="at">replace =</span> T,<span class="at">size =</span> <span class="dv">10000</span>,<span class="at">prob =</span> p_post1<span class="sc">$</span>post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cálculo del intervalo de credibilidad al 90%:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(muestra_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   5%   95% 
+0.552 0.666 </code></pre>
+</div>
+</div>
+<p>de donde se deduce que con una probabilidad de 90%, el parámetro <span class="math inline">\(p\)</span> (proporción de niños) esté contenido en el intervalo <span class="math inline">\((0.55,0.67)\)</span>.</p>
+<p>Ahora vamos a estimar la probabilidad posterior de que un recién nacido fuera de la muestra sea niño:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>y_post <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">prob =</span> muestra_post,<span class="at">size =</span> <span class="dv">1</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>prob_prediccion <span class="ot">&lt;-</span> <span class="fu">sum</span>(y_post)<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>prob_prediccion</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.609</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -754,8 +852,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./unparametro.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Modelos de un parámetro</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

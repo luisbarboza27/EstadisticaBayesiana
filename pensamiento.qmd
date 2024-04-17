@@ -227,4 +227,84 @@ recien_n <- rbinom(n = 200,size = 1,prob = 111/200)
 recien_n
 ```
 
+Vamos a utilizar dos distintas formas de definir numéricamente la previa:
+
+### Previa 1
+
+Se va a definir una previa usando una grilla de tamaño 1000 con 100000 muestras:
+```{r}
+set.seed(10)
+p_prev_sample <- runif(n = 100000)
+histo_1 <- hist(p_prev_sample,breaks = 1000)
+
+
+p_post1 <- data.frame(p = histo_1$breaks[-1],prev = histo_1$counts)
+
+p_post1 <- p_post1 %>% mutate(prev = prev / sum(prev))
+```
+
+Cálculo de probabilidad posterior y valor de $p$ que la maximiza:
+
+```{r}
+y <- sum(recien_n)
+n_tot <- length(recien_n)
+p_post1 <- p_post1 %>% mutate(post = prev * p^y*(1-p)^(n_tot-y)) %>%
+  mutate(post = post / sum(post))
+plot(p_post1$p,p_post1$post,type='l')
+```
+
+Valor que maximiza la posterior:
+```{r}
+p_post1$p[which.max(p_post1$post)]
+```
+
+### Previa 2
+
+Se va a definir una previa usando una grilla de tamaño 10 con 1000 muestras:
+```{r}
+set.seed(10)
+p_prev_sample <- runif(n = 1000)
+histo_2 <- hist(p_prev_sample,breaks = 10)
+
+
+p_post2 <- data.frame(p = histo_2$breaks[-1],prev = histo_2$counts)
+
+p_post2 <- p_post2 %>% mutate(prev = prev / sum(prev))
+```
+
+Cálculo de probabilidad posterior y valor de $p$ que la maximiza:
+
+```{r}
+p_post2 <- p_post2 %>% mutate(post = prev * p^y*(1-p)^(n_tot-y)) %>%
+  mutate(post = post / sum(post))
+plot(p_post2$p,p_post2$post,type='l')
+```
+
+Valor que maximiza la posterior:
+```{r}
+p_post2$p[which.max(p_post2$post)]
+```
+
+De ahora en adelante se utilizará la primera previa para calcular la muestra de tamaño 10000 de la distribución posterior:
+
+```{r}
+muestra_post <- sample(p_post1$p,replace = T,size = 10000,prob = p_post1$post)
+```
+
+Cálculo del intervalo de credibilidad al 90%:
+
+```{r}
+quantile(muestra_post,probs = c(0.05,0.95))
+```
+
+de donde se deduce que con una probabilidad de 90%, el parámetro $p$ (proporción de niños) esté contenido en el intervalo $(0.55,0.67)$.
+
+Ahora vamos a estimar la probabilidad posterior de que un recién nacido fuera de la muestra sea niño:
+
+```{r}
+y_post <- rbinom(n = 1000,prob = muestra_post,size = 1)
+
+prob_prediccion <- sum(y_post)/1000
+prob_prediccion
+```
 
