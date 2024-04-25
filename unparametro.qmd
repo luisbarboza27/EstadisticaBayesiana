@@ -144,3 +144,100 @@ Noten que el parametro de escala en esta función hay que dividirlo por los grad
 quantile(sigma2_post, probs = c(0.025, 0.5, 0.975))
 quantile(sigma2_post2, probs = c(0.025, 0.5, 0.975))
 ```
+
+## Ejemplo 3
+
+Considere el ejemplo de la página 45 del Gelman, en donde se modela la tasa de muerte producto del asma en una ciudad de Estados Unidos. La población de la ciudad es de 200000 personas. En un año han fallecido 3 personas, dando una tasa cruda de:
+
+```{r}
+3/200000
+```
+
+1.5 muertes por 100000 habitantes. Asumimos que el conteo de muertes $y\sim Poisson(2\theta)$ indicando que la tasa se mide en número de casos por 100000 habitantes, con una población expuesta de $2\times 100000$ habitantes. Asumiendo una previa $\theta \sim Gamma(3,5)$ se tiene un valor esperado (previo) de la tasa de muerte de:
+
+```{r}
+3/5
+```
+
+por cada 100000 habitantes. Note que en este caso hay una probabilidad previa de más de un 97.5% de que la tasa de muerte esté por debajo de 1.44:
+
+```{r}
+pgamma(1.5,shape = 3,rate = 5)
+```
+
+Una muestra posterior de $\theta$ asumiendo que $y=3$ es:
+
+```{r}
+theta_post <- rgamma(n = 1000,shape = 6,rate = 7)
+```
+
+y gráficamente:
+
+```{r}
+hist(theta_post)
+```
+
+y un intervalo de credibilidad al 95% sería:
+
+```{r}
+quantile(theta_post, probs = c(0.025, 0.5, 0.975))
+```
+
+Si se observara la misma cantidad de muertes por año en la misma ciudad en un periodo de 10 años, y asumimos que la población es constante, la posterior la podemos muestrear de la siguiente forma:
+
+```{r}
+theta_post2 <- rgamma(n = 1000,shape = 33,rate = 25)
+hist(theta_post2)
+```
+
+y el intervalo de credibilidad correspondiente para $\theta$ al 95% sería:
+
+```{r}
+quantile(theta_post2, probs = c(0.025, 0.5, 0.975))
+```
+
+## Evaluación Práctica 2
+
+Tiempo de quemado de las cinco bombillas:
+
+```{r}
+y <- c(751,594,1213,1126,819)
+```
+
+Simulación de la distribución posterior de $\theta$:
+
+```{r}
+n_tot <- length(y)
+s <- sum(y)
+theta_post <- rgamma(n = 1000,shape = n_tot,rate = s)
+hist(theta_post)
+```
+
+Muestra posterior de $\lambda$:
+
+```{r}
+lambda_post <- 1/theta_post
+hist(lambda_post)
+```
+
+La probabilidad posterior de que $\lambda$ exceda las 1000 horas se puede estimar:
+
+```{r}
+sum(lambda_post>1000)/1000
+```
+La probabilidad predictiva posterior del tiempo de quemado de una bombilla es:
+
+```{r}
+y_tilde <- rexp(n = 1000,rate = 1/lambda_post)
+y_tilde_freq <- hist(y_tilde,breaks = 20)
+y_tilde_x <- y_tilde_freq$mids
+y_tilde_post <- y_tilde_freq$counts/1000
+plot(y_tilde_x,y_tilde_post,type='l',ylab = 'Prob. Post.')
+```
+
+Intervalo de credibilidad al 90% para el tiempo de quemado:
+
+```{r}
+quantile(y_tilde,probs = c(0.05,0.95))
+```
+

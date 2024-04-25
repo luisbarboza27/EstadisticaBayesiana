@@ -172,6 +172,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ejemplo-1" id="toc-ejemplo-1" class="nav-link active" data-scroll-target="#ejemplo-1"><span class="header-section-number">2.1</span> Ejemplo 1</a></li>
   <li><a href="#primera-previa" id="toc-primera-previa" class="nav-link" data-scroll-target="#primera-previa"><span class="header-section-number">2.2</span> Primera previa</a></li>
   <li><a href="#ejemplo-2" id="toc-ejemplo-2" class="nav-link" data-scroll-target="#ejemplo-2"><span class="header-section-number">2.3</span> Ejemplo 2</a></li>
+  <li><a href="#ejemplo-3" id="toc-ejemplo-3" class="nav-link" data-scroll-target="#ejemplo-3"><span class="header-section-number">2.4</span> Ejemplo 3</a></li>
+  <li><a href="#evaluación-práctica-2" id="toc-evaluación-práctica-2" class="nav-link" data-scroll-target="#evaluación-práctica-2"><span class="header-section-number">2.5</span> Evaluación Práctica 2</a></li>
   </ul>
 </nav>
     </div>
@@ -243,14 +245,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     2.5%     97.5% 
-0.4149379 0.4792422 </code></pre>
+0.4130505 0.4750778 </code></pre>
 </div>
 </div>
 <p>y un estimador puntual bayesiano para <span class="math inline">\(\theta\)</span>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(theta_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4459606</code></pre>
+<pre><code>[1] 0.4464448</code></pre>
 </div>
 </div>
 <p>Por otro lado también podemos usar la reparametrización <span class="math inline">\(\phi=\log\left(\frac{\theta}{1-\theta}\right)\)</span> para aplicar la aproximación normal sobre un parámetro totalmente definido en <span class="math inline">\(\mathbb R\)</span>:</p>
@@ -271,11 +273,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">logistico</span>(phi_mean<span class="sc">+</span><span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>phi_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4783524</code></pre>
+<pre><code>[1] 0.4765999</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logistico</span>(phi_mean<span class="sc">-</span><span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>phi_sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4148551</code></pre>
+<pre><code>[1] 0.4155034</code></pre>
 </div>
 </div>
 <p>También podemos hacer inferencia sobre la razón niña/niño (<span class="math inline">\(\theta/(1-\theta)\)</span>):</p>
@@ -284,7 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(razon_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     2.5%     97.5% 
-0.7092203 0.9202787 </code></pre>
+0.7037240 0.9050444 </code></pre>
 </div>
 </div>
 <p>La pregunta de investigación puede ser contestada al calcular lo siguiente e interpretarlo de forma apropiada según lo comentado en clase:</p>
@@ -351,12 +353,125 @@ Attaching package: 'LaplacesDemon'</code></pre>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(sigma2_post, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%      50%    97.5% 
-12.43946 13.85911 15.52504 </code></pre>
+12.38831 13.82776 15.43097 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(sigma2_post2, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%      50%    97.5% 
-12.49812 13.84956 15.41044 </code></pre>
+12.47907 13.77663 15.31954 </code></pre>
+</div>
+</div>
+</section>
+<section id="ejemplo-3" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="ejemplo-3"><span class="header-section-number">2.4</span> Ejemplo 3</h2>
+<p>Considere el ejemplo de la página 45 del Gelman, en donde se modela la tasa de muerte producto del asma en una ciudad de Estados Unidos. La población de la ciudad es de 200000 personas. En un año han fallecido 3 personas, dando una tasa cruda de:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="sc">/</span><span class="dv">200000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.5e-05</code></pre>
+</div>
+</div>
+<p>1.5 muertes por 100000 habitantes. Asumimos que el conteo de muertes <span class="math inline">\(y\sim Poisson(2\theta)\)</span> indicando que la tasa se mide en número de casos por 100000 habitantes, con una población expuesta de <span class="math inline">\(2\times 100000\)</span> habitantes. Asumiendo una previa <span class="math inline">\(\theta \sim Gamma(3,5)\)</span> se tiene un valor esperado (previo) de la tasa de muerte de:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="sc">/</span><span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6</code></pre>
+</div>
+</div>
+<p>por cada 100000 habitantes. Note que en este caso hay una probabilidad previa de más de un 97.5% de que la tasa de muerte esté por debajo de 1.44:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pgamma</span>(<span class="fl">1.5</span>,<span class="at">shape =</span> <span class="dv">3</span>,<span class="at">rate =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9797433</code></pre>
+</div>
+</div>
+<p>Una muestra posterior de <span class="math inline">\(\theta\)</span> asumiendo que <span class="math inline">\(y=3\)</span> es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>theta_post <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">shape =</span> <span class="dv">6</span>,<span class="at">rate =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>y gráficamente:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>y un intervalo de credibilidad al 95% sería:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     2.5%       50%     97.5% 
+0.3538149 0.7925516 1.7008925 </code></pre>
+</div>
+</div>
+<p>Si se observara la misma cantidad de muertes por año en la misma ciudad en un periodo de 10 años, y asumimos que la población es constante, la posterior la podemos muestrear de la siguiente forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>theta_post2 <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">shape =</span> <span class="dv">33</span>,<span class="at">rate =</span> <span class="dv">25</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>y el intervalo de credibilidad correspondiente para <span class="math inline">\(\theta\)</span> al 95% sería:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post2, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     2.5%       50%     97.5% 
+0.9154048 1.2968581 1.7921159 </code></pre>
+</div>
+</div>
+</section>
+<section id="evaluación-práctica-2" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="evaluación-práctica-2"><span class="header-section-number">2.5</span> Evaluación Práctica 2</h2>
+<p>Tiempo de quemado de las cinco bombillas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">751</span>,<span class="dv">594</span>,<span class="dv">1213</span>,<span class="dv">1126</span>,<span class="dv">819</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Simulación de la distribución posterior de <span class="math inline">\(\theta\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>n_tot <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">sum</span>(y)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>theta_post <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">shape =</span> n_tot,<span class="at">rate =</span> s)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Muestra posterior de <span class="math inline">\(\lambda\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lambda_post <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>theta_post</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(lambda_post)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>La probabilidad posterior de que <span class="math inline">\(\lambda\)</span> exceda las 1000 horas se puede estimar:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(lambda_post<span class="sc">&gt;</span><span class="dv">1000</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.462</code></pre>
+</div>
+</div>
+<p>La probabilidad predictiva posterior del tiempo de quemado de una bombilla es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>y_tilde <span class="ot">&lt;-</span> <span class="fu">rexp</span>(<span class="at">n =</span> <span class="dv">1000</span>,<span class="at">rate =</span> <span class="dv">1</span><span class="sc">/</span>lambda_post)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>y_tilde_freq <span class="ot">&lt;-</span> <span class="fu">hist</span>(y_tilde,<span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>y_tilde_x <span class="ot">&lt;-</span> y_tilde_freq<span class="sc">$</span>mids</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>y_tilde_post <span class="ot">&lt;-</span> y_tilde_freq<span class="sc">$</span>counts<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_tilde_x,y_tilde_post,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab =</span> <span class="st">'Prob. Post.'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unparametro_files/figure-html/unnamed-chunk-31-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Intervalo de credibilidad al 90% para el tiempo de quemado:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(y_tilde,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        5%        95% 
+  47.67899 3812.84991 </code></pre>
 </div>
 </div>
 
