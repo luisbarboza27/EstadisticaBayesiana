@@ -66,6 +66,7 @@ hist(phi_post)
 phi_mean <- mean(phi_post)
 phi_sd <- sd(phi_post)
 ```
+
 y de esta forma aproximar el mismo intervalo de credibilidad para $\theta$, usando la transformación logística:
 
 ```{r}
@@ -138,6 +139,7 @@ O bien pueden usar la siguiente función que simula las muestras directamente:
 library(LaplacesDemon)
 sigma2_post2 <- rinvchisq(n = 1000,df = v1,scale = sigma1/v1)
 ```
+
 Noten que el parametro de escala en esta función hay que dividirlo por los grados de libertad para que sea igual al que definimos en clase. En ambos casos se puede calcular un intervalo de credibilidad al 95% y un estimador puntual de $\sigma^2$:
 
 ```{r}
@@ -225,6 +227,7 @@ La probabilidad posterior de que $\lambda$ exceda las 1000 horas se puede estima
 ```{r}
 sum(lambda_post>1000)/1000
 ```
+
 La probabilidad predictiva posterior del tiempo de quemado de una bombilla es:
 
 ```{r}
@@ -240,4 +243,3 @@ Intervalo de credibilidad al 90% para el tiempo de quemado:
 ```{r}
 quantile(y_tilde,probs = c(0.05,0.95))
 ```
-

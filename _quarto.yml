@@ -10,8 +10,9 @@ book:
     - index.qmd
     - pensamiento.qmd
     - unparametro.qmd
+    - variosparametros.qmd
     - references.qmd
-
+    
 bibliography: references.bib
 
 format:

@@ -1,0 +1,109 @@
+# Modelos de varios parámetros
+
+## Ejemplo 1. Página 66, Gelman.
+
+Cargamos la librería MASS, que contiene los datos del experimento de Simon Newcomb en 1882:
+
+```{r}
+library(MASS)
+data("newcomb")
+```
+
+Recuerden que se busca estimar la velocidad media en la que la luz viaja en una distancia de 7442 metros.
+
+Histograma de los datos observados por Newcomb:
+```{r}
+hist(newcomb,breaks = 40)
+```
+
+donde se nota un cierto grado de simetría en la densidad excepto por los dos valores negativos de la serie.
+
+Con el fin de generar una muestra posterior multivariada de $(\mu,\sigma^2)$, primero generamos la muestra posterior de $\sigma^2$:
+
+```{r}
+s2 <- var(newcomb)
+sigma2_pre <- rchisq(n = 1000,df = 65)
+sigma2_post <- sqrt(s2)/sigma2_pre
+hist(sigma2_post)
+```
+
+la cual es una muestra de una variable según $Inv-\chi^2(n-1,s^2)$. La muestra de la media $\mu|\sigma^2,y$ es:
+
+```{r}
+n_tot <- length(newcomb)
+ybar <- mean(newcomb)
+mu_post <- rnorm(n = 1000,mean = ybar,sd = sqrt(sigma2_post/n_tot))
+hist(mu_post)
+```
+
+Un intervalo de credibilidad al 90% para $\mu$ (dado que $\sigma$ es fijo) es:
+
+```{r}
+quantile(mu_post,probs = c(0.05,0.95))
+```
+
+Vale la pena compararlo con un intervalo de credibilidad para $\mu$ sin considerar $\sigma$ fijo:
+
+```{r}
+ybar + c(-1,1)*qt(0.95,df = 65)*sqrt(s2/n_tot)
+```
+
+el cual por supuesto va a ser más disperso.
+
+La distribución posterior predictiva de una nueva observación del experimento, se infiere a través de una muestra:
+
+```{r}
+y_tilde_post <- rnorm(n = 1000,mean = mu_post,sd = sqrt(sigma2_post))
+hist(y_tilde_post)
+
+quantile(y_tilde_post,probs = c(0.05,0.95))
+```
+y este ultimo sería el intervalo de credibilidad al 90% para la nueva observación $\tilde y$.
+
+## Ejemplo 2: sección 4.2, Albert.
+
+Datos de tiempos (en minutos) de corredores de maratón con edades entre 20 y 29 años:
+
+```{r}
+library(LearnBayes)
+data("marathontimes")
+attach(marathontimes)
+hist(time)
+```
+
+Asimismo se puede graficar una [figura de contorno](https://en.wikipedia.org/wiki/Contour_line):
+
+```{r}
+d = mycontour(normchi2post, c(220, 330, 500, 9000), time,xlab="mean",ylab="variance")
+```
+
+Por otro lado generamos una muestra posterior de los dos parámetros de interés, para incorporarlos en el gráfico anterior:
+
+```{r}
+S <- sum((time-mean(time))^2)
+
+n <- length(time)
+
+sigma2_post <- S/rchisq(1000,n-1)
+hist(sigma2_post)
+mu_post <- rnorm(n = 1000,mean = mean(time),sd = sqrt(sigma2_post/n))
+hist(mu_post)
+```
+
+Incorporamos la muestra en el gráfico de la log-densidad-posterior:
+
+```{r}
+d = mycontour(normchi2post, c(220, 330, 500, 9000), time,xlab="mean",ylab="variance")
+points(mu_post,sigma2_post)
+```
+Intervalos de credibilidad para $\mu|\sigma^2, y$ (en horas) y para $\sigma^2|y$ son:
+
+```{r}
+quantile(mu_post,c(0.025,0.975))/60
+quantile(sqrt(sigma2_post),c(0.025,0.975))
+```
+
+## Ejemplo 3: sección 4.3 del Albert
+
+## Evaluación Práctica 3
+
