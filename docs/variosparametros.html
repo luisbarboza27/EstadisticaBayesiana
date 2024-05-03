@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-26.12713 26.29632 </code></pre>
+26.13202 26.29142 </code></pre>
 </div>
 </div>
 <p>Vale la pena compararlo con un intervalo de credibilidad para <span class="math inline">\(\mu\)</span> sin considerar <span class="math inline">\(\sigma\)</span> fijo:</p>
@@ -264,7 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(y_tilde_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-25.49366 26.87430 </code></pre>
+25.56053 26.91179 </code></pre>
 </div>
 </div>
 <p>y este ultimo sería el intervalo de credibilidad al 90% para la nueva observación <span class="math inline">\(\tilde y\)</span>.</p>
@@ -318,17 +318,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))<span class="sc">/</span><span class="dv">60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-4.271898 4.996973 </code></pre>
+4.239369 4.992642 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">sqrt</span>(sigma2_post),<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-37.90798 70.31487 </code></pre>
+37.99596 74.38652 </code></pre>
 </div>
 </div>
 </section>
 <section id="ejemplo-3-sección-4.3-del-albert" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="ejemplo-3-sección-4.3-del-albert"><span class="header-section-number">3.3</span> Ejemplo 3: sección 4.3 del Albert</h2>
+<p>1447 adultos mostraron su preferencia de voto a Bush: <span class="math inline">\(y_1=727\)</span>, Dukakis: <span class="math inline">\(y_2=583\)</span> y <span class="math inline">\(y_3=137\)</span> a otros candidatos para la elección presidencial de 1988. Se asume que <span class="math inline">\(y_1,y_2,y_3\)</span> sigue una distribución multinomial con parámetros <span class="math inline">\(\theta_1,\theta_2,\theta_3\)</span> respectivamente. Entonces la distribución posterior de estos parámetros sigue una distribución Dirichlet, simulados de la siguiente forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">728</span>,<span class="dv">584</span>,<span class="dv">138</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>theta_post <span class="ot">&lt;-</span> <span class="fu">rdirichlet</span>(<span class="dv">1000</span>,alpha)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>con histogramas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post[,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="variosparametros_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post[,<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="variosparametros_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post[,<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="variosparametros_files/figure-html/unnamed-chunk-14-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Es de interés hacer inferencia acerca de la diferencia en la probabilidad de voto de Bush vs Dukakis: <span class="math inline">\(\theta_1-\theta_2\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(theta_post[,<span class="dv">1</span>]<span class="sc">-</span>theta_post[,<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="variosparametros_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>y un intervalo de credibilidad al 95% para esta diferencia es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post[,<span class="dv">1</span>]<span class="sc">-</span>theta_post[,<span class="dv">2</span>],<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      2.5%      97.5% 
+0.05059051 0.14615557 </code></pre>
+</div>
+</div>
+<p>Por lo tanto con una probabilidad del 95% la diferencia siempre faorece al primer candidato. Es más, si estimamos la probabilidad de que el segundo candidato resulte ganador:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(theta_post[,<span class="dv">1</span>]<span class="sc">-</span>theta_post[,<span class="dv">2</span>]<span class="sc">&lt;</span><span class="dv">0</span>)<span class="sc">/</span><span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Esta probabilidad es nula.</p>
 </section>
 <section id="evaluación-práctica-3" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="evaluación-práctica-3"><span class="header-section-number">3.4</span> Evaluación Práctica 3</h2>
