@@ -143,3 +143,5 @@ sum(theta_post[,1]-theta_post[,2]<0)/1000
 Esta probabilidad es nula.
 
 ## Evaluación Práctica 3
+
+...

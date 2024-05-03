@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-26.12513 26.29232 </code></pre>
+26.13033 26.29706 </code></pre>
 </div>
 </div>
 <p>Vale la pena compararlo con un intervalo de credibilidad para <span class="math inline">\(\mu\)</span> sin considerar <span class="math inline">\(\sigma\)</span> fijo:</p>
@@ -264,7 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(y_tilde_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-25.55993 26.85450 </code></pre>
+25.54431 26.87329 </code></pre>
 </div>
 </div>
 <p>y este ultimo sería el intervalo de credibilidad al 90% para la nueva observación <span class="math inline">\(\tilde y\)</span>.</p>
@@ -318,12 +318,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))<span class="sc">/</span><span class="dv">60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-4.267789 5.011834 </code></pre>
+4.248269 4.999389 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">sqrt</span>(sigma2_post),<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-37.48516 69.93918 </code></pre>
+37.90485 70.47164 </code></pre>
 </div>
 </div>
 </section>
@@ -360,8 +360,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post[,<span class="dv">1</span>]<span class="sc">-</span>theta_post[,<span class="dv">2</span>],<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      2.5%      97.5% 
-0.05320776 0.14905862 </code></pre>
+<pre><code>     2.5%     97.5% 
+0.0502637 0.1470538 </code></pre>
 </div>
 </div>
 <p>Por lo tanto con una probabilidad del 95% la diferencia siempre faorece al primer candidato. Es más, si estimamos la probabilidad de que el segundo candidato resulte ganador:</p>
@@ -375,6 +375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="evaluación-práctica-3" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="evaluación-práctica-3"><span class="header-section-number">3.4</span> Evaluación Práctica 3</h2>
+<p>…</p>
 
 
 </section>
