@@ -116,6 +116,7 @@ theta_post <- rdirichlet(1000,alpha)
 ```
 
 con histogramas:
+
 ```{r}
 hist(theta_post[,1])
 hist(theta_post[,2])
@@ -129,6 +130,7 @@ hist(theta_post[,1]-theta_post[,2])
 ```
 
 y un intervalo de credibilidad al 95% para esta diferencia es:
+
 ```{r}
 quantile(theta_post[,1]-theta_post[,2],c(0.025,0.975))
 ```
@@ -190,4 +192,3 @@ Probabilidad posterior de que la diferencia exceda 0:
 ```{r}
 mean(diferencia_post>0)
 ```
-

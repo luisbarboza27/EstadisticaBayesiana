@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./computacion_bayes.html" rel="next">
 <link href="./unparametro.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -195,6 +195,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./computacion_bayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Computación Bayesiana</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -291,7 +297,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-26.13233 26.29084 </code></pre>
+26.13126 26.29339 </code></pre>
 </div>
 </div>
 <p>Vale la pena compararlo con un intervalo de credibilidad para <span class="math inline">\(\mu\)</span> sin considerar <span class="math inline">\(\sigma\)</span> fijo:</p>
@@ -316,7 +322,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(y_tilde_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      5%      95% 
-25.53664 26.88091 </code></pre>
+25.56766 26.91178 </code></pre>
 </div>
 </div>
 <p>y este ultimo sería el intervalo de credibilidad al 90% para la nueva observación <span class="math inline">\(\tilde y\)</span>.</p>
@@ -390,12 +396,12 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(mu_post,<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))<span class="sc">/</span><span class="dv">60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-4.249748 5.019285 </code></pre>
+4.250180 5.046258 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">sqrt</span>(sigma2_post),<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-37.75327 72.06770 </code></pre>
+38.13595 71.99675 </code></pre>
 </div>
 </div>
 </section>
@@ -449,7 +455,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(theta_post[,<span class="dv">1</span>]<span class="sc">-</span>theta_post[,<span class="dv">2</span>],<span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      2.5%      97.5% 
-0.04925801 0.14752282 </code></pre>
+0.05140505 0.14737474 </code></pre>
 </div>
 </div>
 <p>Por lo tanto con una probabilidad del 95% la diferencia siempre faorece al primer candidato. Es más, si estimamos la probabilidad de que el segundo candidato resulte ganador:</p>
@@ -511,7 +517,7 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(riesgo_rel_post,<span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>,<span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    2.5%    97.5% 
-7.105506 8.710901 </code></pre>
+7.157067 8.717791 </code></pre>
 </div>
 </div>
 <p>Histograma de la diferencia en riesgos:</p>
@@ -954,8 +960,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./computacion_bayes.html" class="pagination-link" aria-label="Computación Bayesiana">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Computación Bayesiana</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

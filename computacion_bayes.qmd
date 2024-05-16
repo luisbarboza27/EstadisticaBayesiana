@@ -1,0 +1,141 @@
+# Computación Bayesiana
+
+## Ejemplo Capítulo 5, Albert.
+
+Librerías:
+
+```{r}
+library(tidyverse)
+library(LearnBayes)
+```
+
+Datos de número de casos de cáncer de estómago en hombres en ciudades de Missouri, USA:
+
+```{r}
+data("cancermortality")
+```
+
+Gráfico de contorno de la logverosimilitud del modelo beta-binomial, ante la posible presencia de sobredispersión:
+
+```{r}
+mycontour(betabinexch0,c(.0001,.003,1,20000),cancermortality,
+          xlab="eta",ylab="K")
+```
+
+en donde se evidencia una alta asimetría en ambos parámetros. Se reparametriza el modelo usando las transformaciones $\theta_1=\log\left(\frac{\eta}{1-\eta}\right)$, $\theta_2=\log K$ y se obtiene la siguiente logverisimilitud transformada:
+
+```{r}
+mycontour(betabinexch,c(-8,-4.5,3,16.5),cancermortality,
+            xlab="logit eta",ylab="log K")
+```
+
+Aproximamos la log-densidad posterior usando el método de Laplace:
+
+```{r}
+fit <- laplace(betabinexch,c(-7,6),cancermortality)
+```
+
+con el gráfico de contorno de log-verosimilitud:
+
+```{r}
+npar=list(m=fit$mode,v=fit$var)
+mycontour(lbinorm,c(-8,-4.5,3,16.5),npar,
+              xlab="logit eta", ylab="log K")
+```
+
+Por lo tanto podemos sacar muestras posteriores de los parámetros transformados a través de una normal multivariada:
+
+```{r}
+set.seed(10)
+library(mvtnorm)
+mu_sigma_post <- rmvnorm(1000,mean = npar$m,sigma = npar$v)
+```
+
+y graficamos los puntos sobre el gráfico de contorno:
+
+```{r}
+mycontour(betabinexch,c(-8,-4.5,3,16.5),cancermortality,
+            xlab="logit eta",ylab="log K")
+points(mu_sigma_post,add=T)
+```
+
+A partir de esta muestra es posible obtener un intervalo de credibilidad exacto para cada parámetro usando el supuesto de normalidad:
+
+```{r}
+npar$m[1]+c(-1,1)*qnorm(0.975)*sqrt(npar$v[1,1])
+npar$m[2]+c(-1,1)*qnorm(0.975)*sqrt(npar$v[2,2])
+```
+
+y por otro lado se puede calcular los intervalos de credibilidad directamente sobre la muestra:
+
+```{r}
+quantile(mu_sigma_post[,1],probs = c(0.025,0.975))
+quantile(mu_sigma_post[,2],probs = c(0.025,0.975))
+```
+
+## Ejemplo sección 5.7, Albert
+
+
+En un ejemplo anterior se había calculado la distribución posterior de la proporción de estudiantes que dormían más de 8 horas ($p$). Si queremos calcular los estimadores Monte Carlo de la probabilidad de que dos estudiantes duerman más de 8 horas ($p^2$) sería:
+
+```{r}
+p_posterior <- rbeta(1000,14.26,23.19)
+hist(p_posterior)
+est_posterior <- mean(p_posterior^2)
+est_posterior
+se_posterior <- sd(p_posterior^2)/sqrt(1000)
+se_posterior
+```
+
+y a partir de esto se aproxima (usando el Teorema del Límite Central) un intervalo de credibilidad para $p^2$:
+
+```{r}
+est_posterior+c(-1,1)*qnorm(0.975)*se_posterior
+```
+
+## Continuación Ejemplo 5, Albert.
+
+En este caso usaremos el algoritmo de rechazo como una forma de mejorar el proceso de muestreo obtenido a través del método de Laplace. Recuerden que para utilizar este algoritmo se necesita una distribución propuesta ($p(\theta)$) que aproxime la distribución posterior sin tomar en cuenta la constante de normalización. Si asumimos una distribución t de Student multivariada como propuesta, entonces podemos encontrar una cota superior para la diferencia entre las log-densidades a través de:
+
+```{r}
+betabinT=function(theta,datapar){
+  data=datapar$data
+  tpar=datapar$par
+  d=betabinexch(theta,data)-dmt(theta,mean=c(tpar$m),
+                                S=tpar$var,df=tpar$df,log=TRUE)
+  return(d)
+}
+
+tpar=list(m=fit$mode,var=2*fit$var,df=4)
+datapar=list(data=cancermortality,par=tpar)
+
+start=c(-6.9,12.4)
+fit1=laplace(betabinT,start,datapar)
+```
+
+de donde se observa que un posible valor para la diferencia sería:
+```{r}
+betabinT(fit1$mode,datapar)
+```
+
+y usamos este valor para obtener una muestra posterior de los parámetros usando el algoritmo de rechazo:
+
+```{r}
+set.seed(10)
+theta=rejectsampling(betabinexch,tpar,-569.2813,10000,
+                     cancermortality)
+```
+
+Noten que la proporción de aceptación en la muestra es:
+```{r}
+dim(theta)[1]/10000
+```
+
+y además podemos ver la mejora en la capacidad de la muestra posterior de estar localizada en regiones de alta probabilidad:
+
+```{r}
+mycontour(betabinexch,c(-8,-4.5,3,16.5),cancermortality,
+          xlab="logit eta",ylab="log K")
+points(theta[,1],theta[,2])
+```
+

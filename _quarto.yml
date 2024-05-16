@@ -11,6 +11,7 @@ book:
     - pensamiento.qmd
     - unparametro.qmd
     - variosparametros.qmd
+    - computacion_bayes.qmd
     - references.qmd
     
 bibliography: references.bib
