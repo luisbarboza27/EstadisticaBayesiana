@@ -139,3 +139,138 @@ mycontour(betabinexch,c(-8,-4.5,3,16.5),cancermortality,
 points(theta[,1],theta[,2])
 ```
 
+## Ejemplo sección 6.2, Albert.
+
+En este ejemplo se ilustra una cadena discreta de Markov en donde una persona se mueve aleatoriamente en un conjunto de 6 estados solamente con un paso a la vez, y puede permanecer en el mismo estado de origen en cualquier momento. Si la probabilidad de permanecer en el mismo estado es igual a la probabilidad de avanzar o retroceder una posición, y asimismo las probabilidades de avanzar o retroceder son iguales, entonces la matriz de transición de la cadena de Markov asociada a este ejemplo es:
+
+```{r}
+P <- matrix(c(.5,.5,0,0,0,0,.25,.5,.25,0,0,0,0,.25,.5,.25,0,0,
+           0,0,.25,.5,.25,0,0,0,0,.25,.5,.25,0,0,0,0,.5,.5),
+         nrow=6,ncol=6,byrow=TRUE)
+P
+```
+
+Si asumimos que la persona empieza en el estado 3 y simulamos el proceso de Markov a lo largo de 50000 pasos:
+
+```{r}
+s=array(0,c(50000,1))
+s[1] <- 3
+set.seed(10)
+
+for (j in 2:50000){
+  s[j]=sample(1:6,size=1,prob=P[s[j-1],])
+}
+```
+
+Graficamente, los últimos 1000 pasos se pueden representar:
+```{r}
+plot(tail(s,1000),type='l')
+```
+
+Debido a que esta cadena de Markov es irreducible y aperiódica existe una distribución estacionaria que vamos a aproximar a través del cálculo de la frecuencia relativa en cada uno de los 6 estados:
+
+```{r}
+m=c(500,2000,8000,50000)
+
+for (i in 1:4){
+  print(table(s[1:m[i]])/m[i])
+}
+```
+
+lo cual parece indicar de que hay convergencia a una frecuencia relativa estable por clase. La distribución estacionaria exacta se calcula a través del vector propio asociado al valor propio igual a 1 de la matriz $P^T$:
+
+```{r}
+eig_des <- eigen(t(P))
+eig_des$values
+dist_estacionaria <- eig_des$vectors[,1]
+dist_estacionaria <- dist_estacionaria /sum(dist_estacionaria)
+show(dist_estacionaria)
+```
+
+## Ejemplo sección 6.7, Albert.
+
+Usando la siguiente tabla de datos agrupados, queremos hacer inferencia de la media $\mu$ y desviación estándar $\sigma$ de la altura en pulgadas de hombres universitarios:
+
+```{r}
+d=list(int.lo=c(-Inf,seq(66,74,by=2)),
+         int.hi=c(seq(66,74,by=2), Inf),
+         f=c(14,30,49,70,33,15))
+show(d)
+```
+
+donde los vectores int.hi y int.lo indican los límites superiores e inferiores de los datos agrupados (en pulgadas). El vector f indica la frecuencia de individuos por intervalo. Asumiendo una distribución normal en la altura de los individuos, y tomando la transformación $\lambda=\log(\sigma)$, la distribución posterior se implementaría:
+
+```{r}
+groupeddatapost=function(theta,data)
+{
+  dj = function(f, int.lo, int.hi, mu, sigma)
+    f * log(pnorm(int.hi, mu, sigma) -
+              pnorm(int.lo, mu, sigma))
+  mu = theta[1]
+  sigma = exp(theta[2])
+  sum(dj(data$f, data$int.lo, data$int.hi, mu, sigma))
+}
+```
+
+Primero aproximamos la posterior a través de una normal multivariada con el método de Laplace. Para ello simulamos observaciones por nivel en la tabla agrupada, asumiendo que las alturas son constantes por grupo:
+
+```{r}
+y <- c(rep(65,14),rep(67,30),rep(69,49),rep(71,70),rep(73,33),
+    rep(75,15))
+
+mean(y)
+log(sd(y))
+```
+
+y a partir de lo anterior tomamos como punto inicial (70,1) en el algoritmo de Laplace:
+
+```{r}
+start <- c(70,1)
+fit <- laplace(groupeddatapost,start,d)
+```
+
+y recuerden que se pueden generar muestras posteriores de $(\mu,\lambda)$ con este método:
+
+```{r}
+mu_lambda_post <- rmvnorm(5000,mean = fit$m,sigma = fit$v)
+```
+
+Usando el cálculo anterior, tomamos como propuesta en el algoritmo de Metropolis-Hastings con caminata aleatoria una normal multivariada con escala = 2 y la misma matriz de varianza-covarianza anterior:
+
+```{r}
+proposal <- list(var=fit$var,scale=2)
+bayesfit <- rwmetrop(groupeddatapost,proposal,start,10000,d)
+```
+
+La muestra posterior resultante tuvo una tasa de aceptación de:
+
+```{r}
+bayesfit$accept
+```
+
+El paquete coda nos permite graficar los traceplots de cada muestra posterior. Antes de eso, definimos un objeto mcmc de coda:
+
+```{r}
+library(coda)
+dimnames(bayesfit$par)[[2]]=c("mu","log sigma")
+mcmc_ej <- mcmc(bayesfit$par[-c(1:2000),]) 
+```
+
+```{r}
+library(coda)
+library(lattice)
+xyplot(mcmc_ej,col="black")
+```
+
+Note que usamos un periodo de quemado (burn-in) del 2000 muestras. También podemos incluir un gráfico de autocorrelación:
+
+```{r,fig.width=8,fig.height=6}
+par(mfrow=c(2,1))
+autocorr.plot(mcmc_ej,auto.layout=FALSE)
+```
+y por otro lado uno puede tener un resumen de las muestras posteriores vía MCMC:
+
+```{r}
+summary(mcmc_ej)
+```
+

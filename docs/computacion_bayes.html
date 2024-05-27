@@ -218,6 +218,8 @@ window.Quarto = {
   <li><a href="#ejemplo-capítulo-5-albert." id="toc-ejemplo-capítulo-5-albert." class="nav-link active" data-scroll-target="#ejemplo-capítulo-5-albert."><span class="header-section-number">4.1</span> Ejemplo Capítulo 5, Albert.</a></li>
   <li><a href="#ejemplo-sección-5.7-albert" id="toc-ejemplo-sección-5.7-albert" class="nav-link" data-scroll-target="#ejemplo-sección-5.7-albert"><span class="header-section-number">4.2</span> Ejemplo sección 5.7, Albert</a></li>
   <li><a href="#continuación-ejemplo-5-albert." id="toc-continuación-ejemplo-5-albert." class="nav-link" data-scroll-target="#continuación-ejemplo-5-albert."><span class="header-section-number">4.3</span> Continuación Ejemplo 5, Albert.</a></li>
+  <li><a href="#ejemplo-sección-6.2-albert." id="toc-ejemplo-sección-6.2-albert." class="nav-link" data-scroll-target="#ejemplo-sección-6.2-albert."><span class="header-section-number">4.4</span> Ejemplo sección 6.2, Albert.</a></li>
+  <li><a href="#ejemplo-sección-6.7-albert." id="toc-ejemplo-sección-6.7-albert." class="nav-link" data-scroll-target="#ejemplo-sección-6.7-albert."><span class="header-section-number">4.5</span> Ejemplo sección 6.7, Albert.</a></li>
   </ul>
 </nav>
     </div>
@@ -436,6 +438,204 @@ parameter</code></pre>
 <p><img src="computacion_bayes_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+</div>
+</section>
+<section id="ejemplo-sección-6.2-albert." class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="ejemplo-sección-6.2-albert."><span class="header-section-number">4.4</span> Ejemplo sección 6.2, Albert.</h2>
+<p>En este ejemplo se ilustra una cadena discreta de Markov en donde una persona se mueve aleatoriamente en un conjunto de 6 estados solamente con un paso a la vez, y puede permanecer en el mismo estado de origen en cualquier momento. Si la probabilidad de permanecer en el mismo estado es igual a la probabilidad de avanzar o retroceder una posición, y asimismo las probabilidades de avanzar o retroceder son iguales, entonces la matriz de transición de la cadena de Markov asociada a este ejemplo es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(.<span class="dv">5</span>,.<span class="dv">5</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">25</span>,.<span class="dv">5</span>,.<span class="dv">25</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">25</span>,.<span class="dv">5</span>,.<span class="dv">25</span>,<span class="dv">0</span>,<span class="dv">0</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>           <span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">25</span>,.<span class="dv">5</span>,.<span class="dv">25</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">25</span>,.<span class="dv">5</span>,.<span class="dv">25</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">5</span>,.<span class="dv">5</span>),</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">nrow=</span><span class="dv">6</span>,<span class="at">ncol=</span><span class="dv">6</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>P</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6]
+[1,] 0.50 0.50 0.00 0.00 0.00 0.00
+[2,] 0.25 0.50 0.25 0.00 0.00 0.00
+[3,] 0.00 0.25 0.50 0.25 0.00 0.00
+[4,] 0.00 0.00 0.25 0.50 0.25 0.00
+[5,] 0.00 0.00 0.00 0.25 0.50 0.25
+[6,] 0.00 0.00 0.00 0.00 0.50 0.50</code></pre>
+</div>
+</div>
+<p>Si asumimos que la persona empieza en el estado 3 y simulamos el proceso de Markov a lo largo de 50000 pasos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>s<span class="ot">=</span><span class="fu">array</span>(<span class="dv">0</span>,<span class="fu">c</span>(<span class="dv">50000</span>,<span class="dv">1</span>))</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>s[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">50000</span>){</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  s[j]<span class="ot">=</span><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">size=</span><span class="dv">1</span>,<span class="at">prob=</span>P[s[j<span class="dv">-1</span>],])</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Graficamente, los últimos 1000 pasos se pueden representar:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">tail</span>(s,<span class="dv">1000</span>),<span class="at">type=</span><span class="st">'l'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="computacion_bayes_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Debido a que esta cadena de Markov es irreducible y aperiódica existe una distribución estacionaria que vamos a aproximar a través del cálculo de la frecuencia relativa en cada uno de los 6 estados:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>m<span class="ot">=</span><span class="fu">c</span>(<span class="dv">500</span>,<span class="dv">2000</span>,<span class="dv">8000</span>,<span class="dv">50000</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">table</span>(s[<span class="dv">1</span><span class="sc">:</span>m[i]])<span class="sc">/</span>m[i])</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1     2     3     4     5     6 
+0.118 0.178 0.144 0.222 0.234 0.104 
+
+     1      2      3      4      5      6 
+0.0570 0.1285 0.1640 0.2315 0.2770 0.1420 
+
+       1        2        3        4        5        6 
+0.088625 0.185875 0.206125 0.209750 0.204250 0.105375 
+
+      1       2       3       4       5       6 
+0.09806 0.19734 0.19652 0.20452 0.20450 0.09906 </code></pre>
+</div>
+</div>
+<p>lo cual parece indicar de que hay convergencia a una frecuencia relativa estable por clase. La distribución estacionaria exacta se calcula a través del vector propio asociado al valor propio igual a 1 de la matriz <span class="math inline">\(P^T\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>eig_des <span class="ot">&lt;-</span> <span class="fu">eigen</span>(<span class="fu">t</span>(P))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>eig_des<span class="sc">$</span>values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  1.000000e+00  9.045085e-01  6.545085e-01  3.454915e-01  9.549150e-02
+[6] -3.678415e-17</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dist_estacionaria <span class="ot">&lt;-</span> eig_des<span class="sc">$</span>vectors[,<span class="dv">1</span>]</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>dist_estacionaria <span class="ot">&lt;-</span> dist_estacionaria <span class="sc">/</span><span class="fu">sum</span>(dist_estacionaria)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(dist_estacionaria)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1 0.2 0.2 0.2 0.2 0.1</code></pre>
+</div>
+</div>
+</section>
+<section id="ejemplo-sección-6.7-albert." class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="ejemplo-sección-6.7-albert."><span class="header-section-number">4.5</span> Ejemplo sección 6.7, Albert.</h2>
+<p>Usando la siguiente tabla de datos agrupados, queremos hacer inferencia de la media <span class="math inline">\(\mu\)</span> y desviación estándar <span class="math inline">\(\sigma\)</span> de la altura en pulgadas de hombres universitarios:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>d<span class="ot">=</span><span class="fu">list</span>(<span class="at">int.lo=</span><span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>,<span class="fu">seq</span>(<span class="dv">66</span>,<span class="dv">74</span>,<span class="at">by=</span><span class="dv">2</span>)),</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">int.hi=</span><span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">66</span>,<span class="dv">74</span>,<span class="at">by=</span><span class="dv">2</span>), <span class="cn">Inf</span>),</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">f=</span><span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">30</span>,<span class="dv">49</span>,<span class="dv">70</span>,<span class="dv">33</span>,<span class="dv">15</span>))</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$int.lo
+[1] -Inf   66   68   70   72   74
+
+$int.hi
+[1]  66  68  70  72  74 Inf
+
+$f
+[1] 14 30 49 70 33 15</code></pre>
+</div>
+</div>
+<p>donde los vectores int.hi y int.lo indican los límites superiores e inferiores de los datos agrupados (en pulgadas). El vector f indica la frecuencia de individuos por intervalo. Asumiendo una distribución normal en la altura de los individuos, y tomando la transformación <span class="math inline">\(\lambda=\log(\sigma)\)</span>, la distribución posterior se implementaría:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>groupeddatapost<span class="ot">=</span><span class="cf">function</span>(theta,data)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  dj <span class="ot">=</span> <span class="cf">function</span>(f, int.lo, int.hi, mu, sigma)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    f <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">pnorm</span>(int.hi, mu, sigma) <span class="sc">-</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">pnorm</span>(int.lo, mu, sigma))</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">=</span> theta[<span class="dv">1</span>]</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  sigma <span class="ot">=</span> <span class="fu">exp</span>(theta[<span class="dv">2</span>])</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">dj</span>(data<span class="sc">$</span>f, data<span class="sc">$</span>int.lo, data<span class="sc">$</span>int.hi, mu, sigma))</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Primero aproximamos la posterior a través de una normal multivariada con el método de Laplace. Para ello simulamos observaciones por nivel en la tabla agrupada, asumiendo que las alturas son constantes por grupo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">65</span>,<span class="dv">14</span>),<span class="fu">rep</span>(<span class="dv">67</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="dv">69</span>,<span class="dv">49</span>),<span class="fu">rep</span>(<span class="dv">71</span>,<span class="dv">70</span>),<span class="fu">rep</span>(<span class="dv">73</span>,<span class="dv">33</span>),</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="dv">75</span>,<span class="dv">15</span>))</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 70.16588</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">sd</span>(y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9504117</code></pre>
+</div>
+</div>
+<p>y a partir de lo anterior tomamos como punto inicial (70,1) en el algoritmo de Laplace:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">1</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">laplace</span>(groupeddatapost,start,d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>y recuerden que se pueden generar muestras posteriores de <span class="math inline">\((\mu,\lambda)\)</span> con este método:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>mu_lambda_post <span class="ot">&lt;-</span> <span class="fu">rmvnorm</span>(<span class="dv">5000</span>,<span class="at">mean =</span> fit<span class="sc">$</span>m,<span class="at">sigma =</span> fit<span class="sc">$</span>v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Usando el cálculo anterior, tomamos como propuesta en el algoritmo de Metropolis-Hastings con caminata aleatoria una normal multivariada con escala = 2 y la misma matriz de varianza-covarianza anterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>proposal <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">var=</span>fit<span class="sc">$</span>var,<span class="at">scale=</span><span class="dv">2</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>bayesfit <span class="ot">&lt;-</span> <span class="fu">rwmetrop</span>(groupeddatapost,proposal,start,<span class="dv">10000</span>,d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La muestra posterior resultante tuvo una tasa de aceptación de:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>bayesfit<span class="sc">$</span>accept</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2904</code></pre>
+</div>
+</div>
+<p>El paquete coda nos permite graficar los traceplots de cada muestra posterior. Antes de eso, definimos un objeto mcmc de coda:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(bayesfit<span class="sc">$</span>par)[[<span class="dv">2</span>]]<span class="ot">=</span><span class="fu">c</span>(<span class="st">"mu"</span>,<span class="st">"log sigma"</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>mcmc_ej <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(bayesfit<span class="sc">$</span>par[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2000</span>),]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(mcmc_ej,<span class="at">col=</span><span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="computacion_bayes_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Note que usamos un periodo de quemado (burn-in) del 2000 muestras. También podemos incluir un gráfico de autocorrelación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autocorr.plot</span>(mcmc_ej,<span class="at">auto.layout=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="computacion_bayes_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>y por otro lado uno puede tener un resumen de las muestras posteriores vía MCMC:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mcmc_ej)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Iterations = 1:8000
+Thinning interval = 1 
+Number of chains = 1 
+Sample size per chain = 8000 
+
+1. Empirical mean and standard deviation for each variable,
+   plus standard error of the mean:
+
+             Mean      SD  Naive SE Time-series SE
+mu        70.1678 0.19553 0.0021861       0.006537
+log sigma  0.9799 0.05809 0.0006495       0.002016
+
+2. Quantiles for each variable:
+
+             2.5%     25%     50%    75%  97.5%
+mu        69.7960 70.0390 70.1741 70.293 70.551
+log sigma  0.8729  0.9407  0.9784  1.019  1.095</code></pre>
 </div>
 </div>
 
