@@ -1,0 +1,288 @@
+# Estimación de Modelos Bayesianos (Parte 1)
+
+## Sesgo de una moneda (Kruschke, pag 195)
+
+Carga de librería rjags y funciones utilitarias del Kruschke:
+
+```{r}
+library(rjags)
+source('DBDA2Eprograms/DBDA2E-utilities.R')
+```
+
+Carga de datos y definición de la estructura de datos para JAGS. Los datos se pueden entender como realizaciones de lanzamientos de una moneda (0: escudo, 1: corona; por ejemplo)
+
+```{r}
+myData = read.csv("DBDA2Eprograms/z15N50.csv") 
+y = myData$y        
+Ntotal = length(y)  
+dataList = list(    
+  y = y ,
+  Ntotal = Ntotal 
+)
+```
+
+Definición de modelo Bernoulli($\theta$), con distribución previa sobre $\theta$ Beta(1,1):
+
+```{r}
+modelString = "
+model {
+  for ( i in 1:Ntotal ) {
+    y[i] ~ dbern( theta )
+  }
+  theta ~ dbeta( 1 , 1 )
+}
+" 
+writeLines( modelString , con="TEMPmodel.txt" )
+```
+
+Este modelo permite contestar la pregunta de qué tan grande es el sesgo de una moneda con respecto al valor de una moneda justa ($\theta=1/2$).
+
+Definición de varios valores iniciales, usando muestreo con reemplazo para estimar un MLE de $\theta$:
+
+```{r}
+initsList = function() {
+  resampledY = sample( y , replace=TRUE )
+  thetaInit = sum(resampledY)/length(resampledY)
+  thetaInit = 0.001+0.998*thetaInit # keep away from 0,1
+  return( list( theta=thetaInit ) )
+}
+```
+
+Preprocesamiento del MCMC:
+
+```{r}
+jagsModel = jags.model( file="TEMPmodel.txt" , data=dataList , inits=initsList , 
+                        n.chains=3 , n.adapt=500 )
+```
+
+Ejecución del MCMC:
+
+```{r}
+codaSamples = coda.samples( jagsModel , variable.names=c("theta") ,
+                            n.iter=3334 )
+```
+
+Diagnósticos:
+
+```{r}
+diagMCMC( codaObject=codaSamples , parName="theta" )
+```
+
+Ajuste con el paquete R2jags:
+
+```{r}
+library(R2jags)
+
+bern_model <- function() {
+  for (i in 1:N) {
+    y[i] ~ dbern(theta) 
+  }
+  theta ~ dbeta(1, 1)   
+}
+
+bern_jags <- 
+  jags(
+    data = list(y = myData$y, N = nrow(myData)),
+    model.file = bern_model,
+    parameters.to.save = c("theta")
+  )
+```
+
+Resumen:
+```{r}
+bern_jags
+```
+
+
+
+Gráficos alternativos usando el paquete bayesplot (compatible con ggplot2):
+
+```{r}
+library(bayesplot)
+```
+
+Primero transformamos el output de JAGS a coda:
+```{r}
+bern_mcmc <- as.mcmc(bern_jags)
+plot(bern_mcmc)
+```
+
+Gráfico de la distribución posterior:
+
+```{r}
+mcmc_areas(
+  bern_mcmc,            
+  pars = c("theta"),     
+  prob = 0.90)           
+```
+
+Traceplots combinados:
+
+```{r}
+mcmc_trace(bern_mcmc, pars = "theta") 
+```
+
+Traceplots separados:
+
+```{r}
+library(tidyverse)
+library(ggformula)
+
+mcmc_trace(bern_mcmc, pars = "theta") %>%
+  gf_facet_grid(chain ~ .) %>%
+  gf_refine(scale_color_viridis_d())
+```
+
+Gráficos incluidos en los archivos del libro:
+```{r}
+plotPost( codaSamples[,"theta"] , main="theta" , xlab=bquote(theta) )
+```
+
+```{r}
+plotPost( codaSamples[,"theta"] , main="theta" , xlab=bquote(theta) , 
+          cenTend="median" , compVal=0.5 , ROPE=c(0.45,0.55) , credMass=0.90 )
+```
+
+o bien se puede usar el paquete de github CalvinBayes (https://github.com/CalvinData/CalvinBayes) para hacer los mismos gráficos con el objeto obtenido en R2jags:
+
+```{r}
+library(CalvinBayes)
+
+diag_mcmc(bern_mcmc, par = "theta")
+```
+
+```{r}
+plot_post(bern_mcmc[, "theta"], main = "theta", xlab = expression(theta),
+         cenTend = "median", compVal = 0.5, ROPE = c(0.45, 0.55), 
+         credMass = 0.90, quietly = TRUE)
+```
+
+Otra corrida de jags con distintos argumentos:
+
+```{r}
+set.seed(76543)
+bern_jags2 <- 
+  jags(
+    data = list(y = z15N50$y, N = nrow(z15N50)),
+    model.file = bern_model,
+    parameters.to.save = c("theta"),
+    n.chains = 4, n.iter = 5000, n.burnin = 1000,
+  )
+bern_jags2
+```
+
+Y podemos correr también modelos con distintos valores iniciales:
+
+```{r}
+set.seed(2345)
+bern_jags3 <- 
+  jags(
+    data = list(y = z15N50$y, N = nrow(z15N50)),
+    model.file = bern_model,
+    parameters.to.save = c("theta"),
+    # start each chain by sampling from the prior
+    inits = function() list(theta = rbeta(1, 3, 3))    
+  )
+
+bern_jags4 <- 
+  jags(
+    data = list(y = z15N50$y, N = nrow(z15N50)),
+    model.file = bern_model,
+    parameters.to.save = c("theta"),
+    # choose specific starting point for each chain
+    inits = list(
+      list(theta = 0.5), list(theta = 0.7), list(theta = 0.9)
+    )
+  )
+```
+
+```{r}
+mcmc_trace(as.mcmc(bern_jags4), pars = "theta")
+```
+
+## Ejemplo 2
+
+Dos individuos (Reginald y Tony) tiran cada uno una moneda. Se tiene los resultados de los tiros de cada moneda:
+
+```{r}
+library(mosaic)
+head(z6N8z2N7)  
+```
+
+```{r}
+Target <- z6N8z2N7 %>%
+  rename(hit = y, subject = s)
+df_stats(hit ~ subject, data = Target, props, attempts = length)
+```
+
+
+
+Modelo:
+
+```{r}
+bern2_model <- function() {
+  for (i in 1:Nobs) {
+    hit[i] ~ dbern(theta[subject[i]])  
+  }
+  for (s in 1:Nsub) {
+    theta[s] ~ dbeta(2, 2)   
+  }
+}
+```
+
+Datos:
+
+```{r}
+TargetList <-
+  list(
+    Nobs = nrow(Target),
+    Nsub = 2,
+    hit = Target$hit,
+    subject = as.numeric(as.factor(Target$subject))
+)
+TargetList
+```
+
+Ajuste:
+
+```{r}
+bern2_jags <- 
+  jags(
+    data = TargetList,
+    model = bern2_model,
+    parameters.to.save = "theta")
+```
+
+Diagnósticos:
+```{r}
+bern2_mcmc <- as.mcmc(bern2_jags)
+diag_mcmc(bern2_mcmc,parName = 'theta[1]')
+```
+
+```{r}
+mcmc_acf(bern2_mcmc)
+```
+
+```{r}
+mcmc_pairs(bern2_mcmc, pars = c("theta[1]", "theta[2]"))
+```
+
+```{r}
+mcmc_combo(bern2_mcmc)
+```
+
+Estamos interesados en analizar la diferencia entre $\theta_1$ (Reginald) y $\theta_2$ (Tony):
+
+```{r}
+head(posterior(bern2_jags))
+post2 <- posterior(bern2_jags) %>% mutate(dif = theta.1-theta.2)
+mean(post2$dif)
+quantile(post2$dif,c(0.025,0.975))
+```
+```{r}
+gf_density( ~(theta.1 - theta.2), data = posterior(bern2_jags))
+```
+
+## Ejemplo de Modelación Jerarquica
+
+

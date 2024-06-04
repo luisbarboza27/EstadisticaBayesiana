@@ -12,6 +12,7 @@ book:
     - unparametro.qmd
     - variosparametros.qmd
     - computacion_bayes.qmd
+    - estimacion_modelos1.qmd
     - references.qmd
     
 bibliography: references.bib

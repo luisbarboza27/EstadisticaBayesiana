@@ -274,3 +274,93 @@ y por otro lado uno puede tener un resumen de las muestras posteriores vía MCMC
 summary(mcmc_ej)
 ```
 
+## Evaluación Práctica 4
+
+La siguiente es la implementación de una función que calcule la verosimilitud de este ejemplo:
+
+```{r}
+logPoisson <- function(betas,data){
+  beta0 <- betas[1]
+  beta1 <- betas[2]
+  month <- data[,1]
+  y <- data[,2]
+  vector_logvero <- y*(beta0+beta1*month)-exp(beta0+beta1*month)
+  logvero <- sum(vector_logvero)
+}
+```
+
+en donde asumimos que los datos son:
+
+```{r}
+dataPoisson <- data.frame(month = 1:18,yi = c(15,11,14,17,5,11,10,4,8,10,7,9,11,3,6,1,1,4))
+```
+
+Para verificar, hacemos un gráfico de contorno de la logverosimilitud:
+
+```{r}
+mycontour(logPoisson,c(2,3.5,-0.18,0),dataPoisson,
+          xlab="Beta0",ylab="Beta1")
+```
+
+Ajustamos el método de Laplace usando como valor inicial el punto (2.6,-0.1):
+
+```{r}
+fit_laplace <- laplace(logPoisson ,c(2.6,-0.1),dataPoisson)
+fit_laplace$mode
+fit_laplace$var
+```
+
+Con lo anterior podemos estimar la media de $\beta_1$ como:
+
+```{r}
+mean_laplace <- fit_laplace$mode[2]
+show(mean_laplace)
+```
+
+y su desviación estándar como:
+
+```{r}
+sd_laplace <- sqrt(fit_laplace$var[2,2])
+show(sd_laplace)
+```
+
+Nota: También se vale hacerlo con simulación. Si no lo hicieron de esa forma, lo pueden intentar.
+
+```{r}
+start <- fit_laplace$mode
+proposal_poisson <- list(var=fit_laplace$var,scale=2)
+bayesfit_poisson <- rwmetrop(logPoisson,proposal_poisson,start,1000,dataPoisson)
+```
+
+Y con esto calculamos la media y desviación posterior usando nuestras muestras MCMC (usamos un burn-in de un 10% de la muestra):
+
+```{r}
+mean_mcmc <- mean(bayesfit_poisson$par[100:1000,2])
+sd_mcmc <- sd(bayesfit_poisson$par[100:1000,2])
+```
+
+Traceplot de la muestra completa:
+
+```{r}
+plot(bayesfit_poisson$par[,2],type='l')
+```
+
+Les recomiendo hacer más diagnósticos a las muestras de $\beta_0$ y $\beta_1$.
+
+Tabla de resultados basada en la Tabla 6.2 del Albert:
+
+```{r}
+ID_laplace <- mean_laplace+c(-1,1)*qnorm(0.975)*sd_laplace
+ID_mcmc <- quantile(bayesfit_poisson$par[100:1000,2],probs = c(0.025,0.975))
+laplace_row <- c(NA,c(ID_laplace[1],mean_laplace,ID_laplace[2]))
+mcmc_row <- c(bayesfit_poisson$accept,c(ID_mcmc[1],mean_mcmc,ID_mcmc[2]))
+tabla_res <- data.frame(rbind(laplace_row,mcmc_row))
+colnames(tabla_res) <- c('Aceptacion','beta1_low','beta1_est','beta1_up')
+rownames(tabla_res) <- c('Laplace','MH-Random Walk')
+```
+
+```{r}
+library(kableExtra)
+kable(tabla_res)
+```
+
