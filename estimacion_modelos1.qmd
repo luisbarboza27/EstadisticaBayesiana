@@ -4,7 +4,7 @@
 
 Carga de librería rjags y funciones utilitarias del Kruschke:
 
-```{r}
+```{r,message=FALSE}
 library(rjags)
 source('DBDA2Eprograms/DBDA2E-utilities.R')
 ```
@@ -70,7 +70,7 @@ diagMCMC( codaObject=codaSamples , parName="theta" )
 
 Ajuste con el paquete R2jags:
 
-```{r}
+```{r,message=FALSE}
 library(R2jags)
 
 bern_model <- function() {
@@ -97,7 +97,7 @@ bern_jags
 
 Gráficos alternativos usando el paquete bayesplot (compatible con ggplot2):
 
-```{r}
+```{r,message=FALSE}
 library(bayesplot)
 ```
 
@@ -124,7 +124,7 @@ mcmc_trace(bern_mcmc, pars = "theta")
 
 Traceplots separados:
 
-```{r}
+```{r,message=FALSE}
 library(tidyverse)
 library(ggformula)
 
@@ -145,7 +145,7 @@ plotPost( codaSamples[,"theta"] , main="theta" , xlab=bquote(theta) ,
 
 o bien se puede usar el paquete de github CalvinBayes (https://github.com/CalvinData/CalvinBayes) para hacer los mismos gráficos con el objeto obtenido en R2jags:
 
-```{r}
+```{r,message=FALSE}
 library(CalvinBayes)
 
 diag_mcmc(bern_mcmc, par = "theta")
@@ -166,8 +166,7 @@ bern_jags2 <-
     data = list(y = z15N50$y, N = nrow(z15N50)),
     model.file = bern_model,
     parameters.to.save = c("theta"),
-    n.chains = 4, n.iter = 5000, n.burnin = 1000,
-  )
+    n.chains = 4, n.iter = 5000, n.burnin = 1000,n.thin = 1)
 bern_jags2
 ```
 
@@ -200,24 +199,23 @@ bern_jags4 <-
 mcmc_trace(as.mcmc(bern_jags4), pars = "theta")
 ```
 
-## Ejemplo 2
+## Sesgos de dos monedas
 
-Dos individuos (Reginald y Tony) tiran cada uno una moneda. Se tiene los resultados de los tiros de cada moneda:
+Dos individuos (Reginald y Tony) tiran cada uno una moneda. Se tiene los resultados de los intentos de cada individuo:
 
-```{r}
+```{r,message=FALSE}
 library(mosaic)
 head(z6N8z2N7)  
 ```
+
+Cambiamos los nombres de las variables. Además, noten que las proporciones de 0s y 1s obtenidas por cada individuo son muy distintas entre sí, por lo tanto en el modelo sería conveniente usar una probabilidad de ocurrencia de 1s distinta por individuo.
 
 ```{r}
 Target <- z6N8z2N7 %>%
   rename(hit = y, subject = s)
 df_stats(hit ~ subject, data = Target, props, attempts = length)
 ```
-
-
-
-Modelo:
+El modelo en este caso considera la observación anterior:
 
 ```{r}
 bern2_model <- function() {
@@ -230,7 +228,7 @@ bern2_model <- function() {
 }
 ```
 
-Datos:
+Los datos deben declararse en la siguiente lista:
 
 ```{r}
 TargetList <-
@@ -243,7 +241,7 @@ TargetList <-
 TargetList
 ```
 
-Ajuste:
+Y realizamos el ajuste MCMC:
 
 ```{r}
 bern2_jags <- 
@@ -253,7 +251,8 @@ bern2_jags <-
     parameters.to.save = "theta")
 ```
 
-Diagnósticos:
+Diagnósticos para $\theta_1$. (Hacer los diagnósticos de $\theta_2$ como ejercicio)
+
 ```{r}
 bern2_mcmc <- as.mcmc(bern2_jags)
 diag_mcmc(bern2_mcmc,parName = 'theta[1]')
@@ -271,7 +270,7 @@ mcmc_pairs(bern2_mcmc, pars = c("theta[1]", "theta[2]"))
 mcmc_combo(bern2_mcmc)
 ```
 
-Estamos interesados en analizar la diferencia entre $\theta_1$ (Reginald) y $\theta_2$ (Tony):
+Estamos interesados en analizar la diferencia entre $\theta_1$ (Reginald) y $\theta_2$ (Tony), en particular a través de la diferencia $\theta_1-\theta_2$. Note que a través de esta diferencia, es posible medir la hipótesis nula $H_0: \theta_1> \theta_2$:
 
 ```{r}
 head(posterior(bern2_jags))
@@ -283,6 +282,14 @@ quantile(post2$dif,c(0.025,0.975))
 gf_density( ~(theta.1 - theta.2), data = posterior(bern2_jags))
 ```
 
-## Ejemplo de Modelación Jerarquica
+Para medir $H_0$, estimamos la probabilidad posterior de $H_0$:
 
+```{r}
+sum(post2$dif>0)/3000  
+```
+Por lo tanto la probabilidad de que $H_0$ sea cierta es 0.9323 y la probabilidad de rechazar tal hipótesis (o bien aceptar $H_1: \theta_1<\theta_2$) es 6.77%. 
+
+## Ejemplo de Modelación Jerárquica
+
+https://jamanetwork.com/journals/jama/fullarticle/187390
 
