@@ -223,7 +223,8 @@ window.Quarto = {
   <ul>
   <li><a href="#sesgo-de-una-moneda-kruschke-pag-195" id="toc-sesgo-de-una-moneda-kruschke-pag-195" class="nav-link active" data-scroll-target="#sesgo-de-una-moneda-kruschke-pag-195"><span class="header-section-number">5.1</span> Sesgo de una moneda (Kruschke, pag 195)</a></li>
   <li><a href="#sesgos-de-dos-monedas" id="toc-sesgos-de-dos-monedas" class="nav-link" data-scroll-target="#sesgos-de-dos-monedas"><span class="header-section-number">5.2</span> Sesgos de dos monedas</a></li>
-  <li><a href="#ejemplo-de-modelación-jerárquica" id="toc-ejemplo-de-modelación-jerárquica" class="nav-link" data-scroll-target="#ejemplo-de-modelación-jerárquica"><span class="header-section-number">5.3</span> Ejemplo de Modelación Jerárquica</a></li>
+  <li><a href="#ejemplo-de-modelación-jerárquica-sección-9.2.4-kruschke" id="toc-ejemplo-de-modelación-jerárquica-sección-9.2.4-kruschke" class="nav-link" data-scroll-target="#ejemplo-de-modelación-jerárquica-sección-9.2.4-kruschke"><span class="header-section-number">5.3</span> Ejemplo de Modelación Jerárquica (sección 9.2.4, Kruschke)</a></li>
+  <li><a href="#introducción-a-stan" id="toc-introducción-a-stan" class="nav-link" data-scroll-target="#introducción-a-stan"><span class="header-section-number">5.4</span> Introducción a STAN</a></li>
   </ul>
 </nav>
     </div>
@@ -360,12 +361,12 @@ Initializing model</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bern_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/Rtmp0x7w8B/model3230221c7f049.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e5f7fbd7f.txt", fit using jags,
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
          mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
-theta      0.307   0.063  0.193  0.261  0.306  0.348  0.438 1.001  2100
-deviance  62.043   1.341 61.088 61.187 61.529 62.379 65.783 1.001  3000
+theta      0.308   0.062  0.195  0.264  0.306  0.349  0.439 1.002  1700
+deviance  62.028   1.345 61.087 61.184 61.517 62.310 65.829 1.001  3000
 
 For each parameter, n.eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
@@ -443,8 +444,8 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        ESS      mean    median      mode hdiMass   hdiLow   hdiHigh compVal
-theta 10002 0.3071375 0.3045872 0.3016947    0.95 0.185721 0.4294725      NA
+<pre><code>        ESS      mean    median      mode hdiMass    hdiLow   hdiHigh compVal
+theta 10002 0.3069837 0.3048172 0.2904594    0.95 0.1870631 0.4342261      NA
       pGtCompVal ROPElow ROPEhigh pLtROPE pInROPE pGtROPE
 theta         NA      NA       NA      NA      NA      NA</code></pre>
 </div>
@@ -460,10 +461,10 @@ theta         NA      NA       NA      NA      NA      NA</code></pre>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        ESS      mean    median      mode hdiMass   hdiLow   hdiHigh compVal
-theta 10002 0.3071375 0.3045872 0.3016947     0.9 0.201802 0.4098362     0.5
-      pGtCompVal ROPElow ROPEhigh   pLtROPE    pInROPE    pGtROPE
-theta  0.0024995    0.45     0.55 0.9829034 0.01689662 0.00019996</code></pre>
+<pre><code>        ESS      mean    median      mode hdiMass    hdiLow   hdiHigh compVal
+theta 10002 0.3069837 0.3048172 0.2904594     0.9 0.2003451 0.4085078     0.5
+      pGtCompVal ROPElow ROPEhigh   pLtROPE   pInROPE pGtROPE
+theta 0.00209958    0.45     0.55 0.9840032 0.0159968       0</code></pre>
 </div>
 </div>
 <p>o bien se puede usar el paquete de github CalvinBayes (https://github.com/CalvinData/CalvinBayes) para hacer los mismos gráficos con el objeto obtenido en R2jags:</p>
@@ -513,7 +514,7 @@ Initializing model</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bern_jags2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/Rtmp0x7w8B/model323025ee0e186.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e1f4d9b64.txt", fit using jags,
  4 chains, each with 5000 iterations (first 1000 discarded)
  n.sims = 16000 iterations saved
          mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
@@ -750,9 +751,468 @@ Initializing model</code></pre>
 </div>
 <p>Por lo tanto la probabilidad de que <span class="math inline">\(H_0\)</span> sea cierta es 0.9323 y la probabilidad de rechazar tal hipótesis (o bien aceptar <span class="math inline">\(H_1: \theta_1&lt;\theta_2\)</span>) es 6.77%.</p>
 </section>
-<section id="ejemplo-de-modelación-jerárquica" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="ejemplo-de-modelación-jerárquica"><span class="header-section-number">5.3</span> Ejemplo de Modelación Jerárquica</h2>
-<p>https://jamanetwork.com/journals/jama/fullarticle/187390</p>
+<section id="ejemplo-de-modelación-jerárquica-sección-9.2.4-kruschke" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="ejemplo-de-modelación-jerárquica-sección-9.2.4-kruschke"><span class="header-section-number">5.3</span> Ejemplo de Modelación Jerárquica (sección 9.2.4, Kruschke)</h2>
+<p><strong>Contexto</strong>: El Toque Terapéutico (TT) es una práctica de enfermería que se dice trata condiciones médicas manipulando un “campo de energía humano” con las manos de los practicantes. Este estudio tuvo como objetivo probar si los practicantes de TT pueden percibir este campo de energía. Veintiún practicantes con 1 a 27 años de experiencia en TT fueron evaluados en condiciones cegadas. Se les pidió que identificaran cuál de sus manos estaba más cerca de la mano del investigador, que se colocaba al azar mediante el lanzamiento de una moneda. Catorce practicantes fueron evaluados 10 veces cada uno, y siete fueron evaluados 20 veces cada uno. La capacidad de los practicantes para identificar correctamente la posición de la mano del investigador se comparó con una tasa de éxito del 50% esperada por casualidad.</p>
+<p><strong>Pregunta de Investigación</strong>: ¿Las tasas de acierto para los practicantes será mayor al 50%?</p>
+<p>Carga de datos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(TherapeuticTouch, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+      y s    
+  &lt;dbl&gt; &lt;chr&gt;
+1     1 S01  
+2     0 S01  
+3     0 S01  </code></pre>
+</div>
+</div>
+<p>Las tasas de acierto empíricas para cada individuo se pueden visualizar de la siguiente forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_bar</span>(s <span class="sc">~</span> ., <span class="at">data =</span> TherapeuticTouch, <span class="at">fill =</span> <span class="sc">~</span> <span class="fu">factor</span>(y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>de donde es interesante observar la diferencia entre tasas de acierto entre individuos (que en este caso está ordenado del que tiene menos al que tiene más acierto). Es por esto que un modelo con tasa de acierto variable por individuos tendría sentido.</p>
+<p>Recuerden que el modelo jerárquico tendría la forma:</p>
+<p><span class="math display">\[\begin{align*}
+y_{i|s} &amp; \sim \text{Ber}(\theta_s)\\
+\theta_s &amp; \sim \text{Beta}(\omega(K-2)+1,(1-\omega)(K-2)+1)\\
+\omega &amp; \sim \text{Beta}(1,1)\\
+K-2 &amp; \sim \text{Gamma}(0.01,0.01)
+\end{align*}\]</span></p>
+<p>donde esta última escogencia se hiperparámetros se basa en la aplicación de la siguiente función:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gamma_params</span>(<span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 6
+  shape  rate scale mode   mean    sd
+  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1  0.01  0.01   100 NA        1    10</code></pre>
+</div>
+</div>
+<p>que garantiza una v.a. Gamma con media 1 y desviación estándar 10 (previas no-informativas).</p>
+<p>La definición del modelo en lenguaje JAGS sería:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>touch_model <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Ntotal) {</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dbern</span>(theta[s[i]])</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>Nsubj) {</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    theta[s] <span class="sc">~</span> <span class="fu">dbeta</span>(omega <span class="sc">*</span> (kappa <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">+</span> <span class="dv">1</span>, (<span class="dv">1</span> <span class="sc">-</span> omega) <span class="sc">*</span> (kappa <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  omega <span class="sc">~</span> <span class="fu">dbeta</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>  kappa <span class="ot">&lt;-</span> kappaMinusTwo <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>  kappaMinusTwo <span class="sc">~</span> <span class="fu">dgamma</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>)     <span class="co"># mean = 1, sd = 10</span></span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>con el arreglo de datos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>TouchData <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Ntotal =</span> <span class="fu">nrow</span>(TherapeuticTouch),</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Nsubj =</span> <span class="fu">length</span>(<span class="fu">unique</span>(TherapeuticTouch<span class="sc">$</span>s)),</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> TherapeuticTouch<span class="sc">$</span>y,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># must convert subjects to sequence 1:Nsubj</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">s =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(TherapeuticTouch<span class="sc">$</span>s))</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Se procede a un ajuste preliminar, con los valores por default de JAGS:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>touch_jags <span class="ot">&lt;-</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jags</span>(</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> TouchData,</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> touch_model,</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters.to.save =</span> <span class="fu">c</span>(<span class="st">"theta"</span>, <span class="st">"kappa"</span>, <span class="st">"omega"</span>),</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 280
+   Unobserved stochastic nodes: 30
+   Total graph size: 602
+
+Initializing model</code></pre>
+</div>
+</div>
+<p>Si analizamos los diagnósticos de convergencia, notamos que hay mucho autocorrelación en la series (usando el tamaño efectivo de muestra):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>touch_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e3267ecb6.txt", fit using jags,
+ 3 chains, each with 2000 iterations (first 1000 discarded)
+ n.sims = 3000 iterations saved
+          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
+kappa      52.286  54.028   8.932  20.025  34.399  65.489 210.966 1.056    44
+omega       0.439   0.035   0.367   0.416   0.439   0.462   0.508 1.004  1100
+theta[1]    0.363   0.088   0.175   0.305   0.369   0.426   0.517 1.016   210
+theta[2]    0.384   0.084   0.208   0.331   0.389   0.444   0.536 1.015   190
+theta[3]    0.409   0.081   0.241   0.358   0.414   0.463   0.564 1.005   970
+theta[4]    0.411   0.083   0.236   0.357   0.415   0.467   0.564 1.020   270
+theta[5]    0.409   0.080   0.244   0.358   0.411   0.461   0.563 1.010   500
+theta[6]    0.410   0.082   0.235   0.359   0.414   0.464   0.562 1.006  1100
+theta[7]    0.409   0.080   0.244   0.359   0.412   0.461   0.560 1.019   180
+theta[8]    0.410   0.080   0.243   0.360   0.413   0.462   0.565 1.012   510
+theta[9]    0.407   0.080   0.247   0.356   0.410   0.459   0.561 1.008   650
+theta[10]   0.409   0.081   0.238   0.358   0.413   0.463   0.559 1.008   710
+theta[11]   0.433   0.077   0.276   0.384   0.433   0.483   0.588 1.004  1700
+theta[12]   0.433   0.081   0.278   0.383   0.434   0.485   0.593 1.005   710
+theta[13]   0.434   0.078   0.280   0.385   0.434   0.484   0.587 1.002  3000
+theta[14]   0.432   0.080   0.272   0.380   0.432   0.482   0.593 1.001  3000
+theta[15]   0.433   0.080   0.275   0.381   0.434   0.484   0.590 1.004  3000
+theta[16]   0.457   0.080   0.300   0.408   0.454   0.504   0.624 1.002  3000
+theta[17]   0.456   0.079   0.295   0.406   0.453   0.506   0.621 1.002  1600
+theta[18]   0.454   0.081   0.295   0.401   0.453   0.504   0.626 1.003  3000
+theta[19]   0.457   0.078   0.313   0.407   0.454   0.505   0.618 1.001  3000
+theta[20]   0.455   0.080   0.298   0.403   0.452   0.508   0.612 1.003  3000
+theta[21]   0.457   0.082   0.296   0.404   0.455   0.510   0.621 1.005  1000
+theta[22]   0.457   0.079   0.311   0.405   0.454   0.507   0.625 1.003  1800
+theta[23]   0.480   0.083   0.328   0.425   0.474   0.529   0.658 1.008   510
+theta[24]   0.482   0.083   0.327   0.427   0.476   0.531   0.660 1.003  1300
+theta[25]   0.506   0.088   0.351   0.446   0.497   0.562   0.691 1.008   260
+theta[26]   0.507   0.088   0.354   0.446   0.498   0.560   0.700 1.003   680
+theta[27]   0.505   0.087   0.355   0.445   0.495   0.559   0.695 1.008   250
+theta[28]   0.527   0.093   0.374   0.460   0.517   0.581   0.735 1.008   300
+deviance  378.963   5.156 368.591 375.437 379.284 382.411 388.755 1.010   220
+
+For each parameter, n.eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
+
+DIC info (using the rule, pD = var(deviance)/2)
+pD = 13.2 and DIC = 392.1
+DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
+</div>
+</div>
+<p>Ajustamos el modelo con un número de mayor de cadenas, con mayor tamaño de muestra posterior y con thinning. Noten que ejecutamos el modelo paralelizando el proceso (1 core por cadena)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>touch_jags <span class="ot">&lt;-</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jags.parallel</span>(</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> TouchData,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> touch_model,</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters.to.save =</span> <span class="fu">c</span>(<span class="st">"theta"</span>, <span class="st">"kappa"</span>, <span class="st">"omega"</span>),</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.burnin =</span> <span class="dv">1000</span>,</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.iter =</span> <span class="dv">41000</span>,</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.chains =</span> <span class="dv">5</span>,</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.thin =</span> <span class="dv">10</span>,</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">jags.seed =</span> <span class="dv">54321</span></span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>  )   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>y la autorrelación se mejora considerablemente, al comparar el tamaño de muestra efectivo del primer modelo con respecto al segundo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>touch_jags<span class="sc">$</span>BUGSoutput<span class="sc">$</span>summary[,<span class="st">'n.eff'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> deviance     kappa     omega  theta[1]  theta[2]  theta[3]  theta[4]  theta[5] 
+    20000      5800     14000     14000     19000     20000      6500     20000 
+ theta[6]  theta[7]  theta[8]  theta[9] theta[10] theta[11] theta[12] theta[13] 
+    20000     19000     20000     20000     20000     20000     19000     20000 
+theta[14] theta[15] theta[16] theta[17] theta[18] theta[19] theta[20] theta[21] 
+     8300     13000     20000     16000      8700     20000     20000     20000 
+theta[22] theta[23] theta[24] theta[25] theta[26] theta[27] theta[28] 
+    15000     20000     10000     10000     20000     20000     20000 </code></pre>
+</div>
+</div>
+<p>Ahora hacemos algunos gráficos para analizar las muestras posteriores:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>touch_mcmc <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(touch_jags)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_post</span>(touch_mcmc[, <span class="st">"omega"</span>], <span class="at">comparison_value =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$posterior
+          ESS      mean    median      mode
+var1 13197.07 0.4351743 0.4355163 0.4375461
+
+$hdi
+  prob        lo        hi
+1 0.95 0.3597935 0.5071227
+
+$comparison
+  value P(&lt; comp. val.) P(&gt; comp. val.)
+1   0.5          0.9596          0.0404</code></pre>
+</div>
+</div>
+<p>De donde se concluye que el 96% de la población de practicantes no tienen una tasa de acierto general mayor al 50%. Este análisis se puede realizar para la tasa de acierto del sujeto #28:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_post</span>(touch_mcmc[, <span class="st">"theta[28]"</span>], <span class="at">comparison_value =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$posterior
+          ESS      mean    median      mode
+var1 12746.09 0.5248268 0.5141253 0.4994144
+
+$hdi
+  prob        lo       hi
+1 0.95 0.3582065 0.717917
+
+$comparison
+  value P(&lt; comp. val.) P(&gt; comp. val.)
+1   0.5         0.43435         0.56565</code></pre>
+</div>
+</div>
+<p>Diagnósticos del parámetro de precisión de la tasa de acierto individual:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diag_mcmc</span>(touch_mcmc, <span class="at">par =</span> <span class="st">"kappa"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Gráfico de dispersión entre las muestras posteriores de <span class="math inline">\(K\)</span> y <span class="math inline">\(\omega\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_pairs</span>(touch_mcmc, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"omega"</span>, <span class="st">"kappa"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Muestreo a partir de la previa:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>TouchData_pre <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Ntotal =</span> <span class="dv">0</span>,</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Nsubj =</span> <span class="fu">length</span>(<span class="fu">unique</span>(TherapeuticTouch<span class="sc">$</span>s)),</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># must convert subjects to sequence 1:Nsubj</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">s =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(TherapeuticTouch<span class="sc">$</span>s))</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>touch_jags_pre <span class="ot">&lt;-</span></span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jags.parallel</span>(</span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> TouchData_pre,</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> touch_model,</span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters.to.save =</span> <span class="fu">c</span>(<span class="st">"theta"</span>, <span class="st">"kappa"</span>, <span class="st">"omega"</span>),</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.burnin =</span> <span class="dv">1000</span>,</span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.iter =</span> <span class="dv">41000</span>,</span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.chains =</span> <span class="dv">5</span>,</span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">n.thin =</span> <span class="dv">10</span>,</span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">jags.seed =</span> <span class="dv">54321</span>,</span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">DIC =</span> F</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Diagnósticos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diag_mcmc</span>(touch_mcmc, <span class="at">par =</span> <span class="st">"theta[1]"</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_pairs</span>(touch_mcmc, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"omega"</span>, <span class="st">"kappa"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-48-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="introducción-a-stan" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="introducción-a-stan"><span class="header-section-number">5.4</span> Introducción a STAN</h2>
+<p>Carga de librería:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstan)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rstan_options</span>(<span class="at">auto_write =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ilustrar el uso de STAN, se va a ajustar un modelo Bernoulli a datos sintéticos. El modelo está definido en el archivo moneda.stan en el repositorio de estas notas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>modelo_moneda <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">file =</span> <span class="st">'moneda.stan'</span>,<span class="at">verbose =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRANSLATING MODEL '' FROM Stan CODE TO C++ CODE NOW.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>modelo_moneda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>S4 class stanmodel 'anon_model' coded as follows:
+//
+// This Stan program defines a simple model, with a
+// vector of values 'y' modeled as normally distributed
+// with mean 'mu' and standard deviation 'sigma'.
+//
+// Learn more about model development with Stan at:
+//
+//    http://mc-stan.org/users/interfaces/rstan.html
+//    https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+//
+// The input data is a vector 'y' of length 'N'.
+data {
+  int&lt;lower=0&gt; N;  // N is a non-negative integer
+  int y[N];          // y is a length-N vector of integers
+}
+// The parameters accepted by the model. Our model
+// accepts two parameters 'mu' and 'sigma'.
+parameters {
+  real&lt;lower=0,upper=1&gt; theta;  // theta is between 0 and 1
+}
+// The model to be estimated. We model the output
+// 'y' to be normally distributed with mean 'mu'
+// and standard deviation 'sigma'.
+model {
+  theta ~ beta (1,1);
+  y ~ bernoulli(theta);
+} </code></pre>
+</div>
+</div>
+<p>Ajuste del modelo en condiciones similares a las que JAGS trabaja por default:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>simple_stanfit <span class="ot">&lt;-</span> </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sampling</span>(</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    modelo_moneda, </span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data  =</span> <span class="fu">list</span>(</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">N =</span> <span class="dv">50</span>,</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">15</span>), <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">35</span>))</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">chains =</span> <span class="dv">3</span>,     <span class="co"># default is 4</span></span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter =</span> <span class="dv">1000</span>,    <span class="co"># default is 2000</span></span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">warmup =</span> <span class="dv">200</span>    <span class="co"># default is half of iter</span></span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3e-06 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)
+Chain 1: Iteration: 100 / 1000 [ 10%]  (Warmup)
+Chain 1: Iteration: 200 / 1000 [ 20%]  (Warmup)
+Chain 1: Iteration: 201 / 1000 [ 20%]  (Sampling)
+Chain 1: Iteration: 300 / 1000 [ 30%]  (Sampling)
+Chain 1: Iteration: 400 / 1000 [ 40%]  (Sampling)
+Chain 1: Iteration: 500 / 1000 [ 50%]  (Sampling)
+Chain 1: Iteration: 600 / 1000 [ 60%]  (Sampling)
+Chain 1: Iteration: 700 / 1000 [ 70%]  (Sampling)
+Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
+Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
+Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                0.003 seconds (Sampling)
+Chain 1:                0.003 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 1e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:   1 / 1000 [  0%]  (Warmup)
+Chain 2: Iteration: 100 / 1000 [ 10%]  (Warmup)
+Chain 2: Iteration: 200 / 1000 [ 20%]  (Warmup)
+Chain 2: Iteration: 201 / 1000 [ 20%]  (Sampling)
+Chain 2: Iteration: 300 / 1000 [ 30%]  (Sampling)
+Chain 2: Iteration: 400 / 1000 [ 40%]  (Sampling)
+Chain 2: Iteration: 500 / 1000 [ 50%]  (Sampling)
+Chain 2: Iteration: 600 / 1000 [ 60%]  (Sampling)
+Chain 2: Iteration: 700 / 1000 [ 70%]  (Sampling)
+Chain 2: Iteration: 800 / 1000 [ 80%]  (Sampling)
+Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
+Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.001 seconds (Warm-up)
+Chain 2:                0.003 seconds (Sampling)
+Chain 2:                0.004 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 1e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:   1 / 1000 [  0%]  (Warmup)
+Chain 3: Iteration: 100 / 1000 [ 10%]  (Warmup)
+Chain 3: Iteration: 200 / 1000 [ 20%]  (Warmup)
+Chain 3: Iteration: 201 / 1000 [ 20%]  (Sampling)
+Chain 3: Iteration: 300 / 1000 [ 30%]  (Sampling)
+Chain 3: Iteration: 400 / 1000 [ 40%]  (Sampling)
+Chain 3: Iteration: 500 / 1000 [ 50%]  (Sampling)
+Chain 3: Iteration: 600 / 1000 [ 60%]  (Sampling)
+Chain 3: Iteration: 700 / 1000 [ 70%]  (Sampling)
+Chain 3: Iteration: 800 / 1000 [ 80%]  (Sampling)
+Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
+Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0 seconds (Warm-up)
+Chain 3:                0.003 seconds (Sampling)
+Chain 3:                0.003 seconds (Total)
+Chain 3: </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>simple_stanfit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Inference for Stan model: anon_model.
+3 chains, each with iter=1000; warmup=200; thin=1; 
+post-warmup draws per chain=800, total post-warmup draws=2400.
+
+        mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+theta   0.31    0.00 0.07   0.19   0.26   0.31   0.35   0.44   742    1
+lp__  -32.64    0.03 0.80 -34.90 -32.79 -32.34 -32.16 -32.10   949    1
+
+Samples were drawn using NUTS(diag_e) at Tue Jun 11 11:13:28 2024.
+For each parameter, n_eff is a crude measure of effective sample size,
+and Rhat is the potential scale reduction factor on split chains (at 
+convergence, Rhat=1).</code></pre>
+</div>
+</div>
+<p>Algunos diagnósticos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gf_dens</span>(<span class="sc">~</span>theta, <span class="at">data =</span> <span class="fu">posterior</span>(simple_stanfit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>simple_mcmc <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(simple_stanfit)</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(<span class="fu">as.mcmc.list</span>(simple_stanfit), <span class="at">prob =</span> <span class="fl">0.9</span>, <span class="at">pars =</span> <span class="st">"theta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-53-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diag_mcmc</span>(<span class="fu">as.mcmc.list</span>(simple_stanfit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos1_files/figure-html/unnamed-chunk-53-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 </section>

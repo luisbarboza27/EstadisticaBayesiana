@@ -75,7 +75,6 @@ quantile(mu_sigma_post[,2],probs = c(0.025,0.975))
 
 ## Ejemplo sección 5.7, Albert
 
-
 En un ejemplo anterior se había calculado la distribución posterior de la proporción de estudiantes que dormían más de 8 horas ($p$). Si queremos calcular los estimadores Monte Carlo de la probabilidad de que dos estudiantes duerman más de 8 horas ($p^2$) sería:
 
 ```{r}
@@ -114,6 +113,7 @@ fit1=laplace(betabinT,start,datapar)
 ```
 
 de donde se observa que un posible valor para la diferencia sería:
+
 ```{r}
 betabinT(fit1$mode,datapar)
 ```
@@ -127,6 +127,7 @@ theta=rejectsampling(betabinexch,tpar,-569.2813,10000,
 ```
 
 Noten que la proporción de aceptación en la muestra es:
+
 ```{r}
 dim(theta)[1]/10000
 ```
@@ -163,6 +164,7 @@ for (j in 2:50000){
 ```
 
 Graficamente, los últimos 1000 pasos se pueden representar:
+
 ```{r}
 plot(tail(s,1000),type='l')
 ```
@@ -268,6 +270,7 @@ Note que usamos un periodo de quemado (burn-in) del 2000 muestras. También pode
 par(mfrow=c(2,1))
 autocorr.plot(mcmc_ej,auto.layout=FALSE)
 ```
+
 y por otro lado uno puede tener un resumen de las muestras posteriores vía MCMC:
 
 ```{r}
@@ -363,4 +366,3 @@ rownames(tabla_res) <- c('Laplace','MH-Random Walk')
 library(kableExtra)
 kable(tabla_res)
 ```
-

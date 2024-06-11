@@ -89,11 +89,10 @@ bern_jags <-
 ```
 
 Resumen:
+
 ```{r}
 bern_jags
 ```
-
-
 
 Gráficos alternativos usando el paquete bayesplot (compatible con ggplot2):
 
@@ -102,6 +101,7 @@ library(bayesplot)
 ```
 
 Primero transformamos el output de JAGS a coda:
+
 ```{r}
 bern_mcmc <- as.mcmc(bern_jags)
 plot(bern_mcmc)
@@ -134,6 +134,7 @@ mcmc_trace(bern_mcmc, pars = "theta") %>%
 ```
 
 Gráficos incluidos en los archivos del libro:
+
 ```{r}
 plotPost( codaSamples[,"theta"] , main="theta" , xlab=bquote(theta) )
 ```
@@ -215,6 +216,7 @@ Target <- z6N8z2N7 %>%
   rename(hit = y, subject = s)
 df_stats(hit ~ subject, data = Target, props, attempts = length)
 ```
+
 El modelo en este caso considera la observación anterior:
 
 ```{r}
@@ -278,6 +280,7 @@ post2 <- posterior(bern2_jags) %>% mutate(dif = theta.1-theta.2)
 mean(post2$dif)
 quantile(post2$dif,c(0.025,0.975))
 ```
+
 ```{r}
 gf_density( ~(theta.1 - theta.2), data = posterior(bern2_jags))
 ```
@@ -287,9 +290,213 @@ Para medir $H_0$, estimamos la probabilidad posterior de $H_0$:
 ```{r}
 sum(post2$dif>0)/3000  
 ```
-Por lo tanto la probabilidad de que $H_0$ sea cierta es 0.9323 y la probabilidad de rechazar tal hipótesis (o bien aceptar $H_1: \theta_1<\theta_2$) es 6.77%. 
 
-## Ejemplo de Modelación Jerárquica
+Por lo tanto la probabilidad de que $H_0$ sea cierta es 0.9323 y la probabilidad de rechazar tal hipótesis (o bien aceptar $H_1: \theta_1<\theta_2$) es 6.77%.
 
-https://jamanetwork.com/journals/jama/fullarticle/187390
+## Ejemplo de Modelación Jerárquica (sección 9.2.4, Kruschke)
+
+**Contexto**: El Toque Terapéutico (TT) es una práctica de enfermería que se dice trata condiciones médicas manipulando un "campo de energía humano" con las manos de los practicantes. Este estudio tuvo como objetivo probar si los practicantes de TT pueden percibir este campo de energía. Veintiún practicantes con 1 a 27 años de experiencia en TT fueron evaluados en condiciones cegadas. Se les pidió que identificaran cuál de sus manos estaba más cerca de la mano del investigador, que se colocaba al azar mediante el lanzamiento de una moneda. Catorce practicantes fueron evaluados 10 veces cada uno, y siete fueron evaluados 20 veces cada uno. La capacidad de los practicantes para identificar correctamente la posición de la mano del investigador se comparó con una tasa de éxito del 50% esperada por casualidad.
+
+**Pregunta de Investigación**: ¿Las tasas de acierto para los practicantes será mayor al 50%? 
+
+Carga de datos:
+
+```{r}
+head(TherapeuticTouch, 3)
+```
+Las tasas de acierto empíricas para cada individuo se pueden visualizar de la siguiente forma:
+
+```{r}
+gf_bar(s ~ ., data = TherapeuticTouch, fill = ~ factor(y))
+```
+
+de donde es interesante observar la diferencia entre tasas de acierto entre individuos (que en este caso está ordenado del que tiene menos al que tiene más acierto). Es por esto que un modelo con tasa de acierto variable por individuos tendría sentido.
+
+Recuerden que el modelo jerárquico tendría la forma:
+
+\begin{align*}
+y_{i|s} & \sim \text{Ber}(\theta_s)\\
+\theta_s & \sim \text{Beta}(\omega(K-2)+1,(1-\omega)(K-2)+1)\\
+\omega & \sim \text{Beta}(1,1)\\
+K-2 & \sim \text{Gamma}(0.01,0.01) 
+\end{align*}
+
+donde esta última escogencia se hiperparámetros se basa en la aplicación de la siguiente función:
+
+```{r}
+gamma_params(mean = 1, sd = 10)
+```
+
+que garantiza una v.a. Gamma con media 1 y desviación estándar 10 (previas no-informativas).
+
+La definición del modelo en lenguaje JAGS sería:
+
+```{r}
+touch_model <- function() {
+  for (i in 1:Ntotal) {
+    y[i] ~ dbern(theta[s[i]])
+  }
+  for (s in 1:Nsubj) {
+    theta[s] ~ dbeta(omega * (kappa - 2) + 1, (1 - omega) * (kappa - 2) + 1)
+  }
+  omega ~ dbeta(1, 1)
+  kappa <- kappaMinusTwo + 2
+  kappaMinusTwo ~ dgamma(0.01, 0.01)     # mean = 1, sd = 10
+}
+```
+
+con el arreglo de datos:
+
+```{r}
+TouchData <- list(
+  Ntotal = nrow(TherapeuticTouch),
+  Nsubj = length(unique(TherapeuticTouch$s)),
+  y = TherapeuticTouch$y,
+  # must convert subjects to sequence 1:Nsubj
+  s = as.numeric(factor(TherapeuticTouch$s))
+)
+```
+
+Se procede a un ajuste preliminar, con los valores por default de JAGS:
+
+```{r}
+set.seed(1234)
+touch_jags <-
+  jags(
+    data = TouchData,
+    model = touch_model,
+    parameters.to.save = c("theta", "kappa", "omega"),
+  )
+```
+
+Si analizamos los diagnósticos de convergencia, notamos que hay mucho autocorrelación en la series (usando el tamaño efectivo de muestra):
+
+```{r}
+touch_jags
+```
+
+Ajustamos el modelo con un número de mayor de cadenas, con mayor tamaño de muestra posterior y con thinning. Noten que ejecutamos el modelo paralelizando el proceso (1 core por cadena)
+
+```{r}
+touch_jags <-
+  jags.parallel(
+    data = TouchData,
+    model = touch_model,
+    parameters.to.save = c("theta", "kappa", "omega"),
+    n.burnin = 1000,
+    n.iter = 41000,
+    n.chains = 5,
+    n.thin = 10,
+    jags.seed = 54321
+  )   
+```
+
+y la autorrelación se mejora considerablemente, al comparar el tamaño de muestra efectivo del primer modelo con respecto al segundo:
+
+```{r}
+touch_jags$BUGSoutput$summary[,'n.eff']
+```
+
+Ahora hacemos algunos gráficos para analizar las muestras posteriores:
+
+```{r}
+touch_mcmc <- as.mcmc(touch_jags)
+plot_post(touch_mcmc[, "omega"], comparison_value = 0.5)
+```
+
+De donde se concluye que el 96% de la población de practicantes no tienen una tasa de acierto general mayor al 50%. Este análisis se puede realizar para la tasa de acierto del sujeto #28:
+
+```{r}
+plot_post(touch_mcmc[, "theta[28]"], comparison_value = 0.5)
+```
+
+Diagnósticos del parámetro de precisión de la tasa de acierto individual:
+
+```{r}
+diag_mcmc(touch_mcmc, par = "kappa")
+```
+
+Gráfico de dispersión entre las muestras posteriores de $K$ y $\omega$:
+
+```{r}
+mcmc_pairs(touch_mcmc, pars = c("omega", "kappa"))
+```
+
+Muestreo a partir de la previa:
+
+```{r}
+TouchData_pre <- list(
+  Ntotal = 0,
+  Nsubj = length(unique(TherapeuticTouch$s)),
+  # must convert subjects to sequence 1:Nsubj
+  s = as.numeric(factor(TherapeuticTouch$s))
+)
+
+touch_jags_pre <-
+  jags.parallel(
+    data = TouchData_pre,
+    model = touch_model,
+    parameters.to.save = c("theta", "kappa", "omega"),
+    n.burnin = 1000,
+    n.iter = 41000,
+    n.chains = 5,
+    n.thin = 10,
+    jags.seed = 54321,
+    DIC = F
+  )
+```
+
+Diagnósticos:
+
+```{r}
+diag_mcmc(touch_mcmc, par = "theta[1]")
+mcmc_pairs(touch_mcmc, pars = c("omega", "kappa"))
+```
+
+
+## Introducción a STAN
+
+Carga de librería:
+
+```{r,,message=FALSE}
+library(rstan)
+rstan_options(auto_write = TRUE)
+```
+
+Para ilustrar el uso de STAN, se va a ajustar un modelo Bernoulli a datos sintéticos. El modelo está definido en el archivo moneda.stan en el repositorio de estas notas. 
+
+```{r}
+modelo_moneda <- stan_model(file = 'moneda.stan',verbose = T)
+modelo_moneda
+```
+
+Ajuste del modelo en condiciones similares a las que JAGS trabaja por default:
+
+```{r}
+simple_stanfit <- 
+  sampling(
+    modelo_moneda, 
+    data  = list(
+      N = 50,
+      y = c(rep(1, 15), rep(0, 35))
+    ),
+    chains = 3,     # default is 4
+    iter = 1000,    # default is 2000
+    warmup = 200    # default is half of iter
+  )
+```
+
+```{r}
+simple_stanfit
+```
+
+Algunos diagnósticos:
+
+```{r}
+gf_dens(~theta, data = posterior(simple_stanfit))
+simple_mcmc <- as.matrix(simple_stanfit)
+mcmc_areas(as.mcmc.list(simple_stanfit), prob = 0.9, pars = "theta")
+
+diag_mcmc(as.mcmc.list(simple_stanfit))
+```
 
