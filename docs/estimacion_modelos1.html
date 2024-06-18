@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./estimacion_modelos2.html" rel="next">
 <link href="./computacion_bayes.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -203,6 +203,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="./estimacion_modelos1.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 1)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimacion_modelos2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 2)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -361,18 +367,18 @@ Initializing model</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bern_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e5f7fbd7f.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/RtmptFdHKr/model651267e6394d.txt", fit using jags,
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
          mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
-theta      0.308   0.062  0.195  0.264  0.306  0.349  0.439 1.002  1700
-deviance  62.028   1.345 61.087 61.184 61.517 62.310 65.829 1.001  3000
+theta      0.308   0.064  0.193  0.262  0.306  0.350  0.440 1.001  3000
+deviance  62.076   1.430 61.087 61.194 61.546 62.372 66.074 1.001  3000
 
 For each parameter, n.eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 
 DIC info (using the rule, pD = var(deviance)/2)
-pD = 0.9 and DIC = 62.9
+pD = 1.0 and DIC = 63.1
 DIC is an estimate of expected predictive error (lower deviance is better).</code></pre>
 </div>
 </div>
@@ -444,8 +450,8 @@ DIC is an estimate of expected predictive error (lower deviance is better).</cod
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        ESS      mean    median      mode hdiMass    hdiLow   hdiHigh compVal
-theta 10002 0.3069837 0.3048172 0.2904594    0.95 0.1870631 0.4342261      NA
+<pre><code>        ESS      mean   median      mode hdiMass    hdiLow   hdiHigh compVal
+theta 10002 0.3077605 0.305555 0.3018493    0.95 0.1866602 0.4311935      NA
       pGtCompVal ROPElow ROPEhigh pLtROPE pInROPE pGtROPE
 theta         NA      NA       NA      NA      NA      NA</code></pre>
 </div>
@@ -461,10 +467,10 @@ theta         NA      NA       NA      NA      NA      NA</code></pre>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        ESS      mean    median      mode hdiMass    hdiLow   hdiHigh compVal
-theta 10002 0.3069837 0.3048172 0.2904594     0.9 0.2003451 0.4085078     0.5
-      pGtCompVal ROPElow ROPEhigh   pLtROPE   pInROPE pGtROPE
-theta 0.00209958    0.45     0.55 0.9840032 0.0159968       0</code></pre>
+<pre><code>        ESS      mean   median      mode hdiMass    hdiLow   hdiHigh compVal
+theta 10002 0.3077605 0.305555 0.3018493     0.9 0.2014597 0.4103378     0.5
+      pGtCompVal ROPElow ROPEhigh   pLtROPE    pInROPE pGtROPE
+theta 0.00229954    0.45     0.55 0.9836033 0.01639672       0</code></pre>
 </div>
 </div>
 <p>o bien se puede usar el paquete de github CalvinBayes (https://github.com/CalvinData/CalvinBayes) para hacer los mismos gráficos con el objeto obtenido en R2jags:</p>
@@ -514,7 +520,7 @@ Initializing model</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bern_jags2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e1f4d9b64.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/RtmptFdHKr/model6512152e0c66.txt", fit using jags,
  4 chains, each with 5000 iterations (first 1000 discarded)
  n.sims = 16000 iterations saved
          mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
@@ -780,12 +786,12 @@ Initializing model</code></pre>
 </div>
 <p>de donde es interesante observar la diferencia entre tasas de acierto entre individuos (que en este caso está ordenado del que tiene menos al que tiene más acierto). Es por esto que un modelo con tasa de acierto variable por individuos tendría sentido.</p>
 <p>Recuerden que el modelo jerárquico tendría la forma:</p>
-<p><span class="math display">\[\begin{align*}
+<span class="math display">\[\begin{align*}
 y_{i|s} &amp; \sim \text{Ber}(\theta_s)\\
 \theta_s &amp; \sim \text{Beta}(\omega(K-2)+1,(1-\omega)(K-2)+1)\\
 \omega &amp; \sim \text{Beta}(1,1)\\
 K-2 &amp; \sim \text{Gamma}(0.01,0.01)
-\end{align*}\]</span></p>
+\end{align*}\]</span>
 <p>donde esta última escogencia se hiperparámetros se basa en la aplicación de la siguiente función:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gamma_params</span>(<span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -846,7 +852,7 @@ Initializing model</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>touch_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/RtmpPjfSei/model6e9e3267ecb6.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/RtmptFdHKr/model651224f9fd64.txt", fit using jags,
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
@@ -1094,8 +1100,8 @@ model {
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 3e-06 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 1: Gradient evaluation took 1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1112,15 +1118,15 @@ Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
 Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0 seconds (Warm-up)
-Chain 1:                0.003 seconds (Sampling)
-Chain 1:                0.003 seconds (Total)
+Chain 1:  Elapsed Time: 0.001 seconds (Warm-up)
+Chain 1:                0.004 seconds (Sampling)
+Chain 1:                0.005 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 1e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
+Chain 2: Gradient evaluation took 2e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -1138,8 +1144,8 @@ Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 Chain 2: 
 Chain 2:  Elapsed Time: 0.001 seconds (Warm-up)
-Chain 2:                0.003 seconds (Sampling)
-Chain 2:                0.004 seconds (Total)
+Chain 2:                0.004 seconds (Sampling)
+Chain 2:                0.005 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
@@ -1162,9 +1168,9 @@ Chain 3: Iteration: 800 / 1000 [ 80%]  (Sampling)
 Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0 seconds (Warm-up)
-Chain 3:                0.003 seconds (Sampling)
-Chain 3:                0.003 seconds (Total)
+Chain 3:  Elapsed Time: 0.001 seconds (Warm-up)
+Chain 3:                0.004 seconds (Sampling)
+Chain 3:                0.005 seconds (Total)
 Chain 3: </code></pre>
 </div>
 </div>
@@ -1179,7 +1185,7 @@ post-warmup draws per chain=800, total post-warmup draws=2400.
 theta   0.31    0.00 0.07   0.19   0.26   0.31   0.35   0.44   742    1
 lp__  -32.64    0.03 0.80 -34.90 -32.79 -32.34 -32.16 -32.10   949    1
 
-Samples were drawn using NUTS(diag_e) at Tue Jun 11 11:13:28 2024.
+Samples were drawn using NUTS(diag_e) at Mon Jun 17 22:22:04 2024.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -1634,8 +1640,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./estimacion_modelos2.html" class="pagination-link" aria-label="Estimación de Modelos Bayesianos (Parte 2)">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 2)</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

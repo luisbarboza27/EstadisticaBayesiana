@@ -1,0 +1,942 @@
+# Estimación de Modelos Bayesianos (Parte 2)
+
+## Comparación de medias
+
+Cushny, A. R. and Peebles, A. R. (1905) "The action of optical isomers: II hyoscines." *The Journal of Physiology* 32, 501–510.
+
+### Datos
+
+Vamos a ver los datos. (`extra` = sueño adicional con el medicamento; `group` debería ser realmente `drug`, así que vamos a renombrarlo.)
+
+```{r}
+library(tidyverse)
+library(ggformula)
+library(dplyr)
+sleep <- 
+  datasets::sleep %>% rename(drug = group)
+gf_boxplot(extra ~ drug, data = sleep)
+ df_stats(extra ~ drug, data = sleep)
+```
+
+**Problema de estudio**: Se compararon los hábitos de sueño de los sujetos sin un medicamento para inducir el sueño y luego con él para ver cómo dos medicamentos diferentes afectaban de manera significativa el sueño.
+
+### Modelo
+
+El punto de partida tradicional para modelar las medias es asumir que cada grupo se muestrea de una distribución normal con media desconocida y una **desviación estándar común**. (Veremos que no es más difícil tener desviaciones estándar diferentes).
+
+Entonces, para dos grupos, nuestro modelo tiene tres parámetros: dos medias ((\mu\_1) y (\mu\_2)) y una desviación estándar (\sigma).
+
+Por supuesto, también necesitamos previas para estos parámetros. Una previa común para las medias es una distribución normal. Comenzaremos con un previa uniforme para la desviación estándar, pero discutiremos mejores alternativas en breve.
+
+Esto nos da el siguiente esquema para nuestro modelo:
+
+\[ \begin{align*}
+Y_{i|g} & \sim \text{Norm}(\mu_g, \sigma) \\
+\mu_g & \sim \text{Norm}(?, ?) \\
+\sigma & \sim \text{Unif}(?, ?)
+\end{align*} \]
+
+Los signos de interrogación se llenarán en función de consideraciones de la escala (orden de magnitud de los datos) y la cantidad de regularización que queremos hacer.
+
+Algunas alternativas:
+
+-   Media para la previa en (\mu\_g): 0
+    -   Corresponde a que el medicamento no tenga impacto en el sueño
+    -   Permite que el medicamento aumente o disminuya el sueño sin prejuicios
+    -   Cualquier otro número requeriría más justificación.
+-   Desviación estándar para la previa en (\mu\_g): 3
+    -   Indica que estamos 95% seguros de que el impacto de un medicamento estará entre -6 y 6 horas adicionales de sueño y que es muy poco probable que el medicamento cambie el sueño en 9 o más horas. Esta es una previa bastante débil (6 horas adicionales de sueño sería mucho).
+
+Planteamiento en JAGS:
+
+```{r}
+library(R2jags)
+sleep_model <- function() {
+  for (i in 1:Nobs) {
+    extra[i] ~ dnorm(mu[drug[i]], 1 / sigma^2)
+  }
+  for (d in 1:Ndrugs) {
+    mu[d] ~ dnorm(0, 1/3^2)          # sd = 3
+  }
+  sigma ~ dunif(2/1000, 2 * 1000)    
+  delta_mu    <- mu[2] - mu[1]
+  tau         <- 1 / sigma^2               
+}
+
+sleep_jags <- 
+  jags(
+    model = sleep_model,
+    parameters.to.save = c("mu", "sigma", "delta_mu"),
+    data = list(
+      extra = sleep$extra,
+      drug  = sleep$drug,
+      Nobs  = nrow(sleep),
+      Ndrugs = 2
+    ),
+    DIC = FALSE  # because we haven't discussed deviance yet
+  )
+```
+
+```{r}
+library(CalvinBayes)
+library(bayesplot)
+summary(sleep_jags)
+sleep_mcmc <- as.mcmc(sleep_jags)
+mcmc_areas(sleep_mcmc, prob = 0.95, regex_pars = "mu")
+mcmc_areas(sleep_mcmc, prob = 0.95, regex_pars = "sigma")
+mcmc_pairs(sleep_mcmc)
+```
+
+Cuantificamos la probabilidad posterior de que el tiempo medio de sueño fue superior en la segunda droga que en la primera:
+
+```{r}
+library(mosaic)
+prop( ~(delta_mu > 0), data = posterior(sleep_jags))
+```
+
+### Desviaciones estándar distintas para cada grupo:
+
+Si consideramos una desviación estándar distinta para cada grupo:
+
+```{r results = "hide"}
+sleep_model2 <- function() {
+  for (i in 1:Nobs) {
+    extra[i] ~ dnorm(mu[drug[i]], 1/sigma[drug[i]]^2)
+  }
+  for (d in 1:Ndrugs) {
+    mu[d]    ~  dnorm(0, 1/3^2)
+    sigma[d] ~  dunif(2/1000, 2 * 1000)  
+    tau[d]   <- 1 / sigma[d]^2
+  }
+  delta_mu    <- mu[2] - mu[1]
+  delta_sigma <- sigma[2] - sigma[1]
+}
+
+sleep_jags2 <- 
+  jags(
+    model = sleep_model2,
+    parameters.to.save = c("mu", "sigma", "delta_mu", "delta_sigma", "tau"),
+    data = list(
+      extra = sleep$extra,
+      drug  = sleep$drug,
+      Nobs  = nrow(sleep),
+      Ndrugs = 2
+    ),
+    DIC = FALSE
+  )
+```
+
+Resultados:
+
+```{r}
+summary(sleep_jags2)
+sleep_mcmc2 <- as.mcmc(sleep_jags2)
+mcmc_areas(sleep_mcmc2, prob = 0.95, regex_pars = "mu")
+mcmc_areas(sleep_mcmc2, prob = 0.95, regex_pars = "sigma")
+```
+
+Probabilidades posteriores:
+
+```{r}
+prop( ~(delta_mu > 0), data = posterior(sleep_jags2))
+prop( ~(delta_sigma > 0), data = posterior(sleep_jags2))
+hdi(sleep_jags2, pars = c("delta"))
+hdi(sleep_jags2)
+```
+
+Comparación con una prueba t de dos muestras:
+
+```{r}
+t.test(extra ~ drug, data = sleep)
+prop( ~(delta_mu < 0), data = posterior(sleep_jags2))
+```
+
+### ROPE (Región de Equivalencia Práctica)
+
+Saber que dos cosas no son iguales no es de mucha utilidad práctica si la diferencia es pequeña. Una forma de cuantificar esto es especificar una **región de equivalencia práctica** (ROPE, por sus siglas en inglés). Podríamos decidir, por ejemplo, que no nos interesan las diferencias de menos de 10 minutos (1/6 horas). Nuestra ROPE (para la diferencia en medias) sería entonces el intervalo $(-1/6, 1/6)$ y podríamos preguntarnos si hay evidencia de que la diferencia verdadera se encuentra fuera de ese intervalo. Esto podría verificarse viendo si un HDI (Intervalo de Alta Densidad) se encuentra completamente fuera de la ROPE.
+
+```{r}
+plot_post(posterior(sleep_jags2)$delta_mu, ROPE = c(-1/6, 1/6),
+          hdi_prob = 0.9)
+```
+
+### Comparaciones Pareadas
+
+Los datos en realidad contienen otra variable: `ID`. Resulta que las mismas diez personas fueron evaluadas con cada medicamento. Si estamos principalmente interesados en comparar los dos medicamentos, podríamos tomar la diferencia entre el sueño adicional con un medicamento y con el otro **para cada persona**.
+
+```{r}
+sleep_wide <-
+  datasets::sleep %>% 
+  rename(drug = group) %>%
+  mutate(drug = paste0("drug", drug)) %>%
+  spread(key = drug, value = extra) 
+sleep_wide
+sleep_wide <-
+  sleep_wide %>%
+  mutate(delta = drug2 - drug1)
+sleep_wide
+gf_boxplot(~ delta, data = sleep_wide)
+```
+
+```{r}
+sleep_model4 <- function() {
+  for (i in 1:Nsubj) {
+    delta[i] ~ dt(mu, 1 / sigma^2, nu)
+  }
+  mu         ~ dnorm(0, 2)
+  sigma      ~ dunif(2/1000, 2 * 1000)
+  nuMinusOne ~ dexp(1/29)
+  nu        <- nuMinusOne + 1
+  tau       <- 1 / sigma^2
+}
+
+sleep_jags4 <- 
+  jags(
+    model = sleep_model4,
+    parameters.to.save = c("mu", "sigma", "nu"),
+    data = list(
+      delta = sleep_wide$delta,
+      Nsubj = nrow(sleep_wide)
+    ),
+    n.iter = 5000,
+    DIC = FALSE)
+```
+
+```{r}
+summary(sleep_jags4)
+sleep_mcmc4 <- as.mcmc(sleep_jags4)
+mcmc_areas(sleep_mcmc4, prob = 0.95, pars = "mu")
+mcmc_areas(sleep_mcmc4, prob = 0.95, pars = "nu")
+mcmc_pairs(sleep_mcmc4)
+prop( ~(mu > 0), data = posterior(sleep_jags4))
+hdi(sleep_jags4, pars = c("mu"))
+hdi(sleep_jags4)
+```
+
+## Regresión Lineal Simple
+
+Carga de STAN:
+
+```{r}
+library(rstan)
+```
+
+### Ejemplo: Datos de Galton
+
+Dado que estamos viendo regresión, usemos un conjunto de datos históricos que formó parte de los orígenes de la historia de la regresión: los datos de Galton sobre la altura. Galton recopiló datos sobre la altura de los adultos y sus padres.
+
+```{r}
+library(mosaicData)
+head(Galton)
+```
+
+Para simplificar las cosas por el momento, consideremos solo a las mujeres y solo un hermano por familia.
+
+```{r}
+set.seed(54321)
+GaltonW <-
+  mosaicData::Galton %>% 
+  filter(sex == "F") %>%
+  group_by(family) %>%
+  sample_n(1)
+```
+
+**Problema de estudio**: Galton estaba interesado en cómo la altura de las personas se relaciona con la altura de sus padres. Combinó la altura de los padres en la "altura media de los padres", que era el promedio de ambos.
+
+```{r}
+GaltonW <- 
+  GaltonW %>%
+  mutate(midparent = (father + mother) / 2)
+gf_point(height ~ midparent, data = GaltonW, alpha = 0.5)
+```
+
+### Modelo de regresión
+
+#### Verosimilitud
+
+```{=tex}
+\begin{align*}
+y_{i} &\sim {\sf Norm}(\mu_i, \sigma) \\
+\mu_i &\sim \beta_0 + \beta_1 x_i
+\end{align*}
+```
+Algunas variaciones:
+
+-   Sustituir la distribución normal por otra (t es común).
+-   Permitir que las desviaciones estándar varíen con $x$ así como la media.
+-   Utilizar una relación funcional diferente entre la variable explicativa y la respuesta (regresión no lineal).
+
+La primera variación a veces se llama **regresión robusta** porque es más robusta ante observaciones inusuales.
+
+```{=tex}
+\begin{align*}
+y_{i} &\sim {\sf T}(\mu_i, \sigma, \nu) \\
+\mu_i &\sim \beta_0 + \beta_1 x_i
+\end{align*}
+```
+#### Previas
+
+Necesitamos previas para $\beta_0$, $\beta_1$, $\sigma$ y $\nu$.
+
+-   $\nu$: Ya hemos visto que una **Gamma trasladada** con media alrededor de 30 funciona bien como una previa genérica, dando a los datos espacio para alejarnos de la normalidad si es necesario.
+
+-   $\beta_1$: El MLE para $\beta_1$ es
+
+    $$ \hat\beta_1 = r \frac{SD_y}{SD_x}$$ por lo que tiene sentido tener una previa que cubra ampliamente el intervalo $(- \frac{SD_y}{SD_x}, \frac{SD_y}{SD_x})$.
+
+-   $\beta_0$: El MLE para $\beta_0$ es
+
+    $$ \hat\beta_0 \; = \;  \overline{y} - \hat \beta_1 \overline{x}  \; = \; \overline{y} - r \frac{SD_y}{SD_x} \cdot \overline{x}$$ por lo que podemos elegir un prior que cubra ampliamente el intervalo $(\overline{y} - \frac{SD_y}{SD_x} \cdot \overline{x}, \overline{y} - \frac{SD_y}{SD_x} \cdot \overline{x})$
+
+-   $\sigma$ mide la cantidad de variabilidad en las respuestas para un valor *fijo* de $x$. Una previa débilmente informativa debería cubrir el rango de valores razonables de $\sigma$ con bastante margen.
+
+Implementación en JAGS:
+
+```{r}
+galton_model <- function() {
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- beta0 + beta1 * x[i]
+  }
+  sigma ~ dunif(6/100, 6 * 100)
+  nuMinusOne ~ dexp(1/29)
+  nu <- nuMinusOne + 1
+  beta0 ~ dnorm(0, 1/100^2)   # 100 is order of magnitude of data
+  beta1 ~ dnorm(0, 1/4^2)     # expect roughly 1-1 slope
+}
+```
+
+```{r}
+galton_jags <-
+  jags(
+    model = galton_model,
+    data = list(y = GaltonW$height, x = GaltonW$midparent),
+    parameters.to.save = c("beta0", "beta1", "sigma", "nu"),
+    n.iter = 5000,
+    n.burnin = 2000,
+    n.chains = 4,
+    n.thin = 1
+  )
+```
+
+```{r}
+summary(galton_jags)
+mcmc_combo(as.mcmc(galton_jags))
+```
+
+Claramente la convergencia no es la más adecuada.
+
+```{r ch17-galton-problems}
+posterior(galton_jags) %>% 
+  gf_point(beta0 ~ beta1, color = ~ chain, alpha = 0.2, size = 0.4) %>%
+  gf_density2d(alpha = 0.5)
+posterior(galton_jags) %>% filter(iter <= 250, chain == "chain:1") %>%
+  gf_step(beta0 ~ beta1, alpha = 0.8, color = ~iter) %>%
+  gf_density2d(alpha = 0.2) %>%
+  gf_refine(scale_color_viridis_c()) %>%
+  gf_facet_wrap(~chain) #, scales = "free")
+```
+
+La correlación de los parámetros en la distribución posterior produce una cresta larga, estrecha y diagonal que el muestreador de Gibbs muestrea muy lentamente porque sigue chocando con el borde de la región.
+
+Entonces, ¿cómo solucionamos esto? Se supone que este es el modelo lineal *simple* después de todo. Hay dos formas en las que podríamos esperar solucionar nuestro problema.
+
+1.  **Reparametrizar el modelo** para que la correlación entre los parámetros (en la distribución posterior) se reduzca o elimine.
+
+2.  **Usar un algoritmo diferente** para el muestreo posterior.
+
+Reparametrización 1: **centrado**
+
+Podemos expresar este modelo como
+
+```{=tex}
+\begin{align*}
+y_{i} &\sim {\sf T}(\mu_i, \sigma, \nu) \\
+\mu_i &= \alpha_0 + \alpha_1 (x_i - \overline{x})
+\end{align*}
+```
+Dado que
+
+```{=tex}
+\begin{align*}
+\alpha_0 + \alpha_1 (x_i - \overline{x}) 
+&= (\alpha_0 - \alpha_1 \overline{x}) + \alpha_1 x_i 
+\end{align*}
+```
+Vemos que $\beta_0 = \alpha_0 - \alpha_1 \overline{x}$ y $\beta_1 = \alpha_1$. Por lo tanto, podemos recuperar fácilmente los parámetros originales si lo deseamos. (Y si estamos principalmente interesados en $\beta_1$, no se requiere ninguna traducción).
+
+Esta reparametrización mantiene la escala natural de los datos, y tanto $\alpha_0$ como $\alpha_1$ son fácilmente interpretados: $\alpha_0$ es la respuesta media cuando el predictor es el promedio de los valores del predictor *en los datos*.
+
+Modelación en JAGS:
+
+```{r}
+galtonC_model <- function() {
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- alpha0 + alpha1 * (x[i] - mean(x))
+  }
+  sigma ~ dunif(6/100, 6 * 100)
+  nuMinusOne ~ dexp(1/29)
+  nu <- nuMinusOne + 1
+  alpha0 ~ dnorm(0, 1/100^2)   # 100 is order of magnitude of data
+  alpha1 ~ dnorm(0, 1/4^2)     # expect roughly 1-1 slope
+  beta0 = alpha0 - alpha1 * mean(x)
+  beta1 = alpha1               # not necessary, but gives us both names
+}
+galtonC_jags <-
+  jags(
+    model = galtonC_model,
+    data = list(y = GaltonW$height, x = GaltonW$midparent),
+    parameters.to.save = c("beta0", "beta1", "alpha0", "alpha1", "sigma", "nu"),
+    n.iter = 5000,
+    n.burnin = 2000,
+    n.chains = 4,
+    n.thin = 1
+  )
+```
+
+```{r}
+summary(galtonC_jags)
+mcmc_combo(as.mcmc(galtonC_jags))
+```
+
+```{r}
+gf_point(beta1 ~ beta0, data = posterior(galtonC_jags), alpha = 0.1)
+gf_point(alpha1 ~ alpha0, data = posterior(galtonC_jags), alpha = 0.1)
+```
+
+### Análisis posterior
+
+#### Estimar parámetros
+
+Si estamos principalmente interesados en un parámetro de regresión (generalmente el parámetro de pendiente es mucho más interesante que el parámetro de intercepción), podemos usar un HDI para expresar nuestra estimación.
+
+```{r ch17-galtonC-estimate-params}
+hdi(posterior(galtonC_jags), pars = "beta1")
+mcmc_areas(as.mcmc(galtonC_jags), pars = "beta1", prob = 0.95)
+```
+
+Galton notó lo que vemos aquí: que la pendiente es menor que 1. Esto significa que los hijos de padres más altos que el promedio tienden a ser más bajos que sus padres y los hijos de padres por debajo del promedio tienden a ser más altos que sus padres. Se refirió a esto en su artículo como \["regresión hacia la mediocridad"\]. Resulta que esto no fue una característica especial de la herencia de la altura, sino una característica general de los modelos lineales.
+
+#### Hacer predicciones
+
+Supongamos que conocemos las alturas de un padre y una madre, a partir de las cuales calculamos la altura del padre y la madre ($x$). ¿Qué tan alto predeciríamos que serán sus hijas cuando sean adultas? Cada muestra posterior proporciona una respuesta describiendo una distribución t con `nu` grados de libertad, media $\beta_0 + \beta_1 x$ y desviación estándar $\sigma$.
+
+La distribución posterior de la altura promedio de las hijas nacidas de padres con una altura de padre y madre de $x = 70$ se muestra a continuación, junto con un HDI.
+
+```{r}
+posterior(galtonC_jags) %>% 
+  mutate(mean_daughter = beta0 + beta1 * 70) %>%
+  gf_dens(~mean_daughter)
+Galton_hdi <-
+  posterior(galtonC_jags) %>% 
+  mutate(mean_daughter = beta0 + beta1 * 70) %>%
+  hdi(pars = "mean_daughter")
+Galton_hdi
+```
+
+Entonces, en promedio, predeciríamos que las hijas tienen aproximadamente 66 o 67 pulgadas de altura.
+
+Podemos visualizar esto dibujando una línea para cada muestra posterior. El HDI debería abarcar el 95% intermedio de estos.
+
+```{r}
+gf_abline(intercept = ~beta0, slope = ~beta1, alpha = 0.01,
+          color = "steelblue", 
+          data = posterior(galtonC_jags) %>% sample_n(2000)) %>%
+  gf_point(height ~ midparent, data = GaltonW, 
+           inherit = FALSE, alpha = 0.5) %>%
+  gf_errorbar(lo + hi ~ 70, data = Galton_hdi, color = "skyblue", 
+              width = 0.2, size = 1.2, inherit = FALSE)
+```
+
+Pero esta puede no ser el tipo de predicción que queremos. Observa que las alturas de la mayoría de las hijas no están dentro de la banda azul en la imagen. Esa banda habla sobre la *media*, pero no tiene en cuenta cuánto varían los individuos alrededor de esa media.
+
+Aquí generamos alturas agregando ruido a la estimación dada por los valores de $\beta_0$ y $\beta_1$.
+
+```{r}
+posterior(galtonC_jags) %>%  
+  mutate(new_ht = beta0 + beta1 * 70 + rt(1200, df = nu) * sigma) %>%
+  gf_point(new_ht ~ 70, alpha = 0.01, size = 0.7, color = "steelblue") %>%
+  gf_point(height ~ midparent, data = GaltonW, 
+           inherit = FALSE, alpha = 0.5) 
+```
+
+```{r}
+Galton_hdi2 <-
+  posterior(galtonC_jags) %>% 
+  mutate(new_ht = beta0 + beta1 * 70 + rt(1200, df = nu) * sigma) %>%
+  hdi(regex_pars = "new") 
+Galton_hdi2
+```
+
+#### Verificación predictiva posterior con bayesplot
+
+El paquete bayesplot proporciona varios gráficos de verificación predictiva posterior (ppc). Estas funciones requieren dos entradas importantes:
+
+-   `y`: un vector de valores de respuesta, generalmente los valores del conjunto de datos original.
+-   `yrep`: una matriz de valores `y` simulados. Cada fila corresponde a una muestra posterior. Hay una columna para cada valor de `y`.
+
+Entonces, las filas de `yrep` se pueden comparar con `y` para ver si el modelo se comporta bien.
+
+Nota: Podemos calcular nuestros valores simulados $y$ utilizando valores de predictores que sean similares a los de nuestros datos o utilizando otros valores de predictores que elijamos. La segunda opción nos permite considerar situaciones contrafactuales. Para distinguir estos, algunas personas usan $y_rep$ para lo primero y $\tilde{y}$ para lo segundo.
+
+Ahora todo el trabajo está en crear la matriz `yrep`. Para simplificar eso, usaremos `CalvinBayes::posterior_calc()`. Lo haremos de dos maneras, una vez para los valores promedio de altura y otra vez para los valores individuales de altura (teniendo en cuenta la variabilidad de persona a persona según lo cuantificado por $\nu$ y $\sigma$).
+
+```{r}
+y_avg <- 
+  posterior_calc(
+    galtonC_jags, 
+    height ~ beta0 + beta1 * midparent, 
+    data = GaltonW)
+y_ind <- 
+  posterior_calc(
+    galtonC_jags, 
+    height ~ 
+      beta0 + beta1 * midparent + rt(nrow(GaltonW), df = nu) * sigma, 
+    data = GaltonW)
+```
+
+Los diferentes gráficos de verificación predictiva posterior comienzan con `ppc_`. Aquí tienes un ejemplo:
+
+```{r}
+ppc_intervals(GaltonW$height, y_avg, x = GaltonW$midparent)
+ppc_intervals(GaltonW$height, y_ind, x = GaltonW$midparent)
+```
+
+Podemos extraer los datos utilizados para crear el gráfico y hacer nuestro propio gráfico como queramos.
+
+```{r}
+plot_data <- 
+  ppc_ribbon_data(GaltonW$height, y_ind, x = GaltonW$midparent)
+glimpse(plot_data)
+plot_data %>%
+  gf_ribbon(ll + hh ~ x, fill = "steelblue") %>%
+  gf_ribbon(l + h ~ x, fill = "steelblue") %>%
+  gf_line(m ~ x, color = "steelblue") %>%
+  gf_point(y_obs ~ x, alpha = 0.5)
+plot_data %>%
+  gf_smooth(ll ~ x, color = "steelblue") %>%
+  gf_smooth(hh ~ x, color= "steelblue") %>%
+  gf_smooth(m ~ x, color= "steelblue") %>%
+  gf_point(y_obs ~ x, alpha = 0.5)
+```
+
+### Ajuste de modelos con Stan
+
+Centrar (o estandarizar) es suficiente para hacer que JAGS sea lo suficientemente eficiente como para usarlo. Pero también podemos usar Stan, y dado que Stan no se ve afectado por la correlación en el posterior de la manera en que lo hace JAGS, Stan funciona bien incluso sin reparametrizar el modelo.
+
+El código correspondiente del modelo anterior está en el archivo *galton.stan*
+
+```{r}
+modelo_galton <- stan_model(file = 'galton.stan',verbose = T)
+modelo_galton
+```
+
+Y ajustamos el modelo:
+
+```{r results = "hide"}
+library(rstan)
+galton_stanfit <-
+  sampling(
+    modelo_galton,
+    data = list(
+      N = nrow(GaltonW),
+      x = GaltonW$midparent,
+      y = GaltonW$height
+    ),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000
+  )  
+```
+
+Ten en cuenta que los parámetros de pendiente e intercepción siguen estando correlacionados en el posterior, pero esto no molesta a Stan de la manera en que molesta a JAGS.
+
+```{r}
+galton_stanfit
+gf_point(beta1 ~ beta0, data = posterior(galton_stanfit), alpha = 0.5)
+```
+
+```{r}
+mcmc_combo(as.mcmc.list(galton_stanfit), 
+           pars = c("beta0", "beta1", "sigma", "nu"))
+```
+
+### Modelo con dos interceptos
+
+En el ejemplo anterior, hemos trabajado solo con las mujeres, pero podemos construir un modelo que maneje hombres y mujeres al mismo tiempo. Uno de estos modelos es el modelo de "múltiples interceptos". En este modelo, ambos grupos (hombres y mujeres) tendrán la misma pendiente, pero los interceptos pueden diferir.
+
+```{r}
+library(rstan)
+set.seed(12345)
+modelo_galton2 <- stan_model(file = 'galton2.stan',verbose = T)
+GaltonBoth <- mosaicData::Galton %>% 
+  mutate(midparent = (father + mother)/2,
+         group = as.numeric(factor(sex)) - 1) %>%   # 0s y 1s
+  group_by(family) %>% 
+  sample_n(1)
+
+galton2_stanfit <-
+  sampling(
+    modelo_galton2,
+    data = list(
+      N = nrow(GaltonBoth),
+      x = GaltonBoth$midparent,
+      y = GaltonBoth$height,
+      g = GaltonBoth$group        # 0s y 1s
+    ),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000
+  )  
+```
+
+```{r}
+galton2_stanfit
+galton2_mcmc <- as.mcmc.list(galton2_stanfit)
+Post_galton2 <- posterior(galton2_stanfit)
+mcmc_combo(galton2_mcmc, regex_pars = c("beta", "sigma", "log10nu"))
+plot_post(Post_galton2$beta2, xlab = "beta2", hdi_prob = 0.95)
+```
+
+```{r}
+mcmc_areas(galton2_mcmc, regex_pars = "beta2", prob = 0.95)
+mcmc_areas(galton2_mcmc, regex_pars = "log10nu", prob = 0.95)
+```
+
+```{r ch17-galton2-ppc}
+head(GaltonBoth, 3) 
+yind <-
+  posterior_calc(
+    galton2_stanfit, 
+    yind ~ beta0 + beta1 * midparent + beta2 * group + 
+           rt(nrow(GaltonBoth), df = nu) * sigma,
+    data = GaltonBoth
+  )
+ppc_intervals_grouped(
+  GaltonBoth$height, yind, group = GaltonBoth$sex, 
+  x = GaltonBoth$midparent) 
+
+ppc_data <-
+  ppc_intervals_data(
+  GaltonBoth$height, yind, group = GaltonBoth$sex, 
+  x = GaltonBoth$midparent)
+
+glimpse(ppc_data)
+gf_ribbon(ll + hh ~ x, fill = ~ group, data = ppc_data) %>%
+  gf_ribbon(l + h ~ x, fill = ~ group, data = ppc_data) %>%
+  gf_point(y_obs ~ x, color =  ~ group, data = ppc_data) %>%
+  gf_facet_grid(group ~ .)
+```
+
+Entonces, ¿qué aprendemos de todos los resultados anteriores?
+
+-   Los diagnósticos sugieren que el modelo está convergiendo adecuadamente.
+-   Las comprobaciones de predicción posterior no muestran discrepancias importantes entre el modelo y los datos. (Por lo tanto, nuestra restricción de que las pendientes de las líneas sean iguales para hombres y mujeres parece estar bien).
+-   La "distribución del ruido" parece estar bien aproximada con una distribución normal (La mayoría de la distribución posterior para $\log_{10}(\nu)$ está por encima de 1.5.)
+
+```{r}
+hdi(posterior(galton2_stanfit), regex_pars = "nu", prob = 0.90)
+```
+
+-   La nueva característica de este modelo es $\beta_2$, que cuantifica la diferencia en las alturas *promedio* de hombres y mujeres *cuyos padres tienen las mismas alturas*. Aquí está el HDI del 95% para $\beta_2$ (junto con la pendiente y el intercepto):
+
+```{r}
+hdi(posterior(galton2_stanfit), regex_pars = "beta")
+```
+
+## Regresión Lineal Múltiple
+
+### Ejemplo: SAT
+
+¿Gastar más en educación resulta en puntajes SAT más altos? La prueba SAT es un examen estandarizado utilizado para la admisión a universidades en los Estados Unidos, que evalúa habilidades en lectura crítica, matemáticas y escritura. Datos de 1999 pueden usarse para explorar esta pregunta. Entre otras cosas, los datos incluyen el puntaje SAT promedio total (en una escala de 400 a 1600) y la cantidad de dinero gastado en educación (en miles de dólares por estudiante) en cada estado de Estados Unidos.
+
+Como primer intento, podríamos ajustar un modelo lineal (sat vs expend). Usando centrado, el núcleo del modelo se ve así:
+
+```         
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- alpha0 + alpha1 * (x[i] - mean(x))
+  }
+```
+
+`alpha1` mide cuánto mejora el rendimiento en el SAT por cada \$1000 gastados en educación en un estado. Para ajustar el modelo, necesitamos priors para nuestros cuatro parámetros:
+
+-   `nu`: Podemos usar nuestro exponencial desplazado habitual.
+-   `sigma`: {\sf Unif}(?, ?)
+-   `alpha0`: {\sf Norm}(?, ?)
+-   `alpha1`: {\sf Norm}(0, ?)
+
+Las interrogaciones dependen de la escala de nuestras covariables.
+
+```{r include = FALSE}
+library(brms)
+```
+
+```{r}
+sat_model <- function() {
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- alpha0 + alpha1 * (x[i] - mean(x))
+  }
+  nuMinusOne ~ dexp(1/29.0)
+  nu        <- nuMinusOne + 1
+  alpha0     ~ dnorm(alpha0mean, 1 / alpha0sd^2) 
+  alpha1     ~ dnorm(0, 1 / alpha1sd^2)
+  sigma      ~ dunif(sigma_lo, sigma_hi * 1000)
+  log10nu   <- log(nu) / log(10)    # log10(nu)
+  beta0     <- alpha0 - mean(x) * alpha1          # intercepto verdadero
+}
+```
+
+Entonces, ¿cómo llenamos los signos de interrogación para este conjunto de datos?
+
+-   `sigma`: {\sf Unif}(?,?)
+
+    Esto cuantifica la cantidad de variación de un estado a otro entre estados que tienen el mismo gasto por estudiante. La escala del SAT varía de 400 a 1600. Los promedios estatales no estarán cerca de los extremos de esta escala. Una ventana de 6 órdenes de magnitud alrededor de 1 da **{**\sf Unif}(0.001, 1000), ambos extremos de los cuales están bastante lejos de lo que creemos razonable.
+
+-   `alpha0`: {\sf Norm}(?, ?)
+
+    `alpha0` mide el puntaje SAT promedio para los estados que gastan una cantidad promedio. Dado que los SAT promedio están alrededor de 1000, algo como **{**\sf Norm}(1000, 100) parece razonable.
+
+-   `alpha1`: {\sf Norm}(0, ?)
+
+    Este es el más complicado. La pendiente de una línea de regresión no puede ser mucho más que $\frac{SD_y}{SD_x}$, por lo que podemos estimar esa relación o calcularla a partir de nuestros datos para guiar nuestra elección de prior.
+
+```{r results = "hide"}
+sat_jags <- 
+  jags(
+    model = sat_model,
+    data = list(
+      y = SAT$sat,
+      x = SAT$expend,
+      alpha0mean = 1000,    # SAT scores are roughly 500 + 500
+      alpha0sd   = 100,     # broad prior on scale of 400 - 1600
+      alpha1sd   = 4 * sd(SAT$sat) / sd(SAT$expend),
+      sigma_lo = 0.001,     # 3 o.m. less than 1
+      sigma_hi = 1000       # 3 o.m. greater than 1
+    ),
+    parameters.to.save = c("nu", "log10nu", "alpha0", "beta0", "alpha1", "sigma"),
+    n.iter   = 4000,
+    n.burnin = 1000,
+    n.chains = 3
+  ) 
+```
+
+```{r}
+sat_jags
+diag_mcmc(as.mcmc(sat_jags))
+mcmc_combo(as.mcmc(sat_jags))
+```
+
+Nuestro interés principal es `alpha1`.
+
+```{r}
+summary_df(sat_jags) %>% filter(param == "alpha1")
+plot_post(posterior(sat_jags)$alpha1, xlab = "alpha1", ROPE = c(-5, 5))
+hdi(posterior(sat_jags), pars = "alpha1", prob = 0.95)
+```
+
+Esto parece extraño: ¿Realmente podemos aumentar los puntajes SAT reduciendo la financiación a las escuelas? Quizás deberíamos observar los datos en bruto con nuestro modelo superpuesto.
+
+```{r}
+gf_point(sat ~ expend, data = SAT) %>%
+  gf_abline(slope = ~ alpha1, intercept = ~ beta0, 
+            data = posterior(sat_jags) %>% sample_n(2000),
+            alpha = 0.01, color = "steelblue")
+```
+
+Hay mucha dispersión, y la tendencia negativa está fuertemente influenciada por los 4 estados que gastan más (y tienen puntajes SAT relativamente bajos). Para solventar este problema vamos a incluir más covariables.
+
+Tenemos algunos datos adicionales sobre cada estado. Vamos a ajustar un modelo con dos predictores: `expend` y `frac`.
+
+```{r}
+SAT %>% head(4)
+```
+
+
+```{r}
+sat_model2 <- function() {
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- alpha0 + alpha1 * (x1[i] - mean(x1)) + alpha2 * (x2[i] - mean(x2))
+  }
+  nuMinusOne ~ dexp(1/29.0)
+  nu        <- nuMinusOne + 1
+  alpha0     ~ dnorm(alpha0mean, 1 / alpha0sd^2) 
+  alpha1     ~ dnorm(0, 1 / alpha1sd^2)
+  alpha2     ~ dnorm(0, 1 / alpha2sd^2)
+  sigma      ~ dunif(sigma_lo, sigma_hi * 1000)
+  beta0     <- alpha0 - mean(x1) * alpha1 - mean(x2) * alpha2
+  log10nu   <- log(nu) / log(10)
+}
+```
+
+```{r results = "hide"}
+sat2_jags <- 
+  jags(
+    model = sat_model2,
+    data = list(
+      y = SAT$sat,
+      x1 = SAT$expend,
+      x2 = SAT$frac,
+      alpha0mean = 1000,    # Los puntajes SAT son aproximadamente 500 + 500
+      alpha0sd   = 100,     # Prior amplio en la escala de 400 - 1600
+      alpha1sd   = 4 * sd(SAT$sat) / sd(SAT$expend),
+      alpha2sd   = 4 * sd(SAT$sat) / sd(SAT$frac),
+      sigma_lo = 0.001,
+      sigma_hi = 1000
+    ),
+    parameters.to.save = c("log10nu", "alpha0", "alpha1", "alpha2", "beta0","sigma"),
+    n.iter   = 4000,
+    n.burnin = 1000,
+    n.chains = 3
+  ) 
+```
+
+```{r ch18-sat2-jags-look, fig.height = 5}
+sat2_jags
+diag_mcmc(as.mcmc(sat2_jags))
+mcmc_combo(as.mcmc(sat2_jags))
+```
+
+```{r ch18-sat2-alpha1, fig.height = 4}
+summary_df(sat2_jags) %>% filter(param == "alpha1")
+plot_post(posterior(sat2_jags)$alpha1, xlab = "alpha1", ROPE = c(-5, 5))
+hdi(posterior(sat2_jags), pars = "alpha1", prob = 0.95)
+```
+
+```{r ch18-sat2-alpha2, fig.height = 4}
+summary_df(sat2_jags) %>% filter(param == "alpha2")
+plot_post(posterior(sat2_jags)$alpha2, xlab = "alpha2")
+hdi(posterior(sat2_jags), pars = "alpha2", prob = 0.95)
+```
+
+Las covariables parecen estar correlacionadas:
+
+```{r}
+gf_point(expend ~ frac, data = SAT) 
+```
+
+por lo que un modelo con interacción puede ser más apropiado:
+
+```{r}
+sat_model3 <- function() {
+  for (i in 1:length(y)) {
+    y[i]   ~ dt(mu[i], 1/sigma^2, nu)
+    mu[i] <- alpha0 + alpha1 * (x1[i] - mean(x1)) + alpha2 * (x2[i] - mean(x2)) +  alpha3 * (x3[i] - mean(x3))
+  }
+  nuMinusOne ~ dexp(1/29.0)
+  nu        <- nuMinusOne + 1
+  alpha0     ~ dnorm(alpha0mean, 1 / alpha0sd^2) 
+  alpha1     ~ dnorm(0, 1 / alpha1sd^2)
+  alpha2     ~ dnorm(0, 1 / alpha2sd^2)
+  alpha3     ~ dnorm(0, 1 / alpha3sd^2)
+  sigma      ~ dunif(sigma_lo, sigma_hi)
+  beta0     <- alpha0 - mean(x1) * alpha1 - mean(x2) * alpha2
+  log10nu   <- log(nu) / log(10)
+}
+```
+
+```{r results = "hide"}
+sat3_jags <- 
+  jags(
+    model = sat_model3,
+    data = list(
+      y = SAT$sat,
+      x1 = SAT$expend,
+      x2 = SAT$frac,
+      x3 = SAT$frac * SAT$expend,
+      alpha0mean = 1000,    # SAT scores are roughly 500 + 500
+      alpha0sd   = 100,     # broad prior on scale of 400 - 1600
+      alpha1sd   = 4 * sd(SAT$sat) / sd(SAT$expend),
+      alpha2sd   = 4 * sd(SAT$sat) / sd(SAT$frac),
+      alpha3sd   = 4 * sd(SAT$sat) / sd(SAT$frac * SAT$expend),
+      sigma_lo = 0.001,
+      sigma_hi = 1000
+    ),
+    parameters.to.save = c("log10nu", "alpha0", "alpha1", "alpha2", "alpha3", "beta0","sigma"),
+    n.iter   = 20000,
+    n.burnin = 1000,
+    n.chains = 3
+  ) 
+```
+
+```{r}
+sat3_jags
+diag_mcmc(as.mcmc(sat3_jags))
+mcmc_combo(as.mcmc(sat3_jags))
+mcmc_pairs(as.mcmc(sat3_jags), regex_pars = "alpha")
+```
+
+## Ajuste de un modelo lineal con brms
+
+El paquete brms proporciona una forma simplificada de describir modelos lineales generalizados y ajustarlos con Stan. La función `brm()` convierte una descripción concisa del modelo en código Stan, lo compila y lo ejecuta. Aquí hay un modelo lineal con `sat` como respuesta, y `expend`, `frac`, y una interacción como predictores.
+
+```{r results = "hide"}
+library(brms)  
+sat3_brm <- brm(sat ~ expend * frac, data = SAT)
+sat3_stan <- stanfit(sat3_brm)
+```
+
+Stan maneja mejor los parámetros correlacionados que JAGS.
+
+```{r}
+sat3_stan
+mcmc_combo(as.mcmc.list(sat3_stan))
+```
+
+Podemos usar `stancode()` para extraer el código Stan utilizado para ajustar el modelo.
+
+```{r}
+stancode(sat3_brm)
+```
+
+Podemos usar `standata()` para mostrar los datos que `brm()` pasa a Stan.
+
+```{r}
+standata(sat3_brm) %>% 
+  lapply(head)  # trunca la salida para ahorrar espacio
+```
+
+Supongamos que queremos construir un modelo que tenga el mismo prior y verosimilitud que nuestro modelo JAGS. Aquí están algunos valores que necesitaremos.
+
+```{r}
+4 * sd(SAT$sat) / sd(SAT$expend)
+4 * sd(SAT$sat) / sd(SAT$frac)
+4 * sd(SAT$sat) / sd(SAT$frac * SAT$expend)
+```
+
+Para usar una distribución t para la respuesta, usamos `family = student()`. Para establecer los priors, es útil saber cuáles serán los nombres de los parámetros y cuáles serían los priors predeterminados si no hacemos nada. (Si no se lista ningún prior, se usará un prior plano impropio.)
+
+```{r}
+get_prior(
+  sat ~ expend * frac, data = SAT,
+  family = student()   # distribución para la variable de respuesta
+)
+```
+
+Podemos comunicar los priors a `brm()` de la siguiente manera:
+
+```{r}
+sat3a_brm <- 
+  brm(
+    sat ~ expend * frac, data = SAT,
+    family = student(),
+    prior = c(
+        set_prior("normal(0,220)", coef = "expend"),
+        set_prior("normal(0,11)", coef = "frac"),
+        set_prior("normal(0,1.5)", coef = "expend:frac"),
+        set_prior("normal(1000, 100)", class = "Intercept"),
+        set_prior("exponential(1/30.0)", class = "nu"),
+        set_prior("uniform(0.001,1000)", class = "sigma")
+    )
+  )
+sat3a_stan <- stanfit(sat3a_brm)
+```
+
+```{r}
+sat3a_stan
+mcmc_combo(as.mcmc.list(sat3a_stan))
+```
+

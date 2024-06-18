@@ -297,13 +297,14 @@ Por lo tanto la probabilidad de que $H_0$ sea cierta es 0.9323 y la probabilidad
 
 **Contexto**: El Toque Terapéutico (TT) es una práctica de enfermería que se dice trata condiciones médicas manipulando un "campo de energía humano" con las manos de los practicantes. Este estudio tuvo como objetivo probar si los practicantes de TT pueden percibir este campo de energía. Veintiún practicantes con 1 a 27 años de experiencia en TT fueron evaluados en condiciones cegadas. Se les pidió que identificaran cuál de sus manos estaba más cerca de la mano del investigador, que se colocaba al azar mediante el lanzamiento de una moneda. Catorce practicantes fueron evaluados 10 veces cada uno, y siete fueron evaluados 20 veces cada uno. La capacidad de los practicantes para identificar correctamente la posición de la mano del investigador se comparó con una tasa de éxito del 50% esperada por casualidad.
 
-**Pregunta de Investigación**: ¿Las tasas de acierto para los practicantes será mayor al 50%? 
+**Pregunta de Investigación**: ¿Las tasas de acierto para los practicantes será mayor al 50%?
 
 Carga de datos:
 
 ```{r}
 head(TherapeuticTouch, 3)
 ```
+
 Las tasas de acierto empíricas para cada individuo se pueden visualizar de la siguiente forma:
 
 ```{r}
@@ -314,13 +315,14 @@ de donde es interesante observar la diferencia entre tasas de acierto entre indi
 
 Recuerden que el modelo jerárquico tendría la forma:
 
+```{=tex}
 \begin{align*}
 y_{i|s} & \sim \text{Ber}(\theta_s)\\
 \theta_s & \sim \text{Beta}(\omega(K-2)+1,(1-\omega)(K-2)+1)\\
 \omega & \sim \text{Beta}(1,1)\\
 K-2 & \sim \text{Gamma}(0.01,0.01) 
 \end{align*}
-
+```
 donde esta última escogencia se hiperparámetros se basa en la aplicación de la siguiente función:
 
 ```{r}
@@ -453,7 +455,6 @@ diag_mcmc(touch_mcmc, par = "theta[1]")
 mcmc_pairs(touch_mcmc, pars = c("omega", "kappa"))
 ```
 
-
 ## Introducción a STAN
 
 Carga de librería:
@@ -463,7 +464,7 @@ library(rstan)
 rstan_options(auto_write = TRUE)
 ```
 
-Para ilustrar el uso de STAN, se va a ajustar un modelo Bernoulli a datos sintéticos. El modelo está definido en el archivo moneda.stan en el repositorio de estas notas. 
+Para ilustrar el uso de STAN, se va a ajustar un modelo Bernoulli a datos sintéticos. El modelo está definido en el archivo moneda.stan en el repositorio de estas notas.
 
 ```{r}
 modelo_moneda <- stan_model(file = 'moneda.stan',verbose = T)
@@ -499,4 +500,3 @@ mcmc_areas(as.mcmc.list(simple_stanfit), prob = 0.9, pars = "theta")
 
 diag_mcmc(as.mcmc.list(simple_stanfit))
 ```
-
