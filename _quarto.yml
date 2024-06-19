@@ -14,6 +14,7 @@ book:
     - computacion_bayes.qmd
     - estimacion_modelos1.qmd
     - estimacion_modelos2.qmd
+    - estimacion_modelos3.qmd
     - references.qmd
     
 bibliography: references.bib

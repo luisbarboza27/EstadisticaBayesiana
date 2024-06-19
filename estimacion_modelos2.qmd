@@ -754,7 +754,6 @@ Tenemos algunos datos adicionales sobre cada estado. Vamos a ajustar un modelo c
 SAT %>% head(4)
 ```
 
-
 ```{r}
 sat_model2 <- function() {
   for (i in 1:length(y)) {
@@ -939,4 +938,3 @@ sat3a_stan <- stanfit(sat3a_brm)
 sat3a_stan
 mcmc_combo(as.mcmc.list(sat3a_stan))
 ```
-
