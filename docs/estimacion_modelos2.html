@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./estimacion_modelos3.html" rel="next">
 <link href="./estimacion_modelos1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -209,6 +209,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="./estimacion_modelos2.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 2)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimacion_modelos3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 3)</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -465,10 +471,10 @@ Attaching package: 'CalvinBayes'</code></pre>
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
          mu.vect sd.vect   2.5%   25%   50%   75% 97.5%  Rhat n.eff
-delta_mu   1.514   0.896 -0.286 0.934 1.547 2.101 3.242 1.002  3000
-mu[1]      0.719   0.632 -0.531 0.286 0.724 1.136 1.930 1.001  3000
-mu[2]      2.233   0.648  0.923 1.824 2.228 2.649 3.480 1.001  3000
-sigma      2.039   0.365  1.454 1.775 1.996 2.258 2.885 1.003   850</code></pre>
+delta_mu   1.504   0.901 -0.272 0.924 1.508 2.083 3.272 1.001  3000
+mu[1]      0.723   0.641 -0.530 0.312 0.718 1.126 1.994 1.001  3000
+mu[2]      2.227   0.622  0.926 1.823 2.228 2.641 3.395 1.001  3000
+sigma      2.048   0.369  1.474 1.785 1.998 2.265 2.873 1.005   410</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sleep_mcmc <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(sleep_jags)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(sleep_mcmc, <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">regex_pars =</span> <span class="st">"mu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -594,14 +600,14 @@ Attaching package: 'mosaic'</code></pre>
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
             mu.vect sd.vect   2.5%    25%   50%   75% 97.5%  Rhat n.eff
-delta_mu      1.481   0.981 -0.553  0.837 1.513 2.122 3.369 1.001  3000
-delta_sigma   0.268   0.891 -1.491 -0.241 0.231 0.765 2.124 1.006  3000
-mu[1]         0.705   0.643 -0.587  0.308 0.710 1.117 1.963 1.001  3000
-mu[2]         2.186   0.751  0.666  1.714 2.206 2.670 3.620 1.001  2600
-sigma[1]      2.076   0.583  1.282  1.659 1.972 2.340 3.495 1.002  1900
-sigma[2]      2.344   0.679  1.437  1.884 2.209 2.665 3.934 1.004  1000
-tau[1]        0.283   0.141  0.082  0.183 0.257 0.364 0.609 1.002  1900
-tau[2]        0.223   0.112  0.065  0.141 0.205 0.282 0.484 1.004  1000</code></pre>
+delta_mu      1.465   1.000 -0.615  0.852 1.486 2.122 3.365 1.001  3000
+delta_sigma   0.251   0.897 -1.503 -0.267 0.239 0.748 2.096 1.004   870
+mu[1]         0.707   0.653 -0.611  0.306 0.709 1.118 2.006 1.001  3000
+mu[2]         2.172   0.751  0.666  1.701 2.195 2.646 3.601 1.003  2100
+sigma[1]      2.084   0.605  1.269  1.672 1.963 2.363 3.604 1.002  3000
+sigma[2]      2.335   0.686  1.440  1.875 2.189 2.625 3.978 1.006   390
+tau[1]        0.283   0.143  0.077  0.179 0.260 0.358 0.621 1.002  3000
+tau[2]        0.224   0.109  0.063  0.145 0.209 0.284 0.482 1.006   390</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>sleep_mcmc2 <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(sleep_jags2)</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(sleep_mcmc2, <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">regex_pars =</span> <span class="st">"mu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -626,12 +632,12 @@ tau[2]        0.223   0.112  0.065  0.141 0.205 0.282 0.484 1.004  1000</code></
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop</span>( <span class="sc">~</span>(delta_mu <span class="sc">&gt;</span> <span class="dv">0</span>), <span class="at">data =</span> <span class="fu">posterior</span>(sleep_jags2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>prop_TRUE 
-0.9313333 </code></pre>
+0.9283333 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop</span>( <span class="sc">~</span>(delta_sigma <span class="sc">&gt;</span> <span class="dv">0</span>), <span class="at">data =</span> <span class="fu">posterior</span>(sleep_jags2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>prop_TRUE 
-0.6273333 </code></pre>
+    0.628 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hdi</span>(sleep_jags2, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"delta"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -641,30 +647,30 @@ tau[2]        0.223   0.112  0.065  0.141 0.205 0.282 0.484 1.004  1000</code></
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hdi</span>(sleep_jags2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           par          lo        hi prob chain
-1     delta_mu -0.31002813 3.5258596 0.95     1
-2     delta_mu -0.58403537 3.4175623 0.95     2
-3     delta_mu -0.46920553 3.3184710 0.95     3
-4  delta_sigma -1.65884403 2.0419410 0.95     1
-5  delta_sigma -1.49119963 2.2485091 0.95     2
-6  delta_sigma -1.22031281 1.9648398 0.95     3
-7        mu[1] -0.48699891 2.0134925 0.95     1
-8        mu[1] -0.59781972 1.9963228 0.95     2
-9        mu[1] -0.56654155 1.8347895 0.95     3
-10       mu[2]  0.83941898 3.6885670 0.95     1
-11       mu[2]  0.57439664 3.5707756 0.95     2
-12       mu[2]  0.78891482 3.6594392 0.95     3
-13    sigma[1]  1.16789343 3.4282741 0.95     1
-14    sigma[1]  1.25074100 3.3422105 0.95     2
-15    sigma[1]  1.17272244 3.0258651 0.95     3
-16    sigma[2]  1.29912840 3.6246450 0.95     1
-17    sigma[2]  1.30504880 3.8035711 0.95     2
-18    sigma[2]  1.29832108 3.5145432 0.95     3
-19      tau[1]  0.05591998 0.5561229 0.95     1
-20      tau[1]  0.07962254 0.5898826 0.95     2
-21      tau[1]  0.07993175 0.5637375 0.95     3
-22      tau[2]  0.04658374 0.4517959 0.95     1
-23      tau[2]  0.04414731 0.4505996 0.95     2
-24      tau[2]  0.05781056 0.4468488 0.95     3</code></pre>
+1     delta_mu -0.42916899 3.3958879 0.95     1
+2     delta_mu -0.43841097 3.6903099 0.95     2
+3     delta_mu -0.47902367 3.3569485 0.95     3
+4  delta_sigma -1.78814725 2.0722085 0.95     1
+5  delta_sigma -1.48567086 1.9934718 0.95     2
+6  delta_sigma -1.44612968 1.9262436 0.95     3
+7        mu[1] -0.62948924 1.8380521 0.95     1
+8        mu[1] -0.60592683 2.0782703 0.95     2
+9        mu[1] -0.54697367 2.0189645 0.95     3
+10       mu[2]  0.68648858 3.6563255 0.95     1
+11       mu[2]  0.86477453 3.6639031 0.95     2
+12       mu[2]  0.57237962 3.4360608 0.95     3
+13    sigma[1]  1.08678891 3.4499865 0.95     1
+14    sigma[1]  1.22152506 3.3496403 0.95     2
+15    sigma[1]  1.19640352 3.2401768 0.95     3
+16    sigma[2]  1.37994931 3.8579394 0.95     1
+17    sigma[2]  1.29662877 3.5625917 0.95     2
+18    sigma[2]  1.39009923 3.6987587 0.95     3
+19      tau[1]  0.04248336 0.5768080 0.95     1
+20      tau[1]  0.05097988 0.5330824 0.95     2
+21      tau[1]  0.06194363 0.5756741 0.95     3
+22      tau[2]  0.03103432 0.4190067 0.95     1
+23      tau[2]  0.05079998 0.4630146 0.95     2
+24      tau[2]  0.04720248 0.4356277 0.95     3</code></pre>
 </div>
 </div>
 <p>Comparación con una prueba t de dos muestras:</p>
@@ -686,7 +692,7 @@ mean in group 1 mean in group 2
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop</span>( <span class="sc">~</span>(delta_mu <span class="sc">&lt;</span> <span class="dv">0</span>), <span class="at">data =</span> <span class="fu">posterior</span>(sleep_jags2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> prop_TRUE 
-0.06866667 </code></pre>
+0.07166667 </code></pre>
 </div>
 </div>
 </section>
@@ -706,15 +712,15 @@ mean in group 1 mean in group 2
 <div class="cell-output cell-output-stdout">
 <pre><code>$posterior
       ESS     mean   median     mode
-var1 3000 1.481005 1.513207 1.734047
+var1 3000 1.464829 1.486302 1.666862
 
 $hdi
-  prob         lo      hi
-1  0.9 -0.1688969 3.00691
+  prob          lo      hi
+1  0.9 -0.05022473 3.23944
 
 $ROPE
-          lo        hi  P(&lt; ROPE) P(in ROPE) P(&gt; ROPE)
-1 -0.1666667 0.1666667 0.04866667 0.04333333     0.908</code></pre>
+          lo        hi P(&lt; ROPE) P(in ROPE) P(&gt; ROPE)
+1 -0.1666667 0.1666667     0.056 0.03866667 0.9053333</code></pre>
 </div>
 </div>
 </section>
@@ -808,9 +814,9 @@ Initializing model</code></pre>
  3 chains, each with 5000 iterations (first 2500 discarded), n.thin = 2
  n.sims = 3750 iterations saved
       mu.vect sd.vect  2.5%   25%    50%    75%  97.5%  Rhat n.eff
-mu      1.105   0.368 0.252 0.906  1.135  1.346  1.747 1.001  3800
-nu     21.684  26.066 1.308 4.446 11.673 29.393 99.611 1.004   640
-sigma   1.180   0.490 0.396 0.848  1.130  1.436  2.332 1.003   760</code></pre>
+mu      1.102   0.376 0.270 0.875  1.140  1.349  1.789 1.001  3000
+nu     21.976  25.564 1.331 4.569 12.257 30.024 92.348 1.003  1000
+sigma   1.203   0.506 0.399 0.863  1.145  1.463  2.385 1.002  1200</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>sleep_mcmc4 <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(sleep_jags4)</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(sleep_mcmc4, <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">pars =</span> <span class="st">"mu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -840,27 +846,27 @@ sigma   1.180   0.490 0.396 0.848  1.130  1.436  2.332 1.003   760</code></pre>
 <div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop</span>( <span class="sc">~</span>(mu <span class="sc">&gt;</span> <span class="dv">0</span>), <span class="at">data =</span> <span class="fu">posterior</span>(sleep_jags4))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>prop_TRUE 
-0.9890667 </code></pre>
+0.9933333 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hdi</span>(sleep_jags4, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"mu"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  par        lo       hi prob chain
-1  mu 0.3270903 1.799986 0.95     1
-2  mu 0.3527186 1.782928 0.95     2
-3  mu 0.3312891 1.753492 0.95     3</code></pre>
+1  mu 0.3098570 1.784371 0.95     1
+2  mu 0.4107900 1.884160 0.95     2
+3  mu 0.2549675 1.775744 0.95     3</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hdi</span>(sleep_jags4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    par        lo        hi prob chain
-1    mu 0.3270903  1.799986 0.95     1
-2    mu 0.3527186  1.782928 0.95     2
-3    mu 0.3312891  1.753492 0.95     3
-4    nu 1.0042849 79.192907 0.95     1
-5    nu 1.0035093 77.405855 0.95     2
-6    nu 1.0104257 68.979008 0.95     3
-7 sigma 0.3021670  2.114909 0.95     1
-8 sigma 0.2622193  2.010899 0.95     2
-9 sigma 0.3099302  2.186333 0.95     3</code></pre>
+1    mu 0.3098570  1.784371 0.95     1
+2    mu 0.4107900  1.884160 0.95     2
+3    mu 0.2549675  1.775744 0.95     3
+4    nu 1.0155811 74.410586 0.95     1
+5    nu 1.0056160 73.228221 0.95     2
+6    nu 1.0032844 77.723312 0.95     3
+7 sigma 0.3573697  2.251646 0.95     1
+8 sigma 0.2505344  2.056300 0.95     2
+9 sigma 0.2842914  2.229940 0.95     3</code></pre>
 </div>
 </div>
 </section>
@@ -1397,7 +1403,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   15 : #endif
   16 : // Code generated by stanc v2.32.2
   17 : #include &lt;stan/model/model_header.hpp&gt;
-  18 : namespace model5ad42f2ccaea__namespace {
+  18 : namespace model1f47162ba74f__namespace {
   19 : using stan::model::model_base_crtp;
   20 : using namespace stan::math;
   21 : stan::math::profile_map profiles__;
@@ -1419,7 +1425,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   37 :   " (in 'anon_model', line 14, column 2 to column 14)",
   38 :   " (in 'anon_model', line 15, column 9 to column 10)",
   39 :   " (in 'anon_model', line 15, column 2 to column 14)"};
-  40 : class model5ad42f2ccaea_ final : public model_base_crtp&lt;model5ad42f2ccaea_&gt; {
+  40 : class model1f47162ba74f_ final : public model_base_crtp&lt;model1f47162ba74f_&gt; {
   41 : private:
   42 :   int N;
   43 :   Eigen::Matrix&lt;double,-1,1&gt; y_data__;
@@ -1427,8 +1433,8 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   45 :   Eigen::Map&lt;Eigen::Matrix&lt;double,-1,1&gt;&gt; y{nullptr, 0};
   46 :   Eigen::Map&lt;Eigen::Matrix&lt;double,-1,1&gt;&gt; x{nullptr, 0};
   47 : public:
-  48 :   ~model5ad42f2ccaea_() {}
-  49 :   model5ad42f2ccaea_(stan::io::var_context&amp; context__, unsigned int
+  48 :   ~model1f47162ba74f_() {}
+  49 :   model1f47162ba74f_(stan::io::var_context&amp; context__, unsigned int
   50 :                      random_seed__ = 0, std::ostream* pstream__ = nullptr)
   51 :       : model_base_crtp(0) {
   52 :     int current_statement__ = 0;
@@ -1438,7 +1444,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   56 :     // suppress unused var warning
   57 :     (void) base_rng__;
   58 :     static constexpr const char* function__ =
-  59 :       "model5ad42f2ccaea__namespace::model5ad42f2ccaea_";
+  59 :       "model1f47162ba74f__namespace::model1f47162ba74f_";
   60 :     // suppress unused var warning
   61 :     (void) function__;
   62 :     local_scalar_t__ DUMMY_VAR__(std::numeric_limits&lt;double&gt;::quiet_NaN());
@@ -1507,7 +1513,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  125 :     num_params_r__ = 1 + 1 + 1 + 1;
  126 :   }
  127 :   inline std::string model_name() const final {
- 128 :     return "model5ad42f2ccaea_";
+ 128 :     return "model1f47162ba74f_";
  129 :   }
  130 :   inline std::vector&lt;std::string&gt; model_compile_info() const noexcept {
  131 :     return std::vector&lt;std::string&gt;{"stanc_version = stanc3 v2.32.2",
@@ -1529,7 +1535,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  147 :     // suppress unused var warning
  148 :     (void) DUMMY_VAR__;
  149 :     static constexpr const char* function__ =
- 150 :       "model5ad42f2ccaea__namespace::log_prob";
+ 150 :       "model1f47162ba74f__namespace::log_prob";
  151 :     // suppress unused var warning
  152 :     (void) function__;
  153 :     try {
@@ -1601,7 +1607,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  219 :     (void) DUMMY_VAR__;
  220 :     constexpr bool jacobian__ = false;
  221 :     static constexpr const char* function__ =
- 222 :       "model5ad42f2ccaea__namespace::write_array";
+ 222 :       "model1f47162ba74f__namespace::write_array";
  223 :     // suppress unused var warning
  224 :     (void) function__;
  225 :     try {
@@ -1866,7 +1872,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  484 :   }
  485 : };
  486 : }
- 487 : using stan_model = model5ad42f2ccaea__namespace::model5ad42f2ccaea_;
+ 487 : using stan_model = model1f47162ba74f__namespace::model1f47162ba74f_;
  488 : #ifndef USING_R
  489 : // Boilerplate
  490 : stan::model::model_base&amp;
@@ -1876,14 +1882,14 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  494 :   return *m;
  495 : }
  496 : stan::math::profile_map&amp; get_stan_profile_data() {
- 497 :   return model5ad42f2ccaea__namespace::profiles__;
+ 497 :   return model1f47162ba74f__namespace::profiles__;
  498 : }
  499 : #endif
  500 : #endif
  501 : 
- 502 : RCPP_MODULE(stan_fit4model5ad42f2ccaea__mod) {
+ 502 : RCPP_MODULE(stan_fit4model1f47162ba74f__mod) {
  503 :   class_&lt;rstan::stan_fit&lt;stan_model, boost::random::ecuyer1988&gt; &gt;(
- 504 :       "stan_fit4model5ad42f2ccaea_")
+ 504 :       "stan_fit4model1f47162ba74f_")
  505 : 
  506 :       .constructor&lt;SEXP, SEXP, SEXP&gt;()
  507 : 
@@ -1942,11 +1948,11 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  560 : 
  561 : // declarations
  562 : extern "C" {
- 563 : SEXP file5ad440df72f5( ) ;
+ 563 : SEXP file1f4759baef57( ) ;
  564 : }
  565 : 
  566 : // definition
- 567 : SEXP file5ad440df72f5() {
+ 567 : SEXP file1f4759baef57() {
  568 :  return Rcpp::wrap("anon_model");
  569 : }</code></pre>
 </div>
@@ -2032,7 +2038,7 @@ nuMinusOne    1
 nu            1
 lp__          1
 
-Samples were drawn using NUTS(diag_e) at Mon Jun 17 22:08:29 2024.
+Samples were drawn using NUTS(diag_e) at Sat Jun 22 22:23:57 2024.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -2091,7 +2097,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   15 : #endif
   16 : // Code generated by stanc v2.32.2
   17 : #include &lt;stan/model/model_header.hpp&gt;
-  18 : namespace model5ad477487001__namespace {
+  18 : namespace model1f476f9515fc__namespace {
   19 : using stan::model::model_base_crtp;
   20 : using namespace stan::math;
   21 : stan::math::profile_map profiles__;
@@ -2121,7 +2127,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   45 :   " (in 'anon_model', line 15, column 2 to column 14)",
   46 :   " (in 'anon_model', line 16, column 17 to column 18)",
   47 :   " (in 'anon_model', line 16, column 2 to column 20)"};
-  48 : class model5ad477487001_ final : public model_base_crtp&lt;model5ad477487001_&gt; {
+  48 : class model1f476f9515fc_ final : public model_base_crtp&lt;model1f476f9515fc_&gt; {
   49 : private:
   50 :   int N;
   51 :   Eigen::Matrix&lt;double,-1,1&gt; y_data__;
@@ -2130,8 +2136,8 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   54 :   Eigen::Map&lt;Eigen::Matrix&lt;double,-1,1&gt;&gt; y{nullptr, 0};
   55 :   Eigen::Map&lt;Eigen::Matrix&lt;double,-1,1&gt;&gt; x{nullptr, 0};
   56 : public:
-  57 :   ~model5ad477487001_() {}
-  58 :   model5ad477487001_(stan::io::var_context&amp; context__, unsigned int
+  57 :   ~model1f476f9515fc_() {}
+  58 :   model1f476f9515fc_(stan::io::var_context&amp; context__, unsigned int
   59 :                      random_seed__ = 0, std::ostream* pstream__ = nullptr)
   60 :       : model_base_crtp(0) {
   61 :     int current_statement__ = 0;
@@ -2141,7 +2147,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
   65 :     // suppress unused var warning
   66 :     (void) base_rng__;
   67 :     static constexpr const char* function__ =
-  68 :       "model5ad477487001__namespace::model5ad477487001_";
+  68 :       "model1f476f9515fc__namespace::model1f476f9515fc_";
   69 :     // suppress unused var warning
   70 :     (void) function__;
   71 :     local_scalar_t__ DUMMY_VAR__(std::numeric_limits&lt;double&gt;::quiet_NaN());
@@ -2220,7 +2226,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  144 :     num_params_r__ = 1 + 1 + 1 + 1 + 1;
  145 :   }
  146 :   inline std::string model_name() const final {
- 147 :     return "model5ad477487001_";
+ 147 :     return "model1f476f9515fc_";
  148 :   }
  149 :   inline std::vector&lt;std::string&gt; model_compile_info() const noexcept {
  150 :     return std::vector&lt;std::string&gt;{"stanc_version = stanc3 v2.32.2",
@@ -2242,7 +2248,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  166 :     // suppress unused var warning
  167 :     (void) DUMMY_VAR__;
  168 :     static constexpr const char* function__ =
- 169 :       "model5ad477487001__namespace::log_prob";
+ 169 :       "model1f476f9515fc__namespace::log_prob";
  170 :     // suppress unused var warning
  171 :     (void) function__;
  172 :     try {
@@ -2332,7 +2338,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  256 :     (void) DUMMY_VAR__;
  257 :     constexpr bool jacobian__ = false;
  258 :     static constexpr const char* function__ =
- 259 :       "model5ad477487001__namespace::write_array";
+ 259 :       "model1f476f9515fc__namespace::write_array";
  260 :     // suppress unused var warning
  261 :     (void) function__;
  262 :     try {
@@ -2623,7 +2629,7 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  547 :   }
  548 : };
  549 : }
- 550 : using stan_model = model5ad477487001__namespace::model5ad477487001_;
+ 550 : using stan_model = model1f476f9515fc__namespace::model1f476f9515fc_;
  551 : #ifndef USING_R
  552 : // Boilerplate
  553 : stan::model::model_base&amp;
@@ -2633,14 +2639,14 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  557 :   return *m;
  558 : }
  559 : stan::math::profile_map&amp; get_stan_profile_data() {
- 560 :   return model5ad477487001__namespace::profiles__;
+ 560 :   return model1f476f9515fc__namespace::profiles__;
  561 : }
  562 : #endif
  563 : #endif
  564 : 
- 565 : RCPP_MODULE(stan_fit4model5ad477487001__mod) {
+ 565 : RCPP_MODULE(stan_fit4model1f476f9515fc__mod) {
  566 :   class_&lt;rstan::stan_fit&lt;stan_model, boost::random::ecuyer1988&gt; &gt;(
- 567 :       "stan_fit4model5ad477487001_")
+ 567 :       "stan_fit4model1f476f9515fc_")
  568 : 
  569 :       .constructor&lt;SEXP, SEXP, SEXP&gt;()
  570 : 
@@ -2699,11 +2705,11 @@ PKG_CPPFLAGS =   -I"/home/luis/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/includ
  623 : 
  624 : // declarations
  625 : extern "C" {
- 626 : SEXP file5ad445a85e1a( ) ;
+ 626 : SEXP file1f471a3afc56( ) ;
  627 : }
  628 : 
  629 : // definition
- 630 : SEXP file5ad445a85e1a() {
+ 630 : SEXP file1f471a3afc56() {
  631 :  return Rcpp::wrap("anon_model");
  632 : }</code></pre>
 </div>
@@ -2748,15 +2754,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 11.227 seconds (Warm-up)
-Chain 1:                15.205 seconds (Sampling)
-Chain 1:                26.432 seconds (Total)
+Chain 1:  Elapsed Time: 10.727 seconds (Warm-up)
+Chain 1:                10.21 seconds (Sampling)
+Chain 1:                20.937 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000159 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.59 seconds.
+Chain 2: Gradient evaluation took 6.8e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.68 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -2773,15 +2779,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 15.381 seconds (Warm-up)
-Chain 2:                11.521 seconds (Sampling)
-Chain 2:                26.902 seconds (Total)
+Chain 2:  Elapsed Time: 9.988 seconds (Warm-up)
+Chain 2:                10.272 seconds (Sampling)
+Chain 2:                20.26 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 0.000132 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 1.32 seconds.
+Chain 3: Gradient evaluation took 5.4e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.54 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -2798,9 +2804,9 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 13.158 seconds (Warm-up)
-Chain 3:                9.654 seconds (Sampling)
-Chain 3:                22.812 seconds (Total)
+Chain 3:  Elapsed Time: 10.436 seconds (Warm-up)
+Chain 3:                8.342 seconds (Sampling)
+Chain 3:                18.778 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
@@ -2823,9 +2829,9 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 11.622 seconds (Warm-up)
-Chain 4:                12.732 seconds (Sampling)
-Chain 4:                24.354 seconds (Total)
+Chain 4:  Elapsed Time: 10.717 seconds (Warm-up)
+Chain 4:                10.258 seconds (Sampling)
+Chain 4:                20.975 seconds (Total)
 Chain 4: </code></pre>
 </div>
 </div>
@@ -2855,7 +2861,7 @@ log10nu       1
 nu            1
 lp__          1
 
-Samples were drawn using NUTS(diag_e) at Mon Jun 17 22:12:06 2024.
+Samples were drawn using NUTS(diag_e) at Sat Jun 22 22:27:02 2024.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -3060,7 +3066,7 @@ $ hh          &lt;dbl&gt; 72.26733, 69.97070, 73.30426, 73.58624, 73.37297, 68.6
 <div class="cell">
 <div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>sat_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/Rtmp0d30cr/model5ad4696cd1e5.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/Rtmpff4QT1/model1f472c9bd743.txt", fit using jags,
  3 chains, each with 4000 iterations (first 1000 discarded), n.thin = 3
  n.sims = 3000 iterations saved
           mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat
@@ -3206,7 +3212,7 @@ $ROPE
 <div class="cell">
 <div class="sourceCode cell-code" id="cb178"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb178-1"><a href="#cb178-1" aria-hidden="true" tabindex="-1"></a>sat2_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/Rtmp0d30cr/model5ad4630ec062.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/Rtmpff4QT1/model1f4766a81ca9.txt", fit using jags,
  3 chains, each with 4000 iterations (first 1000 discarded), n.thin = 3
  n.sims = 3000 iterations saved
          mu.vect sd.vect    2.5%     25%     50%      75%    97.5%  Rhat n.eff
@@ -3363,7 +3369,7 @@ $hdi
 <div class="cell">
 <div class="sourceCode cell-code" id="cb196"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb196-1"><a href="#cb196-1" aria-hidden="true" tabindex="-1"></a>sat3_jags</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inference for Bugs model at "/tmp/Rtmp0d30cr/model5ad417b7508f.txt", fit using jags,
+<pre><code>Inference for Bugs model at "/tmp/Rtmpff4QT1/model1f473afc5227.txt", fit using jags,
  3 chains, each with 20000 iterations (first 1000 discarded), n.thin = 19
  n.sims = 3000 iterations saved
           mu.vect sd.vect    2.5%      25%      50%      75%    97.5%  Rhat
@@ -3460,7 +3466,7 @@ Intercept      2802    1
 lprior         2509    1
 lp__           1593    1
 
-Samples were drawn using NUTS(diag_e) at Mon Jun 17 22:15:45 2024.
+Samples were drawn using NUTS(diag_e) at Sat Jun 22 22:30:07 2024.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -3623,8 +3629,8 @@ Warning occurred for prior
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 1.7e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.17 seconds.
+Chain 1: Gradient evaluation took 1.6e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.16 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -3641,9 +3647,9 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.36 seconds (Warm-up)
-Chain 1:                0.216 seconds (Sampling)
-Chain 1:                0.576 seconds (Total)
+Chain 1:  Elapsed Time: 0.352 seconds (Warm-up)
+Chain 1:                0.213 seconds (Sampling)
+Chain 1:                0.565 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
@@ -3666,9 +3672,9 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.314 seconds (Warm-up)
-Chain 2:                0.237 seconds (Sampling)
-Chain 2:                0.551 seconds (Total)
+Chain 2:  Elapsed Time: 0.31 seconds (Warm-up)
+Chain 2:                0.214 seconds (Sampling)
+Chain 2:                0.524 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
@@ -3691,15 +3697,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0.296 seconds (Warm-up)
-Chain 3:                0.203 seconds (Sampling)
-Chain 3:                0.499 seconds (Total)
+Chain 3:  Elapsed Time: 0.29 seconds (Warm-up)
+Chain 3:                0.197 seconds (Sampling)
+Chain 3:                0.487 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 1.2e-05 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+Chain 4: Gradient evaluation took 1.1e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -3716,9 +3722,9 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.27 seconds (Warm-up)
+Chain 4:  Elapsed Time: 0.264 seconds (Warm-up)
 Chain 4:                0.201 seconds (Sampling)
-Chain 4:                0.471 seconds (Total)
+Chain 4:                0.465 seconds (Total)
 Chain 4: </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb224"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb224-1"><a href="#cb224-1" aria-hidden="true" tabindex="-1"></a>sat3a_stan <span class="ot">&lt;-</span> <span class="fu">stanfit</span>(sat3a_brm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3751,7 +3757,7 @@ Intercept      3158    1
 lprior         2997    1
 lp__           1361    1
 
-Samples were drawn using NUTS(diag_e) at Mon Jun 17 22:19:38 2024.
+Samples were drawn using NUTS(diag_e) at Sat Jun 22 22:32:21 2024.
 For each parameter, n_eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor on split chains (at 
 convergence, Rhat=1).</code></pre>
@@ -4186,8 +4192,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./estimacion_modelos3.html" class="pagination-link" aria-label="Estimación de Modelos Bayesianos (Parte 3)">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Estimación de Modelos Bayesianos (Parte 3)</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
