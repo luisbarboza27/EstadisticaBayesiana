@@ -246,6 +246,7 @@ window.Quarto = {
   <li><a href="#diseño-de-parcela-dividida" id="toc-diseño-de-parcela-dividida" class="nav-link" data-scroll-target="#diseño-de-parcela-dividida"><span class="header-section-number">7.2.2</span> Diseño de Parcela Dividida</a></li>
   <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">7.2.3</span> Comparación de modelos</a></li>
   <li><a href="#medición-de-un-modelo-error-de-predicción" id="toc-medición-de-un-modelo-error-de-predicción" class="nav-link" data-scroll-target="#medición-de-un-modelo-error-de-predicción"><span class="header-section-number">7.2.4</span> Medición de un Modelo – Error de Predicción</a></li>
+  <li><a href="#uso-de-loo" id="toc-uso-de-loo" class="nav-link" data-scroll-target="#uso-de-loo"><span class="header-section-number">7.2.5</span> Uso de loo</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1140,213 +1141,245 @@ r^2 &amp;= 1 - \frac{SSE}{SST}
 \end{align}\]</span>
 <p>Esto es una aproximación porque nuestras muestras posteriores son solo una aproximación a la verdadera distribución posterior. Pero si el tamaño efectivo de la muestra de la posterior es grande, esta aproximación debería ser muy buena.</p>
 <p>Desafortunadamente, ambas medidas (<span class="math inline">\(MSE\)</span> y densidad predictiva logarítmica) tienen un problema. Miden qué tan bien el modelo se ajusta a los datos utilizados para ajustar el modelo, pero estamos más interesados en qué tan bien el modelo podría ajustarse a nuevos datos (generados por el mismo proceso aleatorio que generó los datos actuales). Esto lleva a <strong>sobreajuste</strong> y <strong>prefiere modelos más grandes y complejos</strong>, ya que la flexibilidad adicional de estos modelos hace que sea más fácil para ellos “ajustar los datos”.</p>
-<!-- ### Out-of-sample prediction error -->
-<!-- More interesting would be to measure how well the models would fit **new data**. -->
-<!-- This is referred to as **out-of-sample prediction**, in contrast to  -->
-<!-- **in-sample prediction**.   -->
-<!-- So let's consider how well our model predicts new data $\tilde y$ rather than -->
-<!-- the observed data $y$:  -->
-<!-- $$ -->
-<!-- \mathrm{lpd}(\theta; \tilde y)  -->
-<!-- = \log p(\tilde y \mid \theta) -->
-<!-- = \log \prod_{i = 1}^n p(\tilde y_i \mid \theta) -->
-<!-- = \sum_{i = 1}^n \log p(\tilde y_i \mid \theta) -->
-<!-- $$ -->
-<!-- which we can convert into a single number by plugging by posterior averaging: -->
-<!-- And since $\tilde y$ is not fixed (like $y$ was), we take an additional -->
-<!-- step and compute the expected value (average) of this quantity over the  -->
-<!-- distribution of $\tilde y_i$ to get the **expected log (pointwise) predictive density** for a new response $\tilde y_i$:[^20-2] -->
-<!-- [^20-2]: Technically, we should be computing the average using an integral -->
-<!-- instead of averaging over our posterior samples. But since this is a quantity -->
-<!-- we can't compute anyway, I've expressed this in terms of an average over -->
-<!-- our posterior samples. -->
-<!-- $$ -->
-<!-- \mathrm{elppd}  -->
-<!-- = -->
-<!-- \mathrm{E}\left(\sum_{i = 1}^n \log p_{\mathrm{post}}(\tilde y_i)\right) -->
-<!-- \approx -->
-<!-- \sum_{i = 1}^n \mathrm{E}\left(\log  -->
-<!-- \frac{1}{S} \sum_{s = 1}^S p(\tilde y_i \mid \theta^s))\right) -->
-<!-- $$ -->
-<!-- This expected value is taken over the true distribution of $\tilde y_i$ (which is a -->
-<!-- problem, stay tuned.) -->
-<!-- ### Approximating out-of-sample prediction error -->
-<!-- What we would ideally want (elppd), we cannot compute -->
-<!-- since it requires us to know the distribution of out-of-sample data  -->
-<!-- ($\tilde y_i$). -->
-<!-- This leads us to the following impossible set of goals for our ideal  -->
-<!-- measure of model (predictive) performance (borrowed from [@Gelman:2014]): -->
-<!-- * an **unbaised** and **accurate** measure  -->
-<!-- * of **out-of-sample prediction** error (elppd) -->
-<!-- * that will be valid over a **general** class of models, -->
-<!-- * and that **requires minimal computation** beyond that need to fit the model  -->
-<!-- in the first place. -->
-<!-- Here are three approaches to solving this problem -->
-<!-- 1. Use within-sample predictive accuracy. -->
-<!--     But this isn't ideal since it overestimates performace of the model -->
-<!--     (and more so for more complicated models). -->
-<!-- 2. Adjust within-sample predictive accuracy. -->
-<!--     Within-sample predictive accuracy will over-estimate out-of-sample predictive  -->
-<!--     accuracy. If we knew (or could estimate) by how much, we could adjust -->
-<!--     by that amount to eliminate (or reduce) the bias. Quantities like -->
-<!--     AIC (Aikeke's information criterion),  -->
-<!--     DIC (deviance information criterion),  -->
-<!--     and WAIC (widely applicable information criterion) -->
-<!--     take the approach of substracting something from lppd that  -->
-<!--     depends on the complexity of the model. -->
-<!-- 3. Use cross-validation -->
-<!--     The main idea here is to use some of the data to fit the model and the rest  -->
-<!--     of the data to evaluate prediction error. This is a poor person's version of  -->
-<!--     "out-of-sample".  We will focus on **leave one out** (LOO) cross validation  -->
-<!--     where we fit the model $n$ times, each time leaving out one row of the data -->
-<!--     and using the resulting model to predict the removed row. -->
-<!--     If we really needed to recompute the model $n$ times,  -->
-<!--     this would be too computationally expensive for large data sets and complex -->
-<!--     models.  But there are (more) efficient -->
-<!--     approximations to LOO-cv that make it doable. They are based on the idea -->
-<!--     that the posterior distribution using $y(-i)$ (all but row $i$ of the data) -->
-<!--     should usually be similar to the posterior distribution using $y$ (all of the data). -->
-<!--     So we can recycle the work done to compute our original posterior. -->
-<!--     The result is only an approximation, and it doesn't always work well,  -->
-<!--     so sometimes we have to recreate the posterior from scratch, at least for  -->
-<!--     some of the rows. -->
-<!-- The formulas for **estimated out-of-sample predictive density** -->
-<!-- \begin{align*} -->
-<!-- \widehat{\mathrm{elppd}}_{\mathrm{AIC}} -->
-<!--   &= \mathrm{lpd}(\hat\theta_{\mathrm{mle}}, y) - p_{\mathrm{AIC}} \\ -->
-<!-- \widehat{\mathrm{elppd}}_{\mathrm{DIC}}  -->
-<!--   &= \mathrm{lpd}(\hat\theta_{\mathrm{Bayes}}, y) - p_{\mathrm{DIC}} \\ -->
-<!-- \widehat{\mathrm{elppd}}_{\mathrm{WAIC}}  -->
-<!--   &= \mathrm{lppd} - p_{\mathrm{WAIC}} \\ -->
-<!-- \widehat{\mathrm{elppd}}_{\mathrm{LOO}}  -->
-<!--   &= \sum_{i=1}^n \log p_{\mathrm{post}(-i)}(y_i)  -->
-<!--   \approx \sum_{i=1}^n \log \left( \frac{1}{S} \sum_{s = 1}^S p(y_i \mid \theta^{is})\right) -->
-<!-- \end{align*} -->
-<!-- and the associated **effictive number of parameters**: -->
-<!-- \begin{align*} -->
-<!-- p_{\mathrm{AIC}}  &= \mbox{number of parameters in the model}\\ -->
-<!-- p_{\mathrm{DIC}}  &= 2 \mathrm{var}_{\mathrm{post}}(\log p(y \mid \theta)) \\ -->
-<!-- p_{\mathrm{WAIC}} &= 2 \mathrm{var}_{\mathrm{post}}(\sum_{i = 1}^n \log p(y_i \mid \theta)) \\ -->
-<!-- p_{\mathrm{LOO}}  &= \hat{\mathrm{llpd}} - \hat{\mathrm{llpd}}_{\mathrm{LOO}} \\ -->
-<!-- \end{align*} -->
-<!-- Notes -->
-<!-- 1. $\theta^{is}$ is the value of $\theta$ in row $s$ of the posterior distribution -->
-<!-- *when row $i$ has been removed from the data*.  What makes LOO practical is  -->
-<!-- that this can be approximated without refitting the model $n$ times. -->
-<!-- 1. AIC and DIC differ from WAIC and LOO in that they use a point estimate -->
-<!-- for $\theta$ (the maximum likelihood estimate for AIC and the  -->
-<!-- mode of the posterior distribution for DIC) rather than using the  -->
-<!-- full posterior distribution. -->
-<!-- 1. AIC penalizes a model 1 for each parameter.  This is correct for linear -->
-<!-- models with normal noise and uniform priors, but is not correct in general. -->
-<!-- You can think of DIC and WAIC as estimating the effective number of  -->
-<!-- parameters by looking at how much variation there is in $\log(p(y_i \mid \theta))$. -->
-<!-- The more this quantity changes with changes in $\theta$, the more flexible -->
-<!-- the model is (and the more it should be penalized). -->
-<!-- 1. LOO doesn't work by adusting for an estimated number of parameters; -->
-<!-- it attempts to estimate elppd directly. -->
-<!-- But we can reverse engineer things to get an estimated number of parameters -->
-<!-- by taking the difference between -->
-<!-- the (estimated) within-sample and out-of-sample predictive density. -->
-<!-- 1. LOO and WAIC are assymptotically equivalent (that is they give more  -->
-<!-- and more similar values as the sample size increases), but LOO typically -->
-<!-- performs a bit better on small data sets, so the authors of the loo package  -->
-<!-- recommend LOO over WAIC as the go-to measure for comparing models. -->
-<!-- 1. Historically, information criteria have been expressed on the "devaiance scale". -->
-<!-- To convert from log predictive density scale to deviance scale, we multiply by -2.  -->
-<!-- On the  deviance scale, smaller is better.  -->
-<!-- On the log predictive density scale, larger is better  -->
-<!-- (but the values are usually negative.) The `waic()` and `loo()` functions  -->
-<!-- compute both values. -->
-<!-- 1. The output from `loo()` and `waic()` labels things elpd rather than elppd. -->
-<!-- ## Using loo -->
-<!-- The loo package provides functions for computing WAIC and LOO estimates of  -->
-<!-- epld (and their information criterion counterparts). -->
-<!-- While the definitions are a bit involved,  -->
-<!-- using WAIC or LOO to compare models is relatively easy. -->
-<!-- WAIC can be faster, but LOO performs better (according to the authors of  -->
-<!-- the loo package). -->
-<!-- ```{r} -->
-<!-- library(loo) -->
-<!-- waic(fert4_brm) -->
-<!-- loo(fert4_brm) -->
-<!-- ``` -->
-<!-- Sometimes the LOO-PSIS (Pareto-smoothed importance sampling) approximation  -->
-<!-- method doesn't work well and `loo()` recommends refitting some of the models  -->
-<!-- from scratch. This is based on the shape parameter (k) of the Pareto distribution -->
-<!-- used to smooth the tails of the posterior. -->
-<!-- Let's allow `loo()` to run from scratch the models it thinks need it.  -->
-<!-- (This is still much faster than refitting a model for each row of the  -->
-<!-- data since we only start from scratch a small number of times. And we don't -->
-<!-- need to recompile the model, since that doesn't change; we just need to  -->
-<!-- generate posterior samples using a different data set.) -->
-<!-- If there are quite a number of these, `loo()` will suggest k-fold cross-validation -->
-<!-- instead of leave-one-out cross-validation. These leaves out multiple rows of -->
-<!-- data from each refit.  Since there are fewer models this way, it can exchange speed -->
-<!-- for accuracy. -->
-<!-- ```{r ch20-loo-reloo, cache = TRUE} -->
-<!-- fert4_loo <- loo(fert4_brm, reloo = TRUE) # refit as necessary -->
-<!-- ``` -->
-<!-- In this case, things didn't change that much when refitting the six "bad" models. -->
-<!-- ```{r ch20-loo4-reprise} -->
-<!-- fert4_loo -->
-<!-- plot(fert4_loo) -->
-<!-- fert4a_loo <- loo(fert4_brm) -->
-<!-- plot(fert4a_loo) -->
-<!-- ``` -->
-<!-- If we have multiple models, we can use `loo::compare()` to compare them based on -->
-<!-- WAIC or LOO. Before doing that, let's add one more model to our list. -->
-<!-- ```{r ch20-fert5, results = "hide", cache = TRUE} -->
-<!-- fert5_brm <- -->
-<!--   brm(Yield ~ Till + Fert + (1 | Field), data = SplitPlotAgri) -->
-<!-- ``` -->
-<!-- ```{r ch20-waic-all, results = "hide", cache = TRUE} -->
-<!-- library(loo) -->
-<!-- compare( -->
-<!--   waic(fert1_brm),  -->
-<!--   waic(fert2_brm), -->
-<!--   waic(fert4_brm), -->
-<!--   waic(fert5_brm) -->
-<!-- ) -->
-<!-- ``` -->
-<!-- ```{r ch20-loo2, cache = TRUE, results = "hide", cache = TRUE} -->
-<!-- fert1_loo <- loo(fert1_brm)  -->
-<!-- fert2_loo <- loo(fert2_brm)  -->
-<!-- fert5_loo <- loo(fert5_brm)  -->
-<!-- ``` -->
-<!-- Now we can compare our four models using LOO: -->
-<!-- ```{r ch20-loo3, cache = TRUE, resuls = "hide"} -->
-<!-- compare(fert1_loo, fert2_loo, fert4_loo, fert5_loo) -->
-<!-- ``` -->
-<!-- Important things to remember: -->
-<!-- 1. Estimated elpd and information criteria are not  -->
-<!-- meaningful on their own, they are only useful for **comparisons**. -->
-<!-- 2. Comparisons can only be made among models that are fit using the **same data** -->
-<!-- since the computed values depend on both the model and the data. -->
-<!-- 3. All of these methods are approximate. `loo()` and `waic()` provide  -->
-<!-- standard errors as well as estimates.  -->
-<!-- Use those to help determine whether differences between models -->
-<!-- are meaningful or not. -->
-<!-- 4. `p_loo` (effective number of parameters) is also an interesting measure. -->
-<!-- If this estimate does not seem to correspond to roughly the number of free  -->
-<!-- parameters in your model, that is usually a sign that something is wrong.  (Perhaps -->
-<!-- the model is mis-specified.) Keep in mind that multi-level models or models  -->
-<!-- with strong priors place some restrictions on the parameters. This can lead -->
-<!-- to an effective number of parameters that is smaller than the actual number  -->
-<!-- of parameters. -->
-<!-- 5. This is only one aspect of how a model is performing. There may be good  -->
-<!-- reasons to prefer a model with lower (estimated) log predictive density. -->
-<!-- Posterior predictive checks, theory, interpretability, etc. can all be part -->
-<!-- of deciding which models are better. But these methods can help us avoid  -->
-<!-- selecting models that only look good because they are overfitting. -->
-<!--     Note: Sometimes the best solution is to create a new model that combines -->
-<!--     elements from models tried along the way. -->
-<!-- 6. Beware of "model hacking." If you try enough models, you might stumble across -->
-<!-- something. But it might not be meaningful. Choose models with some thought, don't -->
-<!-- just keep trying models in hopes that one of them will produce something interesting. -->
-
-
 </section>
+<section id="error-de-predicción-fuera-de-muestra" class="level4" data-number="7.2.4.5">
+<h4 data-number="7.2.4.5" class="anchored" data-anchor-id="error-de-predicción-fuera-de-muestra"><span class="header-section-number">7.2.4.5</span> Error de predicción fuera de muestra</h4>
+<p>Sería más interesante medir qué tan bien se ajustan los modelos a <strong>nuevos datos</strong>. Esto se conoce como <strong>predicción fuera de muestra</strong>, en contraste con <strong>predicción dentro de la muestra</strong>.</p>
+<p>Así que consideremos qué tan bien nuestro modelo predice nuevos datos <span class="math inline">\(\tilde y\)</span> en lugar de los datos observados <span class="math inline">\(y\)</span>:</p>
+<p>$$ (; y)</p>
+<p>= p(y )</p>
+<p>= _{i = 1}^n p(y_i )</p>
+<p>= _{i = 1}^n p(y_i ) $$</p>
+<p>lo cual podemos convertir en un solo número promediando por el posterior:</p>
+<p>$$</p>
+<p>=</p>
+<p>(<em>{i = 1}^n p</em>{}(y_i))</p>
+<p>_{i = 1}^n (</p>
+<p> _{s = 1}^S p(y_i ^s))</p>
+<p>$$</p>
+</section>
+<section id="aproximación-del-error-de-predicción-fuera-de-muestra" class="level4" data-number="7.2.4.6">
+<h4 data-number="7.2.4.6" class="anchored" data-anchor-id="aproximación-del-error-de-predicción-fuera-de-muestra"><span class="header-section-number">7.2.4.6</span> Aproximación del error de predicción fuera de muestra</h4>
+<p>Lo que idealmente querríamos (elppd), no podemos calcularlo porque requeriría conocer la distribución de los datos fuera de muestra (<span class="math inline">\(\tilde y_i\)</span>).</p>
+<p>Aquí hay tres enfoques para resolver este problema:</p>
+<ol type="1">
+<li><p>Usar precisión predictiva dentro de la muestra.</p>
+<p>Pero esto no es ideal porque sobreestima el rendimiento del modelo (y más aún para modelos más complicados).</p></li>
+<li><p>Ajustar la precisión predictiva dentro de la muestra.</p>
+<p>La precisión predictiva dentro de la muestra sobreestimará la precisión predictiva fuera de muestra. Si supiéramos (o pudiéramos estimar) cuánto, podríamos ajustar esa cantidad para eliminar (o reducir) el sesgo. Cantidades como</p>
+<ul>
+<li><p>AIC (criterio de información de Aikeke),</p></li>
+<li><p>DIC (criterio de información de devianza),</p></li>
+<li><p>y WAIC (criterio de información ampliamente aplicable)</p></li>
+</ul>
+<p>adoptan el enfoque de restar algo de lppd que depende de la complejidad del modelo.</p></li>
+<li><p>Usar validación cruzada.</p>
+<p>La idea principal aquí es usar parte de los datos para ajustar el modelo y el resto de los datos para evaluar el error de predicción. Nos centraremos en la validación cruzada de “dejar uno fuera” (LOO) donde ajustamos el modelo <span class="math inline">\(n\)</span> veces, dejando fuera una fila de datos cada vez y usando el modelo resultante para predecir la fila eliminada.</p>
+<p><strong>LOO-cv</strong> que hacen que sea factible. Se basan en la idea de que la distribución posterior usando <span class="math inline">\(y(-i)\)</span> (todos menos la fila <span class="math inline">\(i\)</span> de los datos) suele ser similar a la distribución posterior usando <span class="math inline">\(y\)</span> (todos los datos).</p></li>
+</ol>
+<p>Las fórmulas para <strong>densidad predictiva estimada fuera de muestra</strong> son:</p>
+<p><span class="math display">\[\begin{align*}
+\widehat{\mathrm{elppd}}_{\mathrm{AIC}}
+  &amp;= \mathrm{lpd}(\hat\theta_{\mathrm{mle}}, y) - p_{\mathrm{AIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{DIC}}
+  &amp;= \mathrm{lpd}(\hat\theta_{\mathrm{Bayes}}, y) - p_{\mathrm{DIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{WAIC}}
+  &amp;= \mathrm{lppd} - p_{\mathrm{WAIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{LOO}}
+  &amp;= \sum_{i=1}^n \log p_{\mathrm{post}(-i)}(y_i)
+  \approx \sum_{i=1}^n \log \left( \frac{1}{S} \sum_{s = 1}^S p(y_i \mid \theta^{is})\right)
+\end{align*}\]</span></p>
+<p>y los correspondientes <strong>números efectivos de parámetros</strong> son:</p>
+<p><span class="math display">\[\begin{align*}
+p_{\mathrm{AIC}}  &amp;= \text{número de parámetros en el modelo} \\
+p_{\mathrm{DIC}}  &amp;= 2 \mathrm{var}_{\mathrm{post}}(\log p(y \mid \theta)) \\
+p_{\mathrm{WAIC}} &amp;= 2 \mathrm{var}_{\mathrm{post}}(\sum_{i = 1}^n \log p(y_i \mid \theta)) \\
+p_{\mathrm{LOO}}  &amp;= \hat{\mathrm{llpd}} - \hat{\mathrm{llpd}}_{\mathrm{LOO}} \\
+\end{align*}\]</span></p>
+<p>Notas:</p>
+<ol type="1">
+<li><p><span class="math inline">\(\theta^{is}\)</span> es el valor de <span class="math inline">\(\theta\)</span> en la fila <span class="math inline">\(s\)</span> de la distribución posterior <em>cuando se ha eliminado la fila <span class="math inline">\(i\)</span> de los datos</em>. Lo que hace práctico a LOO es que esto puede aproximarse sin reajustar el modelo <span class="math inline">\(n\)</span> veces.</p></li>
+<li><p>AIC y DIC difieren de WAIC y LOO en que utilizan una estimación puntual para <span class="math inline">\(\theta\)</span> (el estimador de máxima verosimilitud para AIC y la moda de la distribución posterior para DIC) en lugar de usar la distribución posterior completa.</p></li>
+<li><p>AIC penaliza un modelo con 1 por cada parámetro. Esto es correcto para modelos lineales con ruido normal y priors uniformes, pero no es correcto en general.</p></li>
+<li><p>LOO y WAIC son asintóticamente equivalentes (es decir, dan valores más y más similares a medida que aumenta el tamaño de la muestra), pero LOO típicamente funciona un poco mejor en conjuntos de datos pequeños, por lo que los autores del paquete loo recomiendan LOO sobre WAIC como la medida principal para comparar modelos.</p></li>
+<li><p>Históricamente, los criterios de información se han expresado en la “escala de devianza”. Para convertir de la escala de densidad predictiva logarítmica a la escala de devianza, multiplicamos por -2.</p></li>
+</ol>
+<p>En la escala de devianza, más pequeño es mejor. En la escala de densidad predictiva logarítmica, más grande es mejor (aunque los valores suelen ser negativos). Las funciones <code>waic()</code> y <code>loo()</code> calculan ambos valores.</p>
+</section>
+</section>
+<section id="uso-de-loo" class="level3" data-number="7.2.5">
+<h3 data-number="7.2.5" class="anchored" data-anchor-id="uso-de-loo"><span class="header-section-number">7.2.5</span> Uso de loo</h3>
+<p>El paquete loo proporciona funciones para calcular estimaciones de WAIC y LOO de elpd (y sus contrapartes de criterios de información).</p>
+<p>Aunque las definiciones son algo complejas, comparar modelos usando WAIC o LOO es relativamente sencillo. Según los autores del paquete loo, WAIC puede ser más rápido, pero LOO ofrece un mejor rendimiento.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(loo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is loo version 2.7.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/loo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- As of v2.0.0 loo defaults to 1 core but we recommend using as many as possible. Use the 'cores' argument or set options(mc.cores = NUM_CORES) for an entire session. </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">waic</span>(fert4_brm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 
+21 (21.2%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Computed from 4000 by 99 log-likelihood matrix.
+
+          Estimate   SE
+elpd_waic   -331.3  7.5
+p_waic        30.7  3.8
+waic         662.6 14.9
+
+21 (21.2%) p_waic estimates greater than 0.4. We recommend trying loo instead. </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loo</span>(fert4_brm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Found 4 observations with a pareto_k &gt; 0.7 in model 'fert4_brm'. We recommend to set
+'moment_match = TRUE' in order to perform moment matching for problematic observations.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Computed from 4000 by 99 log-likelihood matrix.
+
+         Estimate   SE
+elpd_loo   -334.9  7.9
+p_loo        34.2  4.3
+looic       669.7 15.8
+------
+MCSE of elpd_loo is NA.
+MCSE and ESS estimates assume MCMC draws (r_eff in [0.4, 1.5]).
+
+Pareto k diagnostic values:
+                         Count Pct.    Min. ESS
+(-Inf, 0.7]   (good)     95    96.0%   128     
+   (0.7, 1]   (bad)       3     3.0%   &lt;NA&gt;    
+   (1, Inf)   (very bad)  1     1.0%   &lt;NA&gt;    
+See help('pareto-k-diagnostic') for details.</code></pre>
+</div>
+</div>
+<p>A veces, el método de aproximación LOO-PSIS (importancia de muestreo suavizado de Pareto) no funciona bien y <code>loo()</code> recomienda reajustar algunos modelos desde cero. Esto se basa en el parámetro de forma (k) de la distribución de Pareto utilizada para suavizar las colas de la distribución posterior.</p>
+<p>Permitamos que <code>loo()</code> vuelva a ajustar los modelos que considere necesario.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>fert4_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(fert4_brm, <span class="at">reloo =</span> <span class="cn">TRUE</span>) <span class="co"># reajuste según sea necesario</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>4 problematic observation(s) found.
+The model will be refit 4 times.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Fitting model 1 out of 4 (leaving out observation 15)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Fitting model 2 out of 4 (leaving out observation 57)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Fitting model 3 out of 4 (leaving out observation 78)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Fitting model 4 out of 4 (leaving out observation 97)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+</div>
+<p>En este caso, no hubo cambios significativos al reajustar los seis modelos “problemáticos”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>fert4_loo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Computed from 4000 by 99 log-likelihood matrix.
+
+         Estimate   SE
+elpd_loo   -334.6  7.8
+p_loo        34.0  4.2
+looic       669.3 15.7
+------
+MCSE of elpd_loo is 0.3.
+MCSE and ESS estimates assume MCMC draws (r_eff in [0.4, 1.5]).
+
+All Pareto k estimates are good (k &lt; 0.7).
+See help('pareto-k-diagnostic') for details.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fert4_loo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos3_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>fert4a_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(fert4_brm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Found 4 observations with a pareto_k &gt; 0.7 in model 'fert4_brm'. We recommend to set
+'moment_match = TRUE' in order to perform moment matching for problematic observations.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fert4a_loo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos3_files/figure-html/unnamed-chunk-31-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Si tenemos múltiples modelos, podemos usar <code>loo::compare()</code> para compararlos según WAIC o LOO. Antes de hacerlo, agreguemos otro modelo a nuestra lista.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>fert5_brm <span class="ot">&lt;-</span> <span class="fu">brm</span>(Yield <span class="sc">~</span> Till <span class="sc">+</span> Fert <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Field), <span class="at">data =</span> SplitPlotAgri)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a>fert1_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(fert1_brm)</span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a>fert2_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(fert2_brm)</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a>fert5_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(fert5_brm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Found 4 observations with a pareto_k &gt; 0.7 in model 'fert5_brm'. We recommend to set
+'moment_match = TRUE' in order to perform moment matching for problematic observations.</code></pre>
+</div>
+</div>
+<p>Ahora podemos comparar nuestros cuatro modelos utilizando LOO:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(fert1_loo, fert2_loo, fert4_loo, fert5_loo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 'compare' is deprecated.
+Use 'loo_compare' instead.
+See help("Deprecated")</code></pre>
+</div>
+</div>
+<p>Aspectos importantes a recordar:</p>
+<ol type="1">
+<li><p>Los elpd estimados y los criterios de información no son significativos por sí solos; solo son útiles para <strong>comparaciones</strong>.</p></li>
+<li><p>Las comparaciones solo pueden hacerse entre modelos ajustados con los <strong>mismos datos</strong>, ya que los valores calculados dependen tanto del modelo como de los datos.</p></li>
+<li><p>Todos estos métodos son aproximados. <code>loo()</code> y <code>waic()</code> proporcionan errores estándar además de las estimaciones.</p></li>
+<li><p><code>p_loo</code> (número efectivo de parámetros) también es una medida interesante. Si esta estimación no corresponde aproximadamente al número de parámetros libres en su modelo, suele ser señal de algún problema (posiblemente el modelo está mal especificado).</p></li>
+</ol>
+
+
 </section>
 </section>
 

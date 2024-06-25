@@ -1,0 +1,597 @@
+# Estimación de Modelos Bayesianos (Parte 3)
+
+## ANOVA de una vía
+
+```{r include = FALSE}
+library(brms)
+library(CalvinBayes)
+library(coda)
+options(width = 100)
+```
+
+La especie estudiada fue la mosca de la fruta, Drosophila melanogaster (Hanley & Shapiro, 1994), conocida porque las hembras recién inseminadas no se aparean nuevamente durante al menos dos días y los machos no cortejan activamente a las hembras embarazadas. Para ilustrar el uso del modelo, se estudió la duración de la vida de los machos en función de su actividad sexual. En el experimento, se manipuló la actividad sexual suministrando a los machos individuales hembras vírgenes receptivas a una tasa de una u ocho vírgenes por día. La longevidad de estos machos se registró y se comparó con la de dos grupos de control: uno con machos mantenidos con hembras recién inseminadas en igual número que las hembras vírgenes y otro con machos sin hembras. El objetivo era determinar si la actividad sexual de los machos reducía su vida, ya que esto ya estaba establecido para las hembras. Un efecto perjudicial de la actividad sexual en machos sería sorprendente, dado que se presume que los costos fisiológicos de la actividad sexual son menores en machos que en hembras. Cada grupo experimental y de control constaba de 25 moscas macho.
+
+```{r}
+gf_violin(longevity ~ group, data = FruitflyReduced) %>%
+  gf_jitter(width = 0.2, height = 0, alpha = 0.5) %>%
+  gf_point(stat = "summary", color = "red", size = 3, alpha = 0.5, fun = mean)
+```
+
+### Modelo 1
+
+Es bastante fácil pedirle a `brm()` que ajuste un modelo para nosotros. Solo proporcionemos nuestras variables explicativas y de respuesta y veamos qué sucede.
+
+```{r cache = TRUE, results = "hide"}
+flies_brm <- brm(longevity ~ group, data = FruitflyReduced)
+```
+
+```{r fig.height = 6}
+flies_stan <- stanfit(flies_brm)
+flies_stan
+mcmc_combo(as.mcmc.list(flies_stan))
+mcmc_areas_ridges(as.mcmc.list(flies_stan), regex_pars = "b_g")
+```
+
+Analicemos la codificación que usa STAN en la variable categórica:
+
+```{r}
+standata(flies_brm) %>% lapply(head)
+```
+
+El modelo resulta ser en este caso:
+
+\[ \mathrm{longevity} = \beta\_0 \cdot 1 + \beta\_1 x_1 + \beta\_2 x_2 + \beta\_3 x_3 + \beta\_4 x_4 + \mathrm{noise} \\ = \beta\_0 \cdot 1 + \beta\_1 x_1 + \beta\_2 x_2 + \beta\_3 x_3 + \beta\_4 x_4 + {\sf Norm}(0, \sigma) \]
+
+donde, por ejemplo,
+
+\[ x_1 = \[\![ \mbox{group} = \mbox{Pregnant1} \]!\] \\ =
+
+```{=tex}
+\begin{cases}
+          1 & \mbox{si group}   =  \mbox{Pregnant1} \\
+          0 & \mbox{si group} \neq \mbox{Pregnant1}
+       \end{cases}
+```
+\]
+
+En otras palabras, la distribución de la longevidad es
+
+-   ${\sf Norm}(\beta_0, \sigma)$ para el grupo `None0`
+-   ${\sf Norm}(\beta_0 + \beta_1, \sigma)$ para el grupo `Pregnant1`
+-   ${\sf Norm}(\beta_0 + \beta_2, \sigma)$ para el grupo `Pregnant2`
+-   ${\sf Norm}(\beta_0 + \beta_3, \sigma)$ para el grupo `Virgin1`
+-   ${\sf Norm}(\beta_0 + \beta_4, \sigma)$ para el grupo `Virgin2`
+
+Aquí están las distribuciones previas predeterminadas:
+
+```{r}
+prior_summary(flies_brm)
+```
+
+-   Previas planas e impropias para los parámetros `b_`.
+
+-   Distribución t con 3 grados de libertad para el intercepto (colas más pesadas que una distribución normal).
+
+    -   Nota: Esto es realmente una previa para $\alpha_0$ (efecto medio de toda la población), no $\beta_0$, ya que usualmente es más fácil especificar una previa para $\alpha_0$. Si por alguna razón quisiéramos especificar una previa para $\beta_0$ en su lugar, hay un pequeño truco: usar la fórmula `longevity ~ 0 + intercept + group`.
+    -   Si tienes curiosidad sobre de dónde vienen los valores 58 y 18, aquí hay una buena suposición:
+
+    ```{r}
+    df_stats(~ longevity, data = FruitflyReduced, mean, sd)
+    ```
+
+-   "T" para `sigma`.
+
+### Modelo 2: Previas personalizadas
+
+El modelo anterior difiere del modelo básico en el Kruschke.
+
+Podemos acercarnos más al modelo de *DBDA* usando esto:
+
+```{r cache = TRUE, results = "hide"}
+flies2_brm <- 
+  brm(longevity ~ group, data = FruitflyReduced,
+      prior = c(
+        set_prior(class = "Intercept", "normal(60, 100)"),  # 100 = 5 * 20
+        set_prior(class = "b", "normal(0, 10)"),  # group = "b" es el valor predeterminado; se podría omitir
+        set_prior(class = "sigma", "uniform(20.0/1000.0, 20.0 * 1000.0)")
+      )
+  )
+prior_summary(flies2_brm)
+stancode(flies2_brm)
+```
+
+Esto todavía no es exactamente igual al modelo utilizado por Kruschke. Resulta que hay múltiples maneras de codificar los $\beta$s. Un tercero es utilizado por Kruschke y requiere un poco más de trabajo para ajustarse usando `brm()`:
+
+### Modelo 3
+
+Si eliminamos el intercepto en el modelo `brm()`, obtenemos un modelo con un $\beta_i$ para cada media de grupo en lugar de un $\beta_0$ para el primer grupo y un $\beta_i$ para la diferencia en las medias de los grupos cuando $i > 0$:
+
+```{r cache = TRUE, results = "hide"}
+flies3_brm <- 
+  brm(
+    longevity ~ 0 + group, data = FruitflyReduced,
+    prior = c(
+      set_prior(class = "b", "normal(60, 10)"),  # group = "b" es el valor predeterminado; se podría omitir
+      set_prior(class = "sigma", "uniform(20.0/1000.0, 20.0 * 1000.0)")
+    ),
+    sample_prior = TRUE
+  )
+prior_summary(flies3_brm)
+stancode(flies3_brm)
+```
+
+Esto es equivalente a
+
+\[ \mathrm{longevity} = \beta\_0 x_0 + \beta\_1 x_1 + \beta\_2 x_2 + \beta\_3 x_3 + \beta\_4 x_4 + \mathrm{ruido} = \beta\_0 x_0 + \beta\_1 x_1 + \beta\_2 x_2 + \beta\_3 x_3 + \beta\_4 x_4 + {\sf Norm}(0, \sigma) \]
+
+donde, por ejemplo,
+
+\[ x_1 = \[\![ \mbox{group} = \mbox{Pregnant1} \]!\] \\ =
+
+```{=tex}
+\begin{cases}
+          1 & \mbox{si group}   =  \mbox{Pregnant1} \\
+          0 & \mbox{si group} \neq \mbox{Pregnant1}
+       \end{cases}
+```
+\]
+
+En otras palabras, la distribución de la longevidad es
+
+-   ${\sf Norm}(\beta_0, \sigma)$ para el grupo `None0`
+-   ${\sf Norm}(\beta_1, \sigma)$ para el grupo `Pregnant1`
+-   ${\sf Norm}(\beta_2, \sigma)$ para el grupo `Pregnant2`
+-   ${\sf Norm}(\beta_3, \sigma)$ para el grupo `Virgin1`
+-   ${\sf Norm}(\beta_4, \sigma)$ para el grupo `Virgin2`
+
+### Comparando grupos
+
+#### Comparación con el "grupo de referencia"
+
+Usamos el modelo 2:
+
+```{r}
+stanfit(flies2_brm)
+```
+
+En este modelo, un grupo corresponde al intercepto del modelo, y las comparaciones de otros grupos con este grupo implican investigar la distribución posterior de uno de los otros $\beta$s.
+
+```{r}
+flies_post <- posterior(flies_stan)
+names(flies_post)
+```
+
+```{r}
+plot_post(flies_post$b_groupPregnant1)
+hdi(flies_post$b_groupPregnant1)
+plot_post(flies_post$b_groupVirgin1)
+mcmc_areas(as.mcmc.list(flies_stan), pars = "b_groupVirgin1", prob = 0.95)
+hdi(flies_post$b_groupVirgin1)
+```
+
+#### Comparación de otros pares de grupos
+
+¿Qué pasa si queremos comparar los grupos `Virgin1` y `Virgin8`? Podemos usar la identidad $\beta_0 + \beta_i - (\beta_0 + \beta_j) = \beta_i - \beta_j$ para simplificar el álgebra y hacerlo de esta manera.
+
+```{r}
+flies_post <-
+  flies_post %>% mutate(dVirgin = b_groupVirgin8 - b_groupVirgin1)
+plot_post(flies_post$dVirgin, xlab = "Virgin8 - Virgin1")
+```
+
+#### Contrastes: Comparación de "grupos de grupos"
+
+¿Qué pasa si queremos comparar los dos grupos de vírgenes con los otros 3 grupos? Esto es un poco más fácil de hacer usando el modelo sin un término de intercepto.
+
+```{r}
+flies3_post <- posterior(flies3_brm)
+names(flies3_post)
+flies3_post <-
+  flies3_post %>% 
+  mutate(
+    contrast = 
+      (b_groupVirgin8 + b_groupVirgin1)/2 - 
+      (b_groupPregnant1 + b_groupPregnant8 + b_groupNone0) / 3
+)
+plot_post(flies3_post$contrast, xlab = "Virgin vs non-virgin groups")
+```
+
+La expresión
+
+\[ \frac{\mu_3 + \mu_4}{2} - \frac{\mu_0 + \mu_1 + \mu_2}{3} = -\frac13 \mu\_0 -\frac13 \mu\_1 -\frac13 \mu\_2 + \frac12 \mu\_3 + \frac12 \mu\_4 \]
+
+es un ejemplo de un **contraste**. Un contraste es simplemente una combinación lineal de las medias de los grupos tal que la suma de los coeficientes sea 0. Muchas relaciones interesantes pueden investigarse usando contrastes, y el paquete brms incluye la función `hypothesis()` para ayudarnos a hacer esto. (Nota: debido a que incluimos `sample_prior = TRUE` en la llamada a `brm()` para este modelo, el gráfico a continuación muestra tanto las distribuciones previas como las posteriores para el contraste.)
+
+```{r}
+h <-
+  hypothesis(
+    flies3_brm,
+    "(groupVirgin8 + groupVirgin1) / 2 < 
+      (groupPregnant1 + groupPregnant8 + groupNone0) / 3"
+  )
+h
+plot(h)
+```
+
+#### Múltiples hipótesis a la vez
+
+Incluso podemos probar múltiples hipótesis a la vez.
+
+```{r}
+h2 <-
+  hypothesis(
+    flies3_brm,
+    c("groupVirgin1 < (groupPregnant1 + groupPregnant8 + groupNone0) / 3",
+      "groupVirgin8 < (groupPregnant1 + groupPregnant8 + groupNone0) / 3")
+  )
+h2
+plot(h2)
+```
+
+#### ¿Igualdad o desigualdad?
+
+En el ejemplo anterior, expresamos nuestro contraste como una desigualdad. También podemos expresarlo como una igualdad. El resultado que obtenemos de `hypothesis()` es un poco diferente si lo hacemos así.
+
+```{r}
+h3 <-
+  hypothesis(
+    flies3_brm,
+    c("groupVirgin1 = (groupPregnant1 + groupPregnant8 + groupNone0) / 3",
+      "groupVirgin8 = (groupPregnant1 + groupPregnant8 + groupNone0) / 3")
+  )
+h3
+plot(h3)
+```
+
+-   El IC es bidireccional en lugar de unidireccional.
+-   La Ratio de Evidencia se define de manera diferente.
+    -   Para las desigualdades, esta es la razón de las probabilidades posteriores de que la desigualdad sea verdadera vs. falsa.
+    -   Para las igualdades, esta es la razón de la densidad posterior (de la igualdad sostenida) a la densidad previa (Factor de Bayes). (Esto solo funciona si `sample_prior = TRUE`, ya que se requieren muestras previas para hacer el cálculo.)
+
+## ANOVA de varias vías
+
+### Rendimiento de Cultivo según el Método de Labranza y Fertilizante
+
+Los datos en `CalvinBayes::SplitPlotAgri` provienen de un estudio agrícola en el que se utilizaron diferentes métodos de labranza y diferentes fertilizantes, y posteriormente se midió el rendimiento del cultivo (en bushels por acre).
+
+```{r}
+gf_point(Yield ~ Fert | ~ Till, data = SplitPlotAgri, alpha = 0.4, size = 4)
+```
+
+Ajustamos dos modelos: sin/con interacción entre fertilizante y labranza. Estamos interesados en la pregunta: ¿Cómo usarías cada modelo para estimar el rendimiento medio al usar labranza de contorno (ridge) y fertilizante profundo (deep)?
+
+```{r results = "hide", cache = TRUE}
+fert1_brm <-
+  brm(Yield ~ Till + Fert, data = SplitPlotAgri)
+```
+
+\vfill
+
+```{r results = "hide", cache = TRUE}
+fert2_brm <-     
+  brm(Yield ~ Till * Fert, data = SplitPlotAgri)
+```
+
+```{r}
+fert1_brm  
+```
+
+Nota que este modelo implica que la diferencia en rendimiento entre el uso de dos fertilizantes es la misma para cada uno de los tres métodos de labranza y la diferencia debida a los métodos de labranza es la misma para cada uno de los tres fertilizantes. Esto puede no ser una suposición razonable. Tal vez algunos fertilizantes funcionen mejor con ciertos métodos de labranza que con otros. El modelo 2 permite esto.
+
+```{r}
+fert2_brm  
+```
+
+Como antes, podemos optar por ajustar el modelo sin una intersección. Esto produce una diferente parametrización del mismo modelo.
+
+```{r results = "hide", cache = TRUE}
+fert2a_brm <-   
+  brm(Yield ~ 0 + Till * Fert, data = SplitPlotAgri)
+```
+
+```{r ch20-fert2a-summary}
+fert2a_brm
+```
+
+### Diseño de Parcela Dividida
+
+El estudio utilizó 33 campos diferentes. Cada campo se dividió en 3 secciones y se aplicó un fertilizante diferente a cada una de las tres secciones. (Qué fertilizante se utilizó en qué sección se determinó al azar). Esto se llama un "diseño de parcela dividida" (incluso si se aplica a cosas que no son campos de cultivo).
+
+Hubiera sido posible dividir cada campo en 9 subparcelas y usar todas las combinaciones de labranza y fertilizante, pero ese no fue el enfoque de este estudio. El método de labranza fue el mismo para todo el campo, probablemente porque era mucho más eficiente arar los campos de esta manera.
+
+El gráfico a continuación indica que diferentes campos parecen tener rendimientos base diferentes, ya que los puntos asociados con un campo tienden a estar cerca de la parte superior o inferior de cada uno de los grupos de fertilizantes. Podemos agregar una variable adicional a nuestro modelo para manejar esta situación.
+
+```{r}
+gf_point(Yield ~ Fert | ~ Till, data = SplitPlotAgri, alpha = 0.4, size = 4) %>%
+  gf_line(group = ~Field)
+```
+
+```{r results = "hide", cache = TRUE}
+fert3_brm <-
+  # el uso de factor() es importante aquí porque los ids de campo son números
+  # factor convierte esto en un factor (es decir, una variable nominal)
+  brm(Yield ~ Till * Fert + factor(Field), data = SplitPlotAgri)
+```
+
+```{r}
+fert3_brm
+```
+
+Afortunadamente, en realidad no queremos este modelo. Ahora tenemos un ajuste para cada campo, y hubo 33 campos. Pero realmente no estamos interesados en predecir el rendimiento *para un campo dado*. Nuestro interés principal es en qué fertilizantes y métodos de labranza funcionan bien.
+
+Si pensamos que la calidad del campo podría describirse mediante una distribución normal (u otra distribución), podríamos estar más interesados en los parámetros de esa distribución que en las estimaciones específicas para los campos particulares en este estudio. El tipo de modelo que queremos para esto se llama un modelo **jerárquico** o **multinivel**, y `brm()` facilita la descripción de dicho modelo.
+
+Aquí hay una manera de pensar sobre tal modelo
+
+-   Cada campo tiene una productividad base.
+-   Las productividades base son normales con alguna media y desviación estándar que nos dicen sobre la distribución de la productividad entre campos. Nuestros 33 campos deberían ayudarnos a estimar esta distribución.
+-   Esa productividad base puede ajustarse hacia arriba o hacia abajo dependiendo del método de labranza y fertilizante utilizado.
+
+En la jerga de `brm()`, el efecto del campo es ajustar la intersección, así que podemos escribirlo así:
+
+```{r results = "hide", cache = TRUE}
+fert4_brm <-
+  brm(Yield ~ Till * Fert + (1 | Field), data = SplitPlotAgri)
+```
+
+Podemos ver en la salida a continuación que la variabilidad de parcela a parcela se estima con una desviación estándar de aproximadamente 8 a 15. Las estimaciones individuales de los campos están ocultas en este informe, pero puedes verlas si escribes `stanfit(fert_brm)`.
+
+```{r}
+fert4_brm
+```
+
+### Comparación de modelos
+
+### Medición de un Modelo -- Error de Predicción
+
+#### Predicción vs. Observación
+
+Una forma de medir qué tan bien está funcionando un modelo es comparar las predicciones que el modelo hace para la variable de respuesta $\hat y_i$ con los valores de respuesta observados en los datos $y_i$. Para simplificar las cosas, nos gustaría convertir estas $n$ predicciones y $n$ observaciones en un solo número.
+
+Esto se puede realizar simplemente a través de: **Suma de Errores Cuadrados** (SSE) o el **Error Cuadrático Medio** (MSE).
+
+```{=tex}
+\begin{align*}
+SSE & = \sum_{i = 1}^n (y_i - \hat y_i)^2 \\
+MSE & = \frac{1}{n} SSE = \frac{1}{n} \sum_{i = 1}^n (y_i - \hat y_i)^2
+\end{align*}
+```
+También a través del $r^2$:
+
+```{=tex}
+\begin{align*}
+SSE &= \sum_{i = 1}^n (y_i - \hat y_i)^2 \\
+SST &= \sum_{i = 1}^n (y_i - \overline{y})^2 \\
+r^2 &= 1 - \frac{SSE}{SST}
+\end{align*}
+```
+Estamos trabajando con modelos bayesianos, por lo que el $SSE$, $MSE$ y $r^2$ tienen distribuciones posteriores, ya que dependen de (la distribución posterior de) $\theta$.
+
+Juntando todo eso para resaltar la dependencia de $\theta$, obtenemos
+
+$$MSE = \frac{1}{n} \sum_{i = 1}^n (y_i - E(y_i \mid \theta))^2$$
+
+#### Densidad predictiva (logarítmica)
+
+Otra opción es calcular la **densidad predictiva logarítmica** (lpd):
+
+$$\mathrm{lpd}(\theta; y) = \log p(y \mid \theta)$$
+
+Una vez más, $y$ está fijado, por lo que esto es una función de $\theta$. De hecho, es simplemente la función de verosimilitud logarítmica. Para un valor dado de $\theta$, la lpd mide (en una escala logarítmica) la probabilidad de observar los datos. Un valor más grande indica un mejor ajuste. Nuevamente, debido a que la lpd es una función de $\theta$, también tiene una distribución posterior.
+
+Asumiendo que los valores de $y$ son independientes dados los parámetros (y los valores predictores $x$), esto se puede escribir como
+
+$$
+\mathrm{lpd}(\theta; y)
+= \log p(y \mid \theta)
+= \log \prod_{i = 1}^n p(y_i \mid \theta)
+= \sum_{i = 1}^n \log p(y_i \mid \theta)
+$$
+
+En este caso, podemos calcular la densidad posterior logarítmica punto por punto y sumar. En la práctica, esto se hace a menudo incluso cuando no se cumple la independencia. Por lo tanto, técnicamente estamos trabajando con la **densidad posterior logarítmica punto por punto**:
+
+$$
+\mathrm{lppd}(\theta; y)
+= \sum_{i = 1}^n \log p(y_i \mid \theta)
+$$
+
+Al igual que el $SSE$, el $MSE$ y el $r^2$, esto asigna una puntuación a cada $i$ y luego suma esas puntuaciones.
+
+Para modelos lineales con ruido normal y priors uniformes, la lpd es proporcional al $MSE$ (y al $SSE$).
+
+#### Predictores
+
+En la notación anterior, hemos estado ocultando el papel de los predictores $x$ (y continuaremos haciéndolo a continuación). Un modelo con predictores hace diferentes predicciones dependiendo de los valores de los predictores:
+
+$$
+\mathrm{lpd}(\theta; y, x)
+= \log p(y \mid \theta, x)
+$$
+
+#### Números a partir de distribuciones
+
+Podemos convertir una medida $\mathrm{lpd}(\theta; y)$, que depende de $\theta$, en un solo número de varias maneras. Ilustraremos esto a continuación:
+
+1.  Podríamos reemplazar $\theta$ con un número particular $\hat \theta$. ($\hat \theta$ podría ser la media, la mediana o la moda de la distribución posterior, o la moda de la función de verosimilitud, por ejemplo). Si hacemos esto, obtenemos el número
+
+$$
+\mathrm{lpd}(\hat \theta; y) 
+= \log p(y \mid \hat\theta) 
+= \sum_{i = 1}^n \log p(y_i \mid \hat \theta)
+$$ Esto a veces se llama una estimación "plug-in" ya que estamos insertando un solo número para $\theta$.
+
+2.  En lugar de resumir $\theta$ con un solo número, podríamos resumir $p(y_i \mid \theta)$ con un solo número promediando sobre los valores de la muestra posterior $p(y_i \mid \theta^s)$. ($\theta^s$ denota el valor de $\theta$ en la fila $s$ de nuestras $S$ muestras posteriores). Si sumamos sobre $i$, obtenemos la **densidad de verosimilitud posterior puntual logarítmica** (lppd):
+
+```{=tex}
+\begin{align}
+\mathrm{lppd}  
+&\approx 
+\sum_{i = 1}^n \log \left( \frac{1}{S} \sum_{s = 1}^S  p(y_i \mid \theta^s)\right)
+\end{align}
+```
+Esto es una aproximación porque nuestras muestras posteriores son solo una aproximación a la verdadera distribución posterior. Pero si el tamaño efectivo de la muestra de la posterior es grande, esta aproximación debería ser muy buena.
+
+Desafortunadamente, ambas medidas ($MSE$ y densidad predictiva logarítmica) tienen un problema. Miden qué tan bien el modelo se ajusta a los datos utilizados para ajustar el modelo, pero estamos más interesados en qué tan bien el modelo podría ajustarse a nuevos datos (generados por el mismo proceso aleatorio que generó los datos actuales). Esto lleva a **sobreajuste** y **prefiere modelos más grandes y complejos**, ya que la flexibilidad adicional de estos modelos hace que sea más fácil para ellos "ajustar los datos".
+
+#### Error de predicción fuera de muestra
+
+Sería más interesante medir qué tan bien se ajustan los modelos a **nuevos datos**. Esto se conoce como **predicción fuera de muestra**, en contraste con **predicción dentro de la muestra**.
+
+Así que consideremos qué tan bien nuestro modelo predice nuevos datos $\tilde y$ en lugar de los datos observados $y$:
+
+$$
+\mathrm{lpd}(\theta; \tilde y)
+
+= \log p(\tilde y \mid \theta)
+
+= \log \prod_{i = 1}^n p(\tilde y_i \mid \theta)
+
+= \sum_{i = 1}^n \log p(\tilde y_i \mid \theta)
+$$
+
+lo cual podemos convertir en un solo número promediando por el posterior:
+
+$$
+
+\mathrm{elppd}
+
+=
+
+\mathrm{E}\left(\sum_{i = 1}^n \log p_{\mathrm{post}}(\tilde y_i)\right)
+
+\approx
+
+\sum_{i = 1}^n \mathrm{E}\left(\log
+
+\frac{1}{S} \sum_{s = 1}^S p(\tilde y_i \mid \theta^s)\right)
+
+$$
+
+
+#### Aproximación del error de predicción fuera de muestra
+
+Lo que idealmente querríamos (elppd), no podemos calcularlo porque requeriría conocer la distribución de los datos fuera de muestra ($\tilde y_i$).
+
+Aquí hay tres enfoques para resolver este problema:
+
+1. Usar precisión predictiva dentro de la muestra.
+
+   Pero esto no es ideal porque sobreestima el rendimiento del modelo (y más aún para modelos más complicados).
+
+2. Ajustar la precisión predictiva dentro de la muestra.
+
+   La precisión predictiva dentro de la muestra sobreestimará la precisión predictiva fuera de muestra. Si supiéramos (o pudiéramos estimar) cuánto, podríamos ajustar esa cantidad para eliminar (o reducir) el sesgo. Cantidades como
+
+   - AIC (criterio de información de Aikeke),
+
+   - DIC (criterio de información de devianza),
+
+   - y WAIC (criterio de información ampliamente aplicable)
+
+   adoptan el enfoque de restar algo de lppd que depende de la complejidad del modelo.
+
+3. Usar validación cruzada.
+
+   La idea principal aquí es usar parte de los datos para ajustar el modelo y el resto de los datos para evaluar el error de predicción.  Nos centraremos en la validación cruzada de "dejar uno fuera" (LOO) donde ajustamos el modelo $n$ veces, dejando fuera una fila de datos cada vez y usando el modelo resultante para predecir la fila eliminada.
+
+   **LOO-cv** que hacen que sea factible. Se basan en la idea
+de que la distribución posterior usando $y(-i)$ (todos menos la fila $i$ de los datos) suele ser similar a la distribución posterior usando $y$ (todos los datos).
+
+Las fórmulas para **densidad predictiva estimada fuera de muestra** son:
+
+\begin{align*}
+\widehat{\mathrm{elppd}}_{\mathrm{AIC}}
+  &= \mathrm{lpd}(\hat\theta_{\mathrm{mle}}, y) - p_{\mathrm{AIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{DIC}}
+  &= \mathrm{lpd}(\hat\theta_{\mathrm{Bayes}}, y) - p_{\mathrm{DIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{WAIC}}
+  &= \mathrm{lppd} - p_{\mathrm{WAIC}} \\
+\widehat{\mathrm{elppd}}_{\mathrm{LOO}}
+  &= \sum_{i=1}^n \log p_{\mathrm{post}(-i)}(y_i)
+  \approx \sum_{i=1}^n \log \left( \frac{1}{S} \sum_{s = 1}^S p(y_i \mid \theta^{is})\right)
+\end{align*}
+
+y los correspondientes **números efectivos de parámetros** son:
+
+\begin{align*}
+p_{\mathrm{AIC}}  &= \text{número de parámetros en el modelo} \\
+p_{\mathrm{DIC}}  &= 2 \mathrm{var}_{\mathrm{post}}(\log p(y \mid \theta)) \\
+p_{\mathrm{WAIC}} &= 2 \mathrm{var}_{\mathrm{post}}(\sum_{i = 1}^n \log p(y_i \mid \theta)) \\
+p_{\mathrm{LOO}}  &= \hat{\mathrm{llpd}} - \hat{\mathrm{llpd}}_{\mathrm{LOO}} \\
+\end{align*}
+
+Notas:
+
+1. $\theta^{is}$ es el valor de $\theta$ en la fila $s$ de la distribución posterior *cuando se ha eliminado la fila $i$ de los datos*. Lo que hace práctico a LOO es que esto puede aproximarse sin reajustar el modelo $n$ veces.
+
+2. AIC y DIC difieren de WAIC y LOO en que utilizan una estimación puntual para $\theta$ (el estimador de máxima verosimilitud para AIC y la moda de la distribución posterior para DIC) en lugar de usar la distribución posterior completa.
+
+3. AIC penaliza un modelo con 1 por cada parámetro. Esto es correcto para modelos lineales con ruido normal y priors uniformes, pero no es correcto en general.
+
+
+4. LOO y WAIC son asintóticamente equivalentes (es decir, dan valores más y más similares a medida que aumenta el tamaño de la muestra), pero LOO típicamente funciona un poco mejor en conjuntos de datos pequeños, por lo que los autores del paquete loo recomiendan LOO sobre WAIC como la medida principal para comparar modelos.
+
+6. Históricamente, los criterios de información se han expresado en la "escala de devianza". Para convertir de la escala de densidad predictiva logarítmica a la escala de devianza, multiplicamos por -2.
+
+En la escala de devianza, más pequeño es mejor. En la escala de densidad predictiva logarítmica, más grande es mejor (aunque los valores suelen ser negativos). Las funciones `waic()` y `loo()` calculan ambos valores.
+
+
+### Uso de loo
+
+El paquete loo proporciona funciones para calcular estimaciones de WAIC y LOO de elpd (y sus contrapartes de criterios de información).
+
+Aunque las definiciones son algo complejas, comparar modelos usando WAIC o LOO es relativamente sencillo. Según los autores del paquete loo, WAIC puede ser más rápido, pero LOO ofrece un mejor rendimiento.
+
+```{r}
+library(loo)
+
+waic(fert4_brm)
+
+loo(fert4_brm)
+```
+
+A veces, el método de aproximación LOO-PSIS (importancia de muestreo suavizado de Pareto) no funciona bien y `loo()` recomienda reajustar algunos modelos desde cero. Esto se basa en el parámetro de forma (k) de la distribución de Pareto utilizada para suavizar las colas de la distribución posterior.
+
+Permitamos que `loo()` vuelva a ajustar los modelos que considere necesario.
+
+```{r cache = TRUE}
+fert4_loo <- loo(fert4_brm, reloo = TRUE) # reajuste según sea necesario
+```
+
+En este caso, no hubo cambios significativos al reajustar los seis modelos "problemáticos".
+
+```{r}
+fert4_loo
+plot(fert4_loo)
+fert4a_loo <- loo(fert4_brm)
+plot(fert4a_loo)
+```
+
+Si tenemos múltiples modelos, podemos usar `loo::compare()` para compararlos según WAIC o LOO. Antes de hacerlo, agreguemos otro modelo a nuestra lista.
+
+```{r results = "hide", cache = TRUE}
+fert5_brm <- brm(Yield ~ Till + Fert + (1 | Field), data = SplitPlotAgri)
+```
+
+```{r cache = TRUE, results = "hide"}
+fert1_loo <- loo(fert1_brm)
+fert2_loo <- loo(fert2_brm)
+fert5_loo <- loo(fert5_brm)
+```
+
+Ahora podemos comparar nuestros cuatro modelos utilizando LOO:
+
+```{r cache = TRUE, results = "hide"}
+compare(fert1_loo, fert2_loo, fert4_loo, fert5_loo)
+```
+
+Aspectos importantes a recordar:
+
+1. Los elpd estimados y los criterios de información no son significativos por sí solos; solo son útiles para **comparaciones**.
+   
+2. Las comparaciones solo pueden hacerse entre modelos ajustados con los **mismos datos**, ya que los valores calculados dependen tanto del modelo como de los datos.
+
+3. Todos estos métodos son aproximados. `loo()` y `waic()` proporcionan errores estándar además de las estimaciones.
+
+4. `p_loo` (número efectivo de parámetros) también es una medida interesante. Si esta estimación no corresponde aproximadamente al número de parámetros libres en su modelo, suele ser señal de algún problema (posiblemente el modelo está mal especificado).
+
