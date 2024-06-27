@@ -15,6 +15,7 @@ book:
     - estimacion_modelos1.qmd
     - estimacion_modelos2.qmd
     - estimacion_modelos3.qmd
+    - estimacion_modelos4.qmd
     - references.qmd
     
 bibliography: references.bib
