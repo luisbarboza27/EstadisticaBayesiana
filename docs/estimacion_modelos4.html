@@ -248,6 +248,11 @@ window.Quarto = {
   <li><a href="#interpretación-de-modelos-de-regresión-logística" id="toc-interpretación-de-modelos-de-regresión-logística" class="nav-link" data-scroll-target="#interpretación-de-modelos-de-regresión-logística"><span class="header-section-number">8.1.5</span> Interpretación de Modelos de Regresión Logística</a></li>
   <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">8.1.6</span> Comparación de modelos</a></li>
   </ul></li>
+  <li><a href="#modelo-lineal-mixto" id="toc-modelo-lineal-mixto" class="nav-link" data-scroll-target="#modelo-lineal-mixto"><span class="header-section-number">8.2</span> Modelo Lineal Mixto</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-pag.-257-faraway" id="toc-ejemplo-pag.-257-faraway" class="nav-link" data-scroll-target="#ejemplo-pag.-257-faraway"><span class="header-section-number">8.2.1</span> Ejemplo pag. 257, Faraway</a></li>
+  <li><a href="#ejemplo-pag.-211-faraway" id="toc-ejemplo-pag.-211-faraway" class="nav-link" data-scroll-target="#ejemplo-pag.-211-faraway"><span class="header-section-number">8.2.2</span> Ejemplo pag. 211, Faraway</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -309,7 +314,7 @@ Y      &amp;\sim \text{Bernoulli}(\theta) \\
 {
     log(x/(1 - x))
 }
-&lt;bytecode: 0x55e3b4e9a6d8&gt;
+&lt;bytecode: 0x5617ad6e4060&gt;
 &lt;environment: namespace:mosaicCore&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ilogit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -318,7 +323,7 @@ Y      &amp;\sim \text{Bernoulli}(\theta) \\
 {
     exp(x)/(1 + exp(x))
 }
-&lt;bytecode: 0x55e3b5079060&gt;
+&lt;bytecode: 0x5617ad6a3a20&gt;
 &lt;environment: namespace:mosaicCore&gt;</code></pre>
 </div>
 </div>
@@ -577,6 +582,856 @@ Pareto k diagnostic values:
 (-Inf, 0.7]   (good)     134   99.3%   679     
    (0.7, 1]   (bad)        1    0.7%   &lt;NA&gt;    
    (1, Inf)   (very bad)   0    0.0%   &lt;NA&gt;    
+See help('pareto-k-diagnostic') for details.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="modelo-lineal-mixto" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="modelo-lineal-mixto"><span class="header-section-number">8.2</span> Modelo Lineal Mixto</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'faraway'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:mosaic':
+
+    ilogit, logit</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:lattice':
+
+    melanoma</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:brms':
+
+    epilepsy</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lme4'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:mosaic':
+
+    factorize</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:brms':
+
+    ngrps</code></pre>
+</div>
+</div>
+<section id="ejemplo-pag.-257-faraway" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="ejemplo-pag.-257-faraway"><span class="header-section-number">8.2.1</span> Ejemplo pag. 257, Faraway</h3>
+<p>El conjunto de datos de pulpa del paquete faraway consiste en información sobre el brillo de la pulpa de papel según el operador de turno a-d.&nbsp;Las variables incluidas son brillo y operador. En este contexto, un operador de turno se refiere a un trabajador que opera una máquina o supervisa un proceso durante un turno específico en una planta de producción de pulpa de papel. Los turnos están generalmente divididos en diferentes períodos del día, y los operadores de turno a, b, c y d se encargan de las operaciones durante estos diferentes períodos. El desempeño de estos operadores puede afectar variables como el brillo de la pulpa de papel producida.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(pulp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Gráfico de brillo medio vs el operador:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pulp, <span class="fu">aes</span>(<span class="at">x=</span>operator, <span class="at">y=</span>bright))<span class="sc">+</span><span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width=</span><span class="fl">0.1</span>, <span class="at">height=</span><span class="fl">0.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos4_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>En este caso se utilizará un modelo mixto. Primero, ajustamos el modelo con lme4:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>mmod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(bright <span class="sc">~</span> <span class="dv">1</span><span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>operator), pulp)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mmod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: bright ~ 1 + (1 | operator)
+   Data: pulp
+
+REML criterion at convergence: 18.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.4666 -0.7595 -0.1244  0.6281  1.6012 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ operator (Intercept) 0.06808  0.2609  
+ Residual             0.10625  0.3260  
+Number of obs: 20, groups:  operator, 4
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  60.4000     0.1494   404.2</code></pre>
+</div>
+</div>
+<p>Y el mismo modelo lo ajustamos en brms:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>mmod_bayes <span class="ot">&lt;-</span> <span class="fu">brm</span>(bright <span class="sc">~</span> <span class="dv">1</span><span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>operator), pulp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /usr/lib64/R/bin/R CMD SHLIB foo.c
+using C compiler: ‘gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)’
+gcc -I"/usr/include/R" -DNDEBUG   -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/unsupported"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/BH/include" -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/src/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppParallel/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include    -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64   -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c foo.c -o foo.o
+In file included from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Core:19,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Dense:1,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22,
+                 from &lt;command-line&gt;:
+/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: cmath: No such file or directory
+  679 | #include &lt;cmath&gt;
+      |          ^~~~~~~
+compilation terminated.
+make: *** [/usr/lib64/R/etc/Makeconf:191: foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.17 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.071 seconds (Warm-up)
+Chain 1:                0.058 seconds (Sampling)
+Chain 1:                0.129 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 1.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.277 seconds (Warm-up)
+Chain 2:                0.062 seconds (Sampling)
+Chain 2:                0.339 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 1.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.488 seconds (Warm-up)
+Chain 3:                0.062 seconds (Sampling)
+Chain 3:                0.55 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 9e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.133 seconds (Warm-up)
+Chain 4:                0.079 seconds (Sampling)
+Chain 4:                0.212 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 4 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>mmod_bayes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 4 divergent transitions after warmup. Increasing adapt_delta above 0.8 may
+help. See http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bright ~ 1 + (1 | operator) 
+   Data: pulp (Number of observations: 20) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~operator (Number of levels: 4) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.41      0.29     0.04     1.16 1.01      599      703
+
+Regression Coefficients:
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept    60.41      0.23    59.95    60.92 1.00      715      649
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.36      0.07     0.25     0.52 1.00     1573     2043
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>Previas utilizadas por default:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(mmod_bayes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   prior     class      coef    group resp dpar nlpar lb ub       source
+ student_t(3, 60.5, 2.5) Intercept                                               default
+    student_t(3, 0, 2.5)        sd                                     0         default
+    student_t(3, 0, 2.5)        sd           operator                  0    (vectorized)
+    student_t(3, 0, 2.5)        sd Intercept operator                  0    (vectorized)
+    student_t(3, 0, 2.5)     sigma                                     0         default</code></pre>
+</div>
+</div>
+<p>Previas personalizadas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>mmod_bayes_personal <span class="ot">&lt;-</span> <span class="fu">brm</span>(bright <span class="sc">~</span> <span class="dv">1</span><span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>operator), pulp,</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="at">class =</span> <span class="st">"Intercept"</span>, <span class="st">"normal(60, 100)"</span>),  </span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_prior</span>(<span class="at">class =</span> <span class="st">"sd"</span>, <span class="st">"uniform(20.0/1000.0, 20.0 * 1000.0)"</span>),  </span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">set_prior</span>(<span class="at">class =</span> <span class="st">"sigma"</span>, <span class="st">"uniform(20.0/1000.0, 20.0 * 1000.0)"</span>)</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>      ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: It appears as if you have specified an upper bounded prior on a parameter that has no natural upper bound.
+If this is really what you want, please specify argument 'ub' of 'set_prior' appropriately.
+Warning occurred for prior 
+&lt;lower=0&gt; sd ~ uniform(20.0/1000.0, 20.0 * 1000.0)
+&lt;lower=0&gt; sigma ~ uniform(20.0/1000.0, 20.0 * 1000.0)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /usr/lib64/R/bin/R CMD SHLIB foo.c
+using C compiler: ‘gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)’
+gcc -I"/usr/include/R" -DNDEBUG   -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/unsupported"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/BH/include" -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/src/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppParallel/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include    -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64   -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c foo.c -o foo.o
+In file included from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Core:19,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Dense:1,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22,
+                 from &lt;command-line&gt;:
+/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: cmath: No such file or directory
+  679 | #include &lt;cmath&gt;
+      |          ^~~~~~~
+compilation terminated.
+make: *** [/usr/lib64/R/etc/Makeconf:191: foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.402 seconds (Warm-up)
+Chain 1:                0.08 seconds (Sampling)
+Chain 1:                0.482 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 1.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.704 seconds (Warm-up)
+Chain 2:                0.066 seconds (Sampling)
+Chain 2:                0.77 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 1.2e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.857 seconds (Warm-up)
+Chain 3:                0.05 seconds (Sampling)
+Chain 3:                0.907 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 1e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.33 seconds (Warm-up)
+Chain 4:                0.054 seconds (Sampling)
+Chain 4:                0.384 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 115 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>mmod_bayes_personal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 115 divergent transitions after warmup. Increasing adapt_delta above 0.8 may
+help. See http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bright ~ 1 + (1 | operator) 
+   Data: pulp (Number of observations: 20) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~operator (Number of levels: 4) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.45      0.33     0.07     1.30 1.00      591      681
+
+Regression Coefficients:
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept    60.40      0.26    59.84    60.97 1.00      652      551
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.36      0.07     0.25     0.52 1.00     1263     2034
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>Intentar con cambio en thinning.</p>
+</section>
+<section id="ejemplo-pag.-211-faraway" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="ejemplo-pag.-211-faraway"><span class="header-section-number">8.2.2</span> Ejemplo pag. 211, Faraway</h3>
+<p>Ilustramos con un experimento para comparar cuatro procesos, A, B, C y D, para la producción de penicilina. Estos son los tratamientos. La materia prima, licor de maíz, es bastante variable y solo puede ser preparada en mezclas suficientes para cuatro corridas. Por lo tanto, un diseño de bloques completos aleatorizados es sugerido por la naturaleza de las unidades experimentales.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"penicillin"</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>penicillin<span class="sc">$</span>Blend <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">5</span>,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Gráfico comparando la producción media de penicilina con los otros dos factores:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penicillin, <span class="fu">aes</span>(<span class="at">y=</span>yield, <span class="at">x=</span>treat, <span class="at">shape=</span>Blend))<span class="sc">+</span><span class="fu">geom_point</span>()<span class="sc">+</span><span class="fu">xlab</span>(<span class="st">"Treatment"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos4_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penicillin, <span class="fu">aes</span>(<span class="at">y=</span>yield, <span class="at">x=</span>Blend, <span class="at">shape=</span>treat))<span class="sc">+</span><span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="estimacion_modelos4_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ajuste con ANOVA (sin efecto aleatorio):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>lmod <span class="ot">&lt;-</span> <span class="fu">aov</span>(yield <span class="sc">~</span> blend <span class="sc">+</span> treat, penicillin)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lmod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df Sum Sq Mean Sq F value Pr(&gt;F)  
+blend        4    264   66.00   3.504 0.0407 *
+treat        3     70   23.33   1.239 0.3387  
+Residuals   12    226   18.83                 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Con lmer (con efecto aleatorio):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>mmod_penicilina <span class="ot">&lt;-</span> <span class="fu">lmer</span>(yield <span class="sc">~</span> treat <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>blend), penicillin)</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sumary</span>(mmod_penicilina)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fixed Effects:
+            coef.est coef.se
+(Intercept) 84.00     2.47  
+treatB       1.00     2.74  
+treatC       5.00     2.74  
+treatD       2.00     2.74  
+
+Random Effects:
+ Groups   Name        Std.Dev.
+ blend    (Intercept) 3.43    
+ Residual             4.34    
+---
+number of obs: 20, groups: blend, 5
+AIC = 115.8, DIC = 130.7
+deviance = 117.3 </code></pre>
+</div>
+</div>
+<p>Con STAN:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>mmod_penicilina_bayes <span class="ot">&lt;-</span> <span class="fu">brm</span>(yield <span class="sc">~</span> treat <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>blend), penicillin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /usr/lib64/R/bin/R CMD SHLIB foo.c
+using C compiler: ‘gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)’
+gcc -I"/usr/include/R" -DNDEBUG   -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/unsupported"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/BH/include" -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/src/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppParallel/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include    -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64   -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c foo.c -o foo.o
+In file included from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Core:19,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Dense:1,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22,
+                 from &lt;command-line&gt;:
+/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: cmath: No such file or directory
+  679 | #include &lt;cmath&gt;
+      |          ^~~~~~~
+compilation terminated.
+make: *** [/usr/lib64/R/etc/Makeconf:191: foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.086 seconds (Warm-up)
+Chain 1:                0.064 seconds (Sampling)
+Chain 1:                0.15 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 7e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.192 seconds (Warm-up)
+Chain 2:                0.091 seconds (Sampling)
+Chain 2:                0.283 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 1.2e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.084 seconds (Warm-up)
+Chain 3:                0.066 seconds (Sampling)
+Chain 3:                0.15 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 7e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.102 seconds (Warm-up)
+Chain 4:                0.06 seconds (Sampling)
+Chain 4:                0.162 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 4 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</div>
+</div>
+<p>Comparemos con un modelo reducido para ver quien tiene mejor capacidad predictiva posterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>mmod_penicilina_bayes_red <span class="ot">&lt;-</span> <span class="fu">brm</span>(yield <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>blend), penicillin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /usr/lib64/R/bin/R CMD SHLIB foo.c
+using C compiler: ‘gcc (GCC) 13.2.1 20240316 (Red Hat 13.2.1-7)’
+gcc -I"/usr/include/R" -DNDEBUG   -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/Rcpp/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/unsupported"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/BH/include" -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/src/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppParallel/include/"  -I"/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/usr/local/include    -fpic  -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64   -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer   -c foo.c -o foo.o
+In file included from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Core:19,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/Dense:1,
+                 from /home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22,
+                 from &lt;command-line&gt;:
+/home/lbarboza/R/x86_64-redhat-linux-gnu-library/4.3/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: cmath: No such file or directory
+  679 | #include &lt;cmath&gt;
+      |          ^~~~~~~
+compilation terminated.
+make: *** [/usr/lib64/R/etc/Makeconf:191: foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.8e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.18 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.076 seconds (Warm-up)
+Chain 1:                0.066 seconds (Sampling)
+Chain 1:                0.142 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 7e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.072 seconds (Warm-up)
+Chain 2:                0.056 seconds (Sampling)
+Chain 2:                0.128 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 6e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.06 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.113 seconds (Warm-up)
+Chain 3:                0.038 seconds (Sampling)
+Chain 3:                0.151 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 7e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.084 seconds (Warm-up)
+Chain 4:                0.05 seconds (Sampling)
+Chain 4:                0.134 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 41 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+Running the chains for more iterations may help. See
+https://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+Running the chains for more iterations may help. See
+https://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+</div>
+</div>
+<p>Comparación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(loo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is loo version 2.7.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- Online documentation and vignettes at mc-stan.org/loo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- As of v2.0.0 loo defaults to 1 core but we recommend using as many as possible. Use the 'cores' argument or set options(mc.cores = NUM_CORES) for an entire session. </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'loo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:mosaic':
+
+    compare</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>penicilina_bayes_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(mmod_penicilina_bayes)</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>penicilina_bayes_red_loo <span class="ot">&lt;-</span> <span class="fu">loo</span>(mmod_penicilina_bayes_red)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>penicilina_bayes_loo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Computed from 4000 by 20 log-likelihood matrix.
+
+         Estimate  SE
+elpd_loo    -63.4 2.2
+p_loo         6.9 1.1
+looic       126.9 4.4
+------
+MCSE of elpd_loo is 0.1.
+MCSE and ESS estimates assume MCMC draws (r_eff in [0.3, 1.1]).
+
+All Pareto k estimates are good (k &lt; 0.7).
+See help('pareto-k-diagnostic') for details.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>penicilina_bayes_red_loo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Computed from 4000 by 20 log-likelihood matrix.
+
+         Estimate  SE
+elpd_loo    -62.3 2.8
+p_loo         4.7 1.2
+looic       124.6 5.6
+------
+MCSE of elpd_loo is 0.2.
+MCSE and ESS estimates assume MCMC draws (r_eff in [0.1, 0.6]).
+
+All Pareto k estimates are good (k &lt; 0.7).
 See help('pareto-k-diagnostic') for details.</code></pre>
 </div>
 </div>

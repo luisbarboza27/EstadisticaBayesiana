@@ -1,0 +1,300 @@
+# Estimación de Modelos Bayesianos (Parte 4)
+
+```{r include = FALSE}
+library(brms)
+library(CalvinBayes)
+library(coda)
+library(mosaic)
+options(width = 100)
+set.seed(100)
+```
+
+## Modelo Logístico
+
+Supongamos que queremos predecir el género de una persona a partir de su altura y peso. ¿Qué tipo de modelo deberíamos usar? Dada una combinación particular de altura y peso, una persona puede ser hombre o mujer. Por lo tanto, para una combinación dada de altura/peso, la distribución del género es una variable aleatoria Bernoulli. Nuestro objetivo es convertir la combinación de altura/peso en el parámetro $\theta$, que especifica la proporción de personas con esa altura y peso que son hombres (o mujeres).
+
+Entonces, nuestro modelo se ve algo así:
+
+```{=tex}
+\begin{align*}
+Y      &\sim \text{Bernoulli}(\theta) \\
+\theta &= \mathrm{f}(\texttt{altura}, \texttt{peso})
+\end{align*}
+```
+Pero, ¿qué funciones deberíamos usar para $f$?
+
+### El enfoque habitual: Regresión logística
+
+Nos gustaría usar una función lineal, pero convertir su rango de $(-\infty, \infty)$ a $(0, 1)$. Alternativamente, podemos convertir el rango $(0,1)$ a $(-\infty, \infty)$ y parametrizar la distribución Bernoulli de manera diferente.
+
+La transformación más común utiliza la transformación de logaritmo de odds:
+
+$$
+\begin{array}{rcl}
+\mathrm{probabilidad} & \theta & (0, 1) \\
+\mathrm{odds} & \theta \mapsto \frac{\theta}{1- \theta} & (0, \infty) \\
+\mathrm{logaritmo\ de\ odds} & \theta \mapsto \log\left(\frac{\theta}{1- \theta}\right) & (-\infty, \infty) \\
+\end{array}
+$$
+
+Leído al revés, esto es la transformación logística:
+
+$$
+\begin{array}{rcl}
+\mathrm{logaritmo\ de\ odds} & x  & (-\infty, \infty) \\
+\mathrm{odds} & x \mapsto e^x  & (0, \infty) \\
+\mathrm{probabilidad} & x \mapsto \frac{e^x}{1 + e^x} & (0, 1) \\
+\end{array}
+$$
+
+Estas funciones están disponibles en el paquete `mosaic` como `logit()` e `ilogit()`:
+
+```{r}
+logit
+ilogit
+```
+
+La función inversa de logit también se llama la **función logística** y el modelo de regresión logística es:
+
+```{=tex}
+\begin{align*}
+Y      &\sim \text{Bernoulli}(\theta) \\
+\theta &= \mathrm{logística}(\beta_0 + 
+          \beta_{\texttt{altura}} \cdot \texttt{altura} + 
+          \beta_{\texttt{peso}} \cdot \texttt{peso})
+          \\
+\mathrm{logit}(\theta) &= \beta_0 + 
+          \beta_{\texttt{altura}} \cdot \texttt{altura} + 
+          \beta_{\texttt{peso}} \cdot \texttt{peso}
+\end{align*}
+```
+La función logit se llama **función de enlace** y la función logística es la **función de enlace inversa**.
+
+### Otros enfoques
+
+Podríamos hacer algo similar con cualquier par de funciones que conviertan hacia adelante y hacia atrás entre $(0,1)$ y $(-\infty, \infty)$. Para cualquier variable aleatoria, la función de distribución acumulativa (CDF) tiene dominio $(-\infty, \infty)$ y rango $(0,1)$, por lo que
+
+-   Cualquier par de funciones CDF/inversa de CDF puede ser usado en lugar de la transformación logística.
+    -   Usar `pnorm()` y `qnorm()` se llama **regresión probit**.
+
+```{r}
+gf_function(ilogit, xlim = c(-6, 6), color = ~"logística") %>%
+  gf_function(pnorm, color = ~"probit (estándar)") %>%
+  gf_function(pnorm, args = list(sd = 1.8), 
+              color = ~"probit (media = 0, sd = 1.8)") %>%
+  gf_theme(legend.position = "top") %>%
+  gf_labs(color = "")
+```
+
+### Preparación de los datos
+
+Utilizaremos un subconjunto de los datos de `NHANES` para este ejemplo. Dado que los datos están en libras y pulgadas, convertiremos los datos de NHANES a estas unidades.
+
+Como en otros modelos, necesitamos convertir nuestra variable dicotómica en 0's y 1's. Sin duda, queremos excluir a los niños del modelo, ya que los patrones de altura y peso son diferentes para niños y adultos. De hecho, seleccionaremos únicamente a los individuos de 22 años.
+
+Aprovecharemos también para eliminar las variables que no necesitamos y eliminar cualquier fila que tenga valores faltantes en esas tres columnas.
+
+```{r ch21-nhanes}
+library(NHANES)
+library(brms)
+nhanes <- 
+  NHANES %>% 
+  mutate(
+    weight = Weight * 2.2,
+    height = Height / 2.54,
+    male = as.numeric(Gender == "male")
+  ) %>%
+  filter(Age == 22) %>%
+  select(male, height, weight) %>% 
+  filter(complete.cases(.))  # eliminar filas con valores faltantes en alguna de las 3 variables
+```
+
+### Especificación de la familia y función de enlace en `brm()`
+
+Comparado con nuestro modelo habitual de regresión lineal, necesitamos hacer dos ajustes:
+
+1.  Utilizar la familia de distribuciones Bernoulli para el ruido.
+2.  Utilizar la función de enlace logit (inversa logística) para traducir hacia adelante y hacia atrás entre la parte lineal del modelo y la distribución.
+
+Así que para la regresión logística y la regresión probit, utilizamos:
+
+```{r results = "hide", cache = TRUE}
+logistic_brm <-
+  brm(male ~ height + weight, family = bernoulli(link = logit), data = nhanes)
+```
+
+```{r results = "hide", cache = TRUE}
+probit_brm <-
+  brm(male ~ height + weight, family = bernoulli(link = probit), data = nhanes)
+```
+
+El resto del modelo se comporta como antes. En particular, se utiliza una distribución t para la intersección y distribuciones uniformes impropias para los demás coeficientes de regresión. Este modelo no tiene un parámetro $\sigma$. (La varianza de una distribución Bernoulli está determinada por el parámetro de probabilidad.)
+
+```{r}
+prior_summary(logistic_brm)
+```
+
+### Interpretación de Modelos de Regresión Logística
+
+Antes de analizar nuestro modelo con dos predictores, veamos un modelo con solo un predictor.
+
+```{r cache = TRUE, results = "hide"}
+male_by_weight_brm <-
+  brm(male ~ weight, family = bernoulli(), data = nhanes)
+```
+
+```{r}
+male_by_weight_brm
+mcmc_combo(as.mcmc.list(stanfit(male_by_weight_brm)))
+plot_post(posterior(male_by_weight_brm)$b_weight)
+p <- marginal_effects(male_by_weight_brm) %>% plot(plot = FALSE)
+p$weight %>%
+  gf_jitter(male ~ weight, data = nhanes, inherit = FALSE,
+            width = 0, height = 0.03, alpha = 0.3)
+```
+
+-   Claramente hay una tendencia ascendente: las personas más pesadas tienen más probabilidades de ser hombres que las personas más ligeras. Esto se observa en la distribución posterior para $\beta_{\mathrm{weight}}$.
+
+    ```{r}
+    hdi(posterior(male_by_weight_brm), pars = "b_weight")
+    ```
+
+```{r ch21-logistic-summary}
+logistic_brm
+```
+
+### Comparación de modelos
+
+```{r}
+logistic_brm_loo <- loo(logistic_brm)
+probit_brm_loo <- loo(probit_brm)
+```
+
+```{r}
+logistic_brm_loo
+probit_brm_loo
+```
+
+## Modelo Lineal Mixto
+
+```{r}
+library(faraway)
+library(lme4)
+```
+
+
+### Ejemplo pag. 257, Faraway
+
+El conjunto de datos de pulpa del paquete faraway consiste en información sobre el brillo de la pulpa de papel según el operador de turno a-d. Las variables incluidas son brillo y operador. En este contexto, un operador de turno se refiere a un trabajador que opera una máquina o supervisa un proceso durante un turno específico en una planta de producción de pulpa de papel. Los turnos están generalmente divididos en diferentes períodos del día, y los operadores de turno a, b, c y d se encargan de las operaciones durante estos diferentes períodos. El desempeño de estos operadores puede afectar variables como el brillo de la pulpa de papel producida.
+
+```{r}
+data(pulp)
+```
+
+Gráfico de brillo medio vs el operador:
+
+
+```{r}
+ggplot(pulp, aes(x=operator, y=bright))+geom_point(position = position_jitter(width=0.1, height=0.0))
+```
+
+
+En este caso se utilizará un modelo mixto. Primero, ajustamos el modelo con lme4:
+
+```{r}
+mmod <- lmer(bright ~ 1+(1|operator), pulp)
+summary(mmod)
+```
+
+Y el mismo modelo lo ajustamos en brms:
+
+```{r}
+mmod_bayes <- brm(bright ~ 1+(1|operator), pulp)
+
+```
+
+```{r}
+mmod_bayes
+```
+
+Previas utilizadas por default:
+
+```{r}
+prior_summary(mmod_bayes)
+```
+
+Previas personalizadas:
+
+```{r}
+mmod_bayes_personal <- brm(bright ~ 1+(1|operator), pulp,
+                  prior = c(set_prior(class = "Intercept", "normal(60, 100)"),  
+        set_prior(class = "sd", "uniform(20.0/1000.0, 20.0 * 1000.0)"),  
+        set_prior(class = "sigma", "uniform(20.0/1000.0, 20.0 * 1000.0)")
+      ))
+
+
+```
+
+```{r}
+mmod_bayes_personal
+```
+
+Intentar con cambio en thinning.
+
+### Ejemplo pag. 211, Faraway
+
+Ilustramos con un experimento para comparar cuatro procesos, A, B, C y D, para la producción de penicilina. Estos son los tratamientos. La materia prima, licor de maíz, es bastante variable y solo puede ser preparada en mezclas suficientes para cuatro corridas. Por lo tanto, un diseño de bloques completos aleatorizados es sugerido por la naturaleza de las unidades experimentales.
+
+```{r}
+data("penicillin")
+penicillin$Blend <- gl(5,4)
+```
+
+
+Gráfico comparando la producción media de penicilina con los otros dos factores:
+
+```{r}
+ggplot(penicillin, aes(y=yield, x=treat, shape=Blend))+geom_point()+xlab("Treatment")
+ggplot(penicillin, aes(y=yield, x=Blend, shape=treat))+geom_point()
+```
+
+Ajuste con ANOVA (sin efecto aleatorio):
+
+```{r}
+lmod <- aov(yield ~ blend + treat, penicillin)
+summary(lmod)
+```
+
+Con lmer (con efecto aleatorio):
+
+```{r}
+mmod_penicilina <- lmer(yield ~ treat + (1|blend), penicillin)
+sumary(mmod_penicilina)
+```
+
+Con STAN:
+
+```{r}
+mmod_penicilina_bayes <- brm(yield ~ treat + (1|blend), penicillin)
+```
+
+Comparemos con un modelo reducido para ver quien tiene mejor capacidad predictiva posterior:
+
+```{r}
+mmod_penicilina_bayes_red <- brm(yield ~ 1 + (1|blend), penicillin)
+```
+
+Comparación:
+
+```{r}
+library(loo)
+
+penicilina_bayes_loo <- loo(mmod_penicilina_bayes)
+penicilina_bayes_red_loo <- loo(mmod_penicilina_bayes_red)
+```
+
+```{r}
+penicilina_bayes_loo
+penicilina_bayes_red_loo
+```
+
